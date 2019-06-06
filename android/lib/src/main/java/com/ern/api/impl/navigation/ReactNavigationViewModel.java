@@ -17,7 +17,6 @@ import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListe
 import com.walmartlabs.electrode.reactnative.bridge.None;
 import com.walmartlabs.electrode.reactnative.bridge.RequestHandlerHandle;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
-import com.walmartlabs.ern.navigation.BuildConfig;
 
 final class ReactNavigationViewModel extends ViewModel {
 
@@ -164,9 +163,7 @@ final class ReactNavigationViewModel extends ViewModel {
     }
 
     private void log(String s) {
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, s);
-        }
+        Logger.d(TAG, s);
     }
 }
 

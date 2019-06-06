@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
 import com.ernnavigationApi.ern.model.NavigationBar;
-import com.walmartlabs.ern.navigation.BuildConfig;
 
 public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDelegate<MiniAppNavRequestListener> {
 
@@ -30,8 +29,7 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
         @Override
         public void onChanged(@Nullable Route route) {
             if (route != null) {
-                if (BuildConfig.DEBUG)
-                    Log.d(TAG, "Received a new navigation route: " + route.getArguments());
+                Log.d(TAG, "Received a new navigation route: " + route.getArguments());
 
                 if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
@@ -115,15 +113,14 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
     }
 
     private void finish(@Nullable Route route) {
-        if (BuildConfig.DEBUG)
-            Log.d(TAG, "finish triggered by RN. Hosting activity will be notified.");
+        Log.d(TAG, "finish triggered by RN. Hosting activity will be notified.");
         mMiniAppRequestListener.finishFlow(NavUtils.getPayload(route.getArguments()));
         route.setResult(true, null);
     }
 
     private void navigate(@NonNull Route route) {
         final String path = NavUtils.getPath(route.getArguments());
-        if (BuildConfig.DEBUG) Log.d(TAG, "navigating to: " + path);
+        Log.d(TAG, "navigating to: " + path);
 
         if (!TextUtils.isEmpty(path)) {
             //If the hosting activity or fragment has not handled the navigation fall back to the default.
