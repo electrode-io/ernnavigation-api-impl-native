@@ -1,6 +1,6 @@
 {
   "name": "ernnavigation-api-impl-native",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
@@ -14,7 +14,33 @@
         "EnNavigation"
       ]
     },
-    "moduleType": "ern-native-api-impl"
+    "moduleType": "ern-native-api-impl",
+    "pluginConfig" : {
+      "android": {
+        "root": "android/lib",
+        "dependencies": [
+          "androidx.appcompat:appcompat:1.0.2",
+          "androidx.lifecycle:lifecycle-extensions:2.0.0"
+        ]
+      },
+      "ios": {
+        "copy": [
+          {
+            "dest": "{{{projectName}}}/APIImpls",
+            "source": "ios/ElectrodeApiImpl/APIImpls/*"
+          }
+        ],
+        "pbxproj": {
+          "addSource": [
+            {
+              "from": "ios/ElectrodeApiImpl/APIImpls/*.swift",
+              "group": "APIImpls",
+              "path": "APIImpls"
+            }
+          ]
+        }
+      }
+    }
   },
   "keywords": [
     "ern-native-api-impl"
