@@ -18,7 +18,7 @@ import com.walmartlabs.electrode.reactnative.bridge.None;
 import com.walmartlabs.electrode.reactnative.bridge.RequestHandlerHandle;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
-final class ReactNavigationViewModel extends ViewModel {
+public final class ReactNavigationViewModel extends ViewModel {
 
     private static final String TAG = ReactNavigationViewModel.class.getSimpleName();
     static final String KEY_NAV_TYPE = "NAV_TYPE";
