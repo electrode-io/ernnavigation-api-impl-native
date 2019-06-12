@@ -2,6 +2,7 @@ package com.ern.api.impl.core;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -113,6 +114,19 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         }
         
         return manager.popBackStackImmediate(tag, 0);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        final boolean isMenuKey = (keyCode == KeyEvent.KEYCODE_MENU);
+
+        if (isMenuKey
+                && canShowDeveloperMenu()) {
+            showDeveloperMenu();
+            return true;
+        }
+
+        return mFragmentActivity.onKeyUp(keyCode, event);
     }
 
     public interface DataProvider {
