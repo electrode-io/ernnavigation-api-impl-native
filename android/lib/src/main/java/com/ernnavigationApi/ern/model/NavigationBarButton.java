@@ -26,16 +26,22 @@ import static com.walmartlabs.electrode.reactnative.bridge.util.BridgeArguments.
 
 public class NavigationBarButton implements Parcelable, Bridgeable {
 
-    private String name;
-    private String identifier;
-    private String orientation;
+    private String title;
+    private String icon;
+    private String id;
+    private String location;
+    private Boolean disabled;
+    private String adaLabel;
 
     private NavigationBarButton() {}
 
     private NavigationBarButton(Builder builder) {
-        this.name = builder.name;
-        this.identifier = builder.identifier;
-        this.orientation = builder.orientation;
+        this.title = builder.title;
+        this.icon = builder.icon;
+        this.id = builder.id;
+        this.location = builder.location;
+        this.disabled = builder.disabled;
+        this.adaLabel = builder.adaLabel;
     }
 
     private NavigationBarButton(Parcel in) {
@@ -43,21 +49,20 @@ public class NavigationBarButton implements Parcelable, Bridgeable {
     }
 
     public NavigationBarButton(@NonNull Bundle bundle) {
-        if(!bundle.containsKey("name")){
-            throw new IllegalArgumentException("name property is required");
+        if(!bundle.containsKey("id")){
+            throw new IllegalArgumentException("id property is required");
         }
 
-        if(!bundle.containsKey("identifier")){
-            throw new IllegalArgumentException("identifier property is required");
+        if(!bundle.containsKey("location")){
+            throw new IllegalArgumentException("location property is required");
         }
 
-        if(!bundle.containsKey("orientation")){
-            throw new IllegalArgumentException("orientation property is required");
-        }
-
-        this.name = bundle.getString("name");
-        this.identifier = bundle.getString("identifier");
-        this.orientation = bundle.getString("orientation");
+        this.title = bundle.getString("title");
+        this.icon = bundle.getString("icon");
+        this.id = bundle.getString("id");
+        this.location = bundle.getString("location");
+        this.disabled = bundle.containsKey("disabled") ? bundle.getBoolean("disabled") : null;
+        this.adaLabel = bundle.getString("adaLabel");
     }
 
     public static final Creator<NavigationBarButton> CREATOR = new Creator<NavigationBarButton>() {
@@ -73,33 +78,63 @@ public class NavigationBarButton implements Parcelable, Bridgeable {
     };
 
     /**
-    * Name of button
+    * Button title if any.
     *
     * @return String
     */
-    @NonNull
-    public String getName() {
-        return name;
+    @Nullable
+    public String getTitle() {
+        return title;
     }
 
     /**
-    * Id of the button
+    * Icon resource identifier that can be used find the icon
     *
     * @return String
     */
-    @NonNull
-    public String getIdentifier() {
-        return identifier;
+    @Nullable
+    public String getIcon() {
+        return icon;
     }
 
     /**
-    * Orientation LEFT|RIGHT|CENTER etc.
+    * Id of the button, this namespace will be used as an identifier when a button click event is emitted.
     *
     * @return String
     */
     @NonNull
-    public String getOrientation() {
-        return orientation;
+    public String getId() {
+        return id;
+    }
+
+    /**
+    * Allowed enums: left, right
+    *
+    * @return String
+    */
+    @NonNull
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+    * Default to false. If set to true the button will be disabled(non-clickable)
+    *
+    * @return Boolean
+    */
+    @Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    /**
+    * Accessibility label
+    *
+    * @return String
+    */
+    @Nullable
+    public String getAdaLabel() {
+        return adaLabel;
     }
 
 
@@ -117,32 +152,68 @@ public class NavigationBarButton implements Parcelable, Bridgeable {
     @Override
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
-        bundle.putString("name", this.name);
-        bundle.putString("identifier", this.identifier);
-        bundle.putString("orientation", this.orientation);
+        bundle.putString("id", this.id);
+        bundle.putString("location", this.location);
+        if(title != null) {
+            bundle.putString("title", this.title );
+        }
+        if(icon != null) {
+            bundle.putString("icon", this.icon );
+        }
+        if(this.disabled != null) {
+            bundle.putBoolean("disabled", this.disabled);
+        }
+        if(adaLabel != null) {
+            bundle.putString("adaLabel", this.adaLabel );
+        }
         return bundle;
     }
 
     @Override
     public String toString() {
         return "{"
-        + "name:" + (name != null ? "\"" + name + "\"" : null)+ ","
-        + "identifier:" + (identifier != null ? "\"" + identifier + "\"" : null)+ ","
-        + "orientation:" + (orientation != null ? "\"" + orientation + "\"" : null)
+        + "title:" + (title != null ? "\"" + title + "\"" : null)+ ","
+        + "icon:" + (icon != null ? "\"" + icon + "\"" : null)+ ","
+        + "id:" + (id != null ? "\"" + id + "\"" : null)+ ","
+        + "location:" + (location != null ? "\"" + location + "\"" : null)+ ","
+        + "disabled:" + disabled+ ","
+        + "adaLabel:" + (adaLabel != null ? "\"" + adaLabel + "\"" : null)
         + "}";
     }
 
     public static class Builder {
-        private final String name;
-        private final String identifier;
-        private final String orientation;
+        private final String id;
+        private final String location;
+        private String title;
+        private String icon;
+        private Boolean disabled;
+        private String adaLabel;
 
-        public Builder(@NonNull String name, @NonNull String identifier, @NonNull String orientation) {
-            this.name = name;
-            this.identifier = identifier;
-            this.orientation = orientation;
+        public Builder(@NonNull String id, @NonNull String location) {
+            this.id = id;
+            this.location = location;
         }
 
+        @NonNull
+        public Builder title(@Nullable String title) {
+            this.title = title;
+            return this;
+        }
+        @NonNull
+        public Builder icon(@Nullable String icon) {
+            this.icon = icon;
+            return this;
+        }
+        @NonNull
+        public Builder disabled(@Nullable Boolean disabled) {
+            this.disabled = disabled;
+            return this;
+        }
+        @NonNull
+        public Builder adaLabel(@Nullable String adaLabel) {
+            this.adaLabel = adaLabel;
+            return this;
+        }
 
         @NonNull
         public NavigationBarButton build() {

@@ -27,12 +27,14 @@ import static com.walmartlabs.electrode.reactnative.bridge.util.BridgeArguments.
 public class NavigationBar implements Parcelable, Bridgeable {
 
     private String title;
+    private Boolean hide;
     private List<NavigationBarButton> buttons;
 
     private NavigationBar() {}
 
     private NavigationBar(Builder builder) {
         this.title = builder.title;
+        this.hide = builder.hide;
         this.buttons = builder.buttons;
     }
 
@@ -46,6 +48,7 @@ public class NavigationBar implements Parcelable, Bridgeable {
         }
 
         this.title = bundle.getString("title");
+        this.hide = bundle.containsKey("hide") ? bundle.getBoolean("hide") : null;
         this.buttons = bundle.containsKey("buttons") ? getList(bundle.getParcelableArray("buttons"), NavigationBarButton.class) : null;
     }
 
@@ -69,6 +72,16 @@ public class NavigationBar implements Parcelable, Bridgeable {
     @NonNull
     public String getTitle() {
         return title;
+    }
+
+    /**
+    * Use to hide the navigation bar.
+    *
+    * @return Boolean
+    */
+    @Nullable
+    public Boolean getHide() {
+        return hide;
     }
 
     /**
@@ -97,6 +110,9 @@ public class NavigationBar implements Parcelable, Bridgeable {
     public Bundle toBundle() {
         Bundle bundle = new Bundle();
         bundle.putString("title", this.title);
+        if(this.hide != null) {
+            bundle.putBoolean("hide", this.hide);
+        }
         if(this.buttons != null) {
             updateBundleWithList(this.buttons, bundle, "buttons");
         }
@@ -107,18 +123,25 @@ public class NavigationBar implements Parcelable, Bridgeable {
     public String toString() {
         return "{"
         + "title:" + (title != null ? "\"" + title + "\"" : null)+ ","
+        + "hide:" + hide+ ","
         + "buttons:" + (buttons != null ? buttons.toString() : null)
         + "}";
     }
 
     public static class Builder {
         private final String title;
+        private Boolean hide;
         private List<NavigationBarButton> buttons;
 
         public Builder(@NonNull String title) {
             this.title = title;
         }
 
+        @NonNull
+        public Builder hide(@Nullable Boolean hide) {
+            this.hide = hide;
+            return this;
+        }
         @NonNull
         public Builder buttons(@Nullable List<NavigationBarButton> buttons) {
             this.buttons = buttons;

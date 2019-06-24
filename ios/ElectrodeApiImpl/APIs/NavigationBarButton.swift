@@ -4,62 +4,99 @@
     private static let tag = String(describing: type(of: self))
 
     /**
-     Name of button
+     Button title if any.
      */
-    public let name: String
+    public let title: String?
     /**
-     Id of the button
+     Icon resource identifier that can be used find the icon
      */
-    public let identifier: String
+    public let icon: String?
     /**
-     Orientation LEFT|RIGHT|CENTER etc.
+     Id of the button, this namespace will be used as an identifier when a button click event is emitted.
      */
-    public let orientation: String
+    public let id: String
+    /**
+     Allowed enums: left, right
+     */
+    public let location: String
+    /**
+     Default to false. If set to true the button will be disabled(non-clickable)
+     */
+    public let disabled: Bool?
+    /**
+     Accessibility label
+     */
+    public let adaLabel: String?
 
-    public init(name: String, identifier: String, orientation: String) {
-        self.name = name
-        self.identifier = identifier
-        self.orientation = orientation
+    public init(title: String?, icon: String?, id: String, location: String, disabled: Bool?, adaLabel: String?) {
+        self.title = title
+        self.icon = icon
+        self.id = id
+        self.location = location
+        self.disabled = disabled
+        self.adaLabel = adaLabel
         super.init()
     }
 
     public override init() {
-        self.name = String()
-        self.identifier = String()
-        self.orientation = String()
+        self.id = String()
+        self.location = String()
+        self.title = nil
+        self.icon = nil
+        self.disabled = nil
+        self.adaLabel = nil
         super.init()
     }
 
     required public init(dictionary:[AnyHashable:Any]) {
         
 
-        if let name = dictionary["name"] as? String  {
-                  self.name = name
+        if let id = dictionary["id"] as? String  {
+                  self.id = id
         } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [name] ")
-            self.name = dictionary["name"] as! String
+            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [id] ")
+            self.id = dictionary["id"] as! String
         }
 
                  
 
-        if let identifier = dictionary["identifier"] as? String  {
-                  self.identifier = identifier
+        if let location = dictionary["location"] as? String  {
+                  self.location = location
         } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [identifier] ")
-            self.identifier = dictionary["identifier"] as! String
-        }
-
-                 
-
-        if let orientation = dictionary["orientation"] as? String  {
-                  self.orientation = orientation
-        } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [orientation] ")
-            self.orientation = dictionary["orientation"] as! String
+            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [location] ")
+            self.location = dictionary["location"] as! String
         }
 
          
 
+
+        if let title = dictionary["title"] as? String {
+            self.title = title
+        } else {
+            self.title = nil
+        }
+        
+
+        if let icon = dictionary["icon"] as? String {
+            self.icon = icon
+        } else {
+            self.icon = nil
+        }
+        
+
+        if let disabled = dictionary["disabled"] as? Bool {
+            self.disabled = disabled
+        } else {
+            self.disabled = nil
+        }
+        
+
+        if let adaLabel = dictionary["adaLabel"] as? String {
+            self.adaLabel = adaLabel
+        } else {
+            self.adaLabel = nil
+        }
+        
         super.init(dictionary: dictionary)
     }
 
@@ -67,10 +104,21 @@
 
          var dict = [:] as [AnyHashable : Any]
 
-         dict["name"] =  self.name
-dict["identifier"] =  self.identifier
-dict["orientation"] =  self.orientation
+         dict["id"] =  self.id
+dict["location"] =  self.location
 
+        if let nonNullTitle = self.title {
+                dict["title"] = nonNullTitle
+        }
+        if let nonNullIcon = self.icon {
+                dict["icon"] = nonNullIcon
+        }
+        if let nonNullDisabled = self.disabled {
+                dict["disabled"] = nonNullDisabled
+        }
+        if let nonNullAdaLabel = self.adaLabel {
+                dict["adaLabel"] = nonNullAdaLabel
+        }
         return dict as NSDictionary
     }
 }
@@ -81,62 +129,99 @@ public class NavigationBarButton: ElectrodeObject, Bridgeable {
     private static let tag = String(describing: type(of: self))
 
     /**
-     Name of button
+     Button title if any.
      */
-    public let name: String
+    public let title: String?
     /**
-     Id of the button
+     Icon resource identifier that can be used find the icon
      */
-    public let identifier: String
+    public let icon: String?
     /**
-     Orientation LEFT|RIGHT|CENTER etc.
+     Id of the button, this namespace will be used as an identifier when a button click event is emitted.
      */
-    public let orientation: String
+    public let id: String
+    /**
+     Allowed enums: left, right
+     */
+    public let location: String
+    /**
+     Default to false. If set to true the button will be disabled(non-clickable)
+     */
+    public let disabled: Bool?
+    /**
+     Accessibility label
+     */
+    public let adaLabel: String?
 
-    public init(name: String, identifier: String, orientation: String) {
-        self.name = name
-        self.identifier = identifier
-        self.orientation = orientation
+    public init(title: String?, icon: String?, id: String, location: String, disabled: Bool?, adaLabel: String?) {
+        self.title = title
+        self.icon = icon
+        self.id = id
+        self.location = location
+        self.disabled = disabled
+        self.adaLabel = adaLabel
         super.init()
     }
 
     public override init() {
-        self.name = String()
-        self.identifier = String()
-        self.orientation = String()
+        self.id = String()
+        self.location = String()
+        self.title = nil
+        self.icon = nil
+        self.disabled = nil
+        self.adaLabel = nil
         super.init()
     }
 
     required public init(dictionary:[AnyHashable:Any]) {
         
 
-        if let name = dictionary["name"] as? String  {
-                  self.name = name
+        if let id = dictionary["id"] as? String  {
+                  self.id = id
         } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [name] ")
-            self.name = dictionary["name"] as! String
+            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [id] ")
+            self.id = dictionary["id"] as! String
         }
 
                  
 
-        if let identifier = dictionary["identifier"] as? String  {
-                  self.identifier = identifier
+        if let location = dictionary["location"] as? String  {
+                  self.location = location
         } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [identifier] ")
-            self.identifier = dictionary["identifier"] as! String
-        }
-
-                 
-
-        if let orientation = dictionary["orientation"] as? String  {
-                  self.orientation = orientation
-        } else {
-            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [orientation] ")
-            self.orientation = dictionary["orientation"] as! String
+            assertionFailure("\(NavigationBarButton.tag) missing one or more required properties [location] ")
+            self.location = dictionary["location"] as! String
         }
 
          
 
+
+        if let title = dictionary["title"] as? String {
+            self.title = title
+        } else {
+            self.title = nil
+        }
+        
+
+        if let icon = dictionary["icon"] as? String {
+            self.icon = icon
+        } else {
+            self.icon = nil
+        }
+        
+
+        if let disabled = dictionary["disabled"] as? Bool {
+            self.disabled = disabled
+        } else {
+            self.disabled = nil
+        }
+        
+
+        if let adaLabel = dictionary["adaLabel"] as? String {
+            self.adaLabel = adaLabel
+        } else {
+            self.adaLabel = nil
+        }
+        
         super.init(dictionary: dictionary)
     }
 
@@ -144,10 +229,21 @@ public class NavigationBarButton: ElectrodeObject, Bridgeable {
 
          var dict = [:] as [AnyHashable : Any]
 
-         dict["name"] =  self.name
-dict["identifier"] =  self.identifier
-dict["orientation"] =  self.orientation
+         dict["id"] =  self.id
+dict["location"] =  self.location
 
+        if let nonNullTitle = self.title {
+                dict["title"] = nonNullTitle
+        }
+        if let nonNullIcon = self.icon {
+                dict["icon"] = nonNullIcon
+        }
+        if let nonNullDisabled = self.disabled {
+                dict["disabled"] = nonNullDisabled
+        }
+        if let nonNullAdaLabel = self.adaLabel {
+                dict["adaLabel"] = nonNullAdaLabel
+        }
         return dict as NSDictionary
     }
 }

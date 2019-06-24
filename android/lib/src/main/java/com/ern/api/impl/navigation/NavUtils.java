@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ernnavigationApi.ern.model.NavigationBar;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +52,7 @@ public final class NavUtils {
                 try {
                     return new JSONObject((String) obj);
                 } catch (JSONException e) {
-                    Log.w(TAG, "Parsing failed for jsonPayload");
+                    Logger.w(TAG, "Parsing failed for jsonPayload");
                     return null;
                 }
             }
@@ -73,14 +74,13 @@ public final class NavUtils {
                 try {
                     return new NavigationBar((Bundle) obj);
                 } catch (IllegalArgumentException e) {
-                    Log.w(TAG, "Invalid bundle: " + e.getMessage());
+                    Logger.w(TAG, "Invalid bundle: " + e.getMessage());
                     return null;
                 }
             } else {
-                Log.w(TAG, "received wrong navigationBar key, value is not a bundle." + obj);
+                Logger.w(TAG, "received wrong navigationBar key, value is not a bundle." + obj);
             }
         }
         return null;
     }
 }
-

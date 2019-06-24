@@ -15,7 +15,7 @@
       ]
     },
     "moduleType": "ern-native-api-impl",
-    "pluginConfig" : {
+    "pluginConfig": {
       "android": {
         "root": "android",
         "dependencies": [

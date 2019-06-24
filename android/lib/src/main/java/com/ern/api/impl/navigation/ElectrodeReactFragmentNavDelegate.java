@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,20 +17,23 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
+import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigationApi.ern.model.NavigationBarButton;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDelegate<MiniAppNavRequestListener> {
-
     private static final String TAG = ElectrodeReactFragmentNavDelegate.class.getSimpleName();
 
     private ReactNavigationViewModel mNavViewModel;
     private FragmentNavigator mFragmentNavigator;
+    private OnNavBarItemClickListener navBarButtonClickListener;
 
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
         public void onChanged(@Nullable Route route) {
             if (route != null) {
-                Log.d(TAG, "Received a new navigation route: " + route.getArguments());
+                Logger.d(TAG, "Received a new navigation route: " + route.getArguments());
 
                 if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
@@ -67,6 +71,12 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
             throw new RuntimeException(mFragment
                     + " must implement ElectrodeReactFragmentNavDelegate.FragmentNavigator");
         }
+
+        if (fragment instanceof OnNavBarItemClickListener) {
+            navBarButtonClickListener = (OnNavBarItemClickListener) fragment;
+        } else {
+            navBarButtonClickListener = new DefaultNavBarButtonClickListener();
+        }
     }
 
     @Override
@@ -81,7 +91,6 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        updateNavBar(mFragment.getArguments());
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -93,6 +102,7 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
 
     public void onResume() {
         super.onResume();
+        updateNavBar(mFragment.getArguments());
         mNavViewModel.registerNavRequestHandler();
     }
 
@@ -113,14 +123,14 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
     }
 
     private void finish(@Nullable Route route) {
-        Log.d(TAG, "finish triggered by RN. Hosting activity will be notified.");
+        Logger.d(TAG, "finish triggered by RN. Hosting activity will be notified.");
         mMiniAppRequestListener.finishFlow(NavUtils.getPayload(route.getArguments()));
         route.setResult(true, null);
     }
 
     private void navigate(@NonNull Route route) {
         final String path = NavUtils.getPath(route.getArguments());
-        Log.d(TAG, "navigating to: " + path);
+        Logger.d(TAG, "navigating to: " + path);
 
         if (!TextUtils.isEmpty(path)) {
             //If the hosting activity or fragment has not handled the navigation fall back to the default.
@@ -139,13 +149,21 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
         if (arguments != null) {
             NavigationBar navigationBar = NavUtils.getNavBar(arguments);
             if (navigationBar != null) {
-                mMiniAppRequestListener.updateNavBar(navigationBar);
+                mMiniAppRequestListener.updateNavBar(navigationBar, navBarButtonClickListener);
                 return true;
             } else {
                 return false;
             }
         }
         return false;
+    }
+
+    private class DefaultNavBarButtonClickListener implements OnNavBarItemClickListener {
+
+        @Override
+        public void onNavBarButtonClicked(@NonNull NavigationBarButton button, @NonNull MenuItem item) {
+            EnNavigationApi.events().emitOnNavButtonClick(button.getId());
+        }
     }
 
     public interface FragmentNavigator {

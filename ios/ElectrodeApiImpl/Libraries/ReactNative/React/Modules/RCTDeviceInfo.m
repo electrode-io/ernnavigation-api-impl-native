@@ -16,7 +16,6 @@
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_TV
   UIInterfaceOrientation _currentInterfaceOrientation;
-  NSDictionary *_currentInterfaceDimensions;
 #endif
 }
 
@@ -49,13 +48,6 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceOrientationDidChange)
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
-
-  _currentInterfaceDimensions = RCTExportedDimensions(_bridge);
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
 #endif
 }
 
@@ -85,23 +77,16 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   RCTAssertMainQueue();
 
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-  typeof (dimensions.window) window = dimensions.window;
-  NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
+  typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
+  NSDictionary<NSString *, NSNumber *> *dims = @{
       @"width": @(window.width),
       @"height": @(window.height),
       @"scale": @(window.scale),
       @"fontScale": @(window.fontScale)
   };
-  typeof (dimensions.screen) screen = dimensions.screen;
-  NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
-      @"width": @(screen.width),
-      @"height": @(screen.height),
-      @"scale": @(screen.scale),
-      @"fontScale": @(screen.fontScale)
-  };
   return @{
-      @"window": dimsWindow,
-      @"screen": dimsScreen
+      @"window": dims,
+      @"screen": dims
   };
 }
 
@@ -176,31 +161,6 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       }
 
   _currentInterfaceOrientation = nextOrientation;
-}
-
-
-- (void)interfaceFrameDidChange
-{
-  __weak typeof(self) weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-    [weakSelf _interfaceFrameDidChange];
-  });
-}
-
-
-- (void)_interfaceFrameDidChange
-{
-  NSDictionary *nextInterfaceDimensions = RCTExportedDimensions(_bridge);
-
-  if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions])) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                                  body:nextInterfaceDimensions];
-#pragma clang diagnostic pop
-  }
-
-  _currentInterfaceDimensions = nextInterfaceDimensions;
 }
 
 #endif // TARGET_OS_TV

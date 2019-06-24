@@ -159,7 +159,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Shadow
-  if (!isnan(_textShadowRadius)) {
+  if (!CGSizeEqualToSize(_textShadowOffset, CGSizeZero)) {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = _textShadowOffset;
     shadow.shadowBlurRadius = _textShadowRadius;

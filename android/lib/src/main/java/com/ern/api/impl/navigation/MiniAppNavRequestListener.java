@@ -26,8 +26,9 @@ public interface MiniAppNavRequestListener extends ElectrodeReactFragmentDelegat
      * Use to update the action bar title.
      *
      * @param navigationBar {@link NavigationBar}
+     * @param navBarButtonClickListener {@link OnNavBarItemClickListener}
      */
-    void updateNavBar(@NonNull NavigationBar navigationBar);
+    void updateNavBar(@NonNull NavigationBar navigationBar, @NonNull OnNavBarItemClickListener navBarButtonClickListener);
 
     /**
      * Use for navigating back to a MiniApp that was already rendered. Doing so will pop all the MiniApps in the stack till it finds a match.

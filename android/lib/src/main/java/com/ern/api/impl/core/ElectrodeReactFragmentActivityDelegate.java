@@ -1,8 +1,6 @@
 package com.ern.api.impl.core;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -13,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.AddToBackStackState;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
@@ -23,15 +22,10 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     private static final String TAG = ElectrodeReactFragmentActivityDelegate.class.getSimpleName();
 
     private DataProvider dataProvider;
-    private FragmentActivity mFragmentActivity;
+    protected FragmentActivity mFragmentActivity;
 
     public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity) {
-        this(activity, null);
-    }
-
-
-    public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity, @Nullable String mainComponentName) {
-        super(activity, mainComponentName);
+        super(activity, null);
         if (activity instanceof DataProvider) {
             dataProvider = (DataProvider) activity;
 
@@ -49,9 +43,16 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         startReactNative();
     }
 
+    @Override
+    public void onDestroy() {
+        mFragmentActivity = null;
+        dataProvider = null;
+        super.onDestroy();
+    }
+
     private void startReactNative() {
         String appName = dataProvider.getRootComponentName();
-        Log.d(TAG, "Loading the react view inside MiniApp fragment.");
+        Logger.d(TAG, "Loading the react view inside MiniApp fragment.");
         startMiniAppFragment(appName, dataProvider.getProps());
     }
 
@@ -81,7 +82,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
             switchToFragment(fragment, addToBackStackState, tag);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
+            Logger.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
         }
     }
 
@@ -112,21 +113,8 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
                 return true;
             }
         }
-        
+
         return manager.popBackStackImmediate(tag, 0);
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        final boolean isMenuKey = (keyCode == KeyEvent.KEYCODE_MENU);
-
-        if (isMenuKey
-                && canShowDeveloperMenu()) {
-            showDeveloperMenu();
-            return true;
-        }
-
-        return mFragmentActivity.onKeyUp(keyCode, event);
     }
 
     public interface DataProvider {
@@ -160,7 +148,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         /***
          * Return the fragment class that needs to be instantiated to render react native component.
          *
-         * Note: Default available fragments: {@link DefaultMiniAppFragment}, {@link MiniAppNavFragment}.
+         * Note: Default available fragments: {@link DefaultMiniAppFragment}
          * @return Class
          */
         @NonNull

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.facebook.react.ReactRootView;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -63,7 +64,8 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
             throw new IllegalStateException("Missing key \"miniAppComponentName\" in args");
         }
 
-        Log.d(TAG, "delegate.onCreateView() called. Component name: " + miniAppComponentName);
+        Logger.d(TAG, "delegate.onCreateView() called. Component name: " + miniAppComponentName);
+        
         assert miniAppComponentName != null;
         miniAppView = (ReactRootView) mMiniAppRequestListener.createReactNativeView(miniAppComponentName, initialProps());
         return miniAppView;

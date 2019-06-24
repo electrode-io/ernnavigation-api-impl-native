@@ -28,9 +28,11 @@ import com.ernnavigationApi.ern.model.ErnRoute;
 
 public final class EnNavigationApi {
     private static final Requests REQUESTS;
+    private static final Events EVENTS;
 
     static {
         REQUESTS = new EnNavigationRequests();
+        EVENTS = new EnNavigationEvents();
     }
 
     private EnNavigationApi() {
@@ -41,7 +43,21 @@ public final class EnNavigationApi {
         return REQUESTS;
     }
 
+    @NonNull
+    public static Events events() {
+        return EVENTS;
+    }
 
+    public interface Events {
+        String EVENT_ON_NAV_BUTTON_CLICK = "com.ernnavigationApi.ern.api.event.onNavButtonClick";
+
+        UUID addOnNavButtonClickEventListener(@NonNull final ElectrodeBridgeEventListener<String> eventListener);
+
+            ElectrodeBridgeEventListener<ElectrodeBridgeEvent> removeOnNavButtonClickEventListener(@NonNull final UUID uuid);
+
+        void emitOnNavButtonClick(@NonNull String buttonId);
+
+    }
 
     public interface Requests {
         String REQUEST_BACK = "com.ernnavigationApi.ern.api.request.back";
