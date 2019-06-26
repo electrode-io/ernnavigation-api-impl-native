@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.AddToBackStackState;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
@@ -17,7 +20,7 @@ import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
 
-public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivityDelegate {
+public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivityDelegate implements LifecycleObserver {
 
     private static final String TAG = ElectrodeReactFragmentActivityDelegate.class.getSimpleName();
 
@@ -38,11 +41,37 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         }
     }
 
+    //Not putting this under the OnLifecycleEvent sine we need the savedInstanceState
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        startReactNative();
+        if(savedInstanceState == null) {
+            startReactNative();
+        }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onStart() {
+        //PlaceHolder
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onStop() {
+        //PlaceHolder
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     @Override
     public void onDestroy() {
         mFragmentActivity = null;

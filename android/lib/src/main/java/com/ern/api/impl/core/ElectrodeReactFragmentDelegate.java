@@ -3,7 +3,6 @@ package com.ern.api.impl.core;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,9 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
@@ -21,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDelegate.MiniAppRequestListener> {
+public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDelegate.MiniAppRequestListener> implements LifecycleObserver {
     private static final String TAG = ElectrodeReactFragmentDelegate.class.getSimpleName();
 
     protected final Fragment mFragment;
@@ -65,7 +67,6 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
         }
 
         Logger.d(TAG, "delegate.onCreateView() called. Component name: " + miniAppComponentName);
-        
         assert miniAppComponentName != null;
         miniAppView = (ReactRootView) mMiniAppRequestListener.createReactNativeView(miniAppComponentName, initialProps());
         return miniAppView;
@@ -92,19 +93,23 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
         //PlaceHolder
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     @SuppressWarnings("WeakerAccess")
     public void onStart() {
         //PlaceHolder
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
         //PlaceHolder
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void onPause() {
         //PlaceHolder
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
         //PlaceHolder
     }
@@ -118,6 +123,7 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
         }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
         //PlaceHolder
     }

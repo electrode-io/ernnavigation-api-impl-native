@@ -36,6 +36,7 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getLifecycle().addObserver(electrodeReactFragmentDelegate);
         electrodeReactFragmentDelegate.onCreate(savedInstanceState);
     }
 
@@ -51,25 +52,6 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
     }
 
     @Override
-    public void onStart() {
-        electrodeReactFragmentDelegate.onStart();
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        electrodeReactFragmentDelegate.onResume();
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        electrodeReactFragmentDelegate.onPause();
-        super.onPause();
-    }
-
-
-    @Override
     public void onDetach() {
         electrodeReactFragmentDelegate.onDetach();
         electrodeReactFragmentDelegate = null;
@@ -82,3 +64,4 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
         super.onDestroyView();
     }
 }
+
