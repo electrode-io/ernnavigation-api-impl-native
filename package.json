@@ -1,6 +1,6 @@
 {
   "name": "ernnavigation-api-impl-native",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
@@ -30,11 +30,11 @@
             "source": "ios/ElectrodeApiImpl/APIImpls/*.swift"
           },
           {
-            "dest": "{{{projectName}}}/APIImpls/Core",
+            "dest": "{{{projectName}}}/APIImpls",
             "source": "ios/ElectrodeApiImpl/APIImpls/Core/*.*"
           },
           {
-            "dest": "{{{projectName}}}/APIImpls/Navigation",
+            "dest": "{{{projectName}}}/APIImpls",
             "source": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.*"
           }
         ],
