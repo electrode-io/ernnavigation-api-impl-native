@@ -6,8 +6,9 @@
 //  Copyright © 2019 Walmart. All rights reserved.
 //
 
-#import "MiniAppNavViewController.h"
 #import "ENCoreDelegate.h"
+#import "ENNavigationProtocol.h"
+#import "MiniAppNavViewController.h"
 #import <UIKit/UIKit.h>
 
 @interface ENNavigationDelegate : ENCoreDelegate

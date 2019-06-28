@@ -7,15 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef void(^MiniAppFinishedCallback)(NSString *);
-
 @class MiniAppNavViewController;
 
 @protocol EnMiniAppDataProvider <NSObject>
 - (NSString *_Nonnull) miniAppName;
 - (NSDictionary *_Nullable) properties;
-- (MiniAppFinishedCallback _Nullable) finishedCallback;
 @end
 
 @interface ENCoreDelegate : NSObject

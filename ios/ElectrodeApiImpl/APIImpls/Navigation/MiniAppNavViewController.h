@@ -8,7 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "ENNavigationProtocol.h"
-#import "ENCoreDelegate.h"
+#import "ENNavigationDelegate.h"
+
+typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
+
+@protocol EnMiniAppNavDataProvider <EnMiniAppDataProvider>
+- (MiniAppFinishedCallback _Nullable) finishedCallback;
+@end
 
 @interface MiniAppNavViewController : UIViewController <ENNavigationProtocol>
 
