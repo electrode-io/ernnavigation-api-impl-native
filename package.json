@@ -1,6 +1,6 @@
 {
   "name": "ernnavigation-api-impl-native",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
@@ -27,7 +27,15 @@
         "copy": [
           {
             "dest": "{{{projectName}}}/APIImpls",
-            "source": "ios/ElectrodeApiImpl/APIImpls/**"
+            "source": "ios/ElectrodeApiImpl/APIImpls/*.swift"
+          },
+          {
+            "dest": "{{{projectName}}}/APIImpls/Core",
+            "source": "ios/ElectrodeApiImpl/APIImpls/Core/*.*"
+          },
+          {
+            "dest": "{{{projectName}}}/APIImpls/Navigation",
+            "source": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.*"
           }
         ],
         "pbxproj": {
@@ -38,14 +46,14 @@
               "path": "APIImpls"
             },
             {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.*",
-              "group": "APIImpls/Core",
+              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.h",
+              "group": "Core",
               "path": "APIImpls/Core"
             },
             {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.*",
-              "group": "APIImpls/Navigation",
-              "path": "APIImpls/Navigation"
+              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.m",
+              "group": "Core",
+              "path": "APIImpls/Core"
             }
           ]
         }
