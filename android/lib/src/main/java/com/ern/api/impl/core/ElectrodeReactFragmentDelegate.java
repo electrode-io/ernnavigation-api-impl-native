@@ -96,36 +96,42 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     @SuppressWarnings("WeakerAccess")
     public void onStart() {
+        Logger.d(TAG, "inside onStart");
         //PlaceHolder
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
+        Logger.d(TAG, "inside onResume");
         //PlaceHolder
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void onPause() {
+        Logger.d(TAG, "inside onPause");
         //PlaceHolder
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
+        Logger.d(TAG, "inside onStop");
         //PlaceHolder
     }
 
     @SuppressWarnings("WeakerAccess")
     public void onDestroyView() {
+        Logger.d(TAG, "inside onDestroyView");
+        //PlaceHolder
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    public void onDestroy() {
+        Logger.d(TAG, "inside onDestroy");
         if (miniAppView != null) {
             assert mFragment.getArguments() != null;
             mMiniAppRequestListener.removeReactNativeView(Objects.requireNonNull(mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME)));
             miniAppView = null;
         }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
-        //PlaceHolder
     }
 
     @SuppressWarnings("WeakerAccess")

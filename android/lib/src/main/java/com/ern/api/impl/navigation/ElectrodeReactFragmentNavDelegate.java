@@ -58,6 +58,7 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
                 if (!route.isCompleted()) {
                     throw new IllegalStateException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a nav type.");
                 }
+                Logger.d(TAG, "Nav request handling completed");
             }
         }
     };
@@ -118,6 +119,9 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
     }
 
     private void update(Route route) {
+        if (mFragment.getArguments() != null) {
+            mFragment.getArguments().putAll(route.getArguments());
+        }
         boolean result = updateNavBar(route.getArguments());
         route.setResult(result, !result ? "failed to update nav bar." : null);
     }
@@ -175,5 +179,5 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
          */
         boolean navigate(Route route);
     }
-
 }
+

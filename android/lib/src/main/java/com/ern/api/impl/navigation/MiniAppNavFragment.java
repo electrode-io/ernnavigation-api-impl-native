@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 
 import com.ern.api.impl.core.ElectrodeReactCoreFragment;
 
-
 public class MiniAppNavFragment extends ElectrodeReactCoreFragment<ElectrodeReactFragmentNavDelegate> implements ElectrodeReactFragmentNavDelegate.FragmentNavigator {
 
     public MiniAppNavFragment() {

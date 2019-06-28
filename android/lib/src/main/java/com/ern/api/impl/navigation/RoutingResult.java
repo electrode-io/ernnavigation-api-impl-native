@@ -11,5 +11,4 @@ public class RoutingResult {
         this.isComplete = isComplete;
         this.message = message;
     }
-    
 }

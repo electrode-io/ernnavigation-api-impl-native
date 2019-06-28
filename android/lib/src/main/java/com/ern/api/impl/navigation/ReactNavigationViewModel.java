@@ -129,6 +129,7 @@ public final class ReactNavigationViewModel extends ViewModel {
 
     public void registerNavRequestHandler() {
         if (requestHandle == null) {
+            log("Registering navigation request handlers");
             requestHandle = EnNavigationApi.requests().registerNavigateRequestHandler(navRequestHandler);
             updateRequestHandle = EnNavigationApi.requests().registerUpdateRequestHandler(updateRequestHandler);
             backRequestHandle = EnNavigationApi.requests().registerBackRequestHandler(backRequestHandler);
@@ -140,6 +141,7 @@ public final class ReactNavigationViewModel extends ViewModel {
 
     public void unRegisterNavRequestHandler() {
         if (requestHandle != null) {
+            log("Unregistering navigation request handlers");
             requestHandle.unregister();
             updateRequestHandle.unregister();
             backRequestHandle.unregister();
