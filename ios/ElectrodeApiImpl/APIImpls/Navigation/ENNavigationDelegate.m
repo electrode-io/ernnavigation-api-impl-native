@@ -21,10 +21,10 @@
         }
         NSString *miniAppName = [(id<EnMiniAppDataProvider>)navigationController miniAppName];
         NSDictionary *properties = [(id<EnMiniAppDataProvider>)navigationController properties];
-        MiniAppNavViewController *viewController = [[MiniAppNavViewController alloc] initWithProperties:properties withMiniAppName:miniAppName];
-        viewController.view.frame = [UIScreen mainScreen].bounds;
+        MiniAppNavViewController *vc = [[MiniAppNavViewController alloc] initWithProperties:properties withMiniAppName:miniAppName];
+        vc.view.frame = [UIScreen mainScreen].bounds;
         navigationController.navigationBar.translucent = NO;
-        [navigationController pushViewController:viewController animated:NO];
+        [navigationController pushViewController:vc animated:NO];
     } else {
         [super viewDidLoad: viewController];
     }
