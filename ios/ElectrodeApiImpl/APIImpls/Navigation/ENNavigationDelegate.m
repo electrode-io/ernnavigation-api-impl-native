@@ -16,13 +16,15 @@
 -(void)viewDidLoad:(UIViewController *)viewController {
     if ([viewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController *)viewController;
-        if(![navigationController conformsToProtocol:@protocol(EnMiniAppDataProvider)]) {
-            [NSException raise:@"viewController does not conform to EnMiniAppDataProvider" format:@"The view controller must implement EnMiniAppDataProvider protocol"];
+        if(![navigationController conformsToProtocol:@protocol(EnMiniAppNavDataProvider)]) {
+            [NSException raise:@"viewController does not conform to EnMiniAppNavDataProvider" format:@"The view controller must implement EnMiniAppDataProvider protocol"];
         }
-        NSString *miniAppName = [(id<EnMiniAppDataProvider>)navigationController miniAppName];
-        NSDictionary *properties = [(id<EnMiniAppDataProvider>)navigationController properties];
+        NSString *miniAppName = [(id<EnMiniAppNavDataProvider>)navigationController miniAppName];
+        NSDictionary *properties = [(id<EnMiniAppNavDataProvider>)navigationController properties];
+        MiniAppFinishedCallback finishedCallback = [(id<EnMiniAppNavDataProvider>)navigationController finishedCallback];
         MiniAppNavViewController *vc = [[MiniAppNavViewController alloc] initWithProperties:properties withMiniAppName:miniAppName];
         vc.view.frame = [UIScreen mainScreen].bounds;
+        vc.finishedCallback = finishedCallback;
         navigationController.navigationBar.translucent = NO;
         [navigationController pushViewController:vc animated:NO];
     } else {
@@ -136,11 +138,10 @@
         NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:navigationButton.icon]];
         UIImage * image = [UIImage imageWithData:imageData];
         button = [[ENBarButtonItem alloc]initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];
-        button.stringTag = navigationButton.id;
     } else {
         button = [[ENBarButtonItem alloc]initWithTitle:navigationButton.title style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];
-        button.stringTag = navigationButton.id;
     }
+    button.stringTag = navigationButton.id;
     return button;
 }
 
