@@ -22,4 +22,3 @@ public interface MenuItemProperties {
      */
     boolean isHandleClickInActivity();
 }
-

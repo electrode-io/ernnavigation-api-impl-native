@@ -1,10 +1,14 @@
 package com.ern.api.impl.core;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -24,8 +28,22 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
     private static final String TAG = ElectrodeReactFragmentActivityDelegate.class.getSimpleName();
 
-    private DataProvider dataProvider;
+    /**
+     * Indicates that a new fragment is going to be pushed to the back stack.
+     */
+    private static final int ACTION_PUSH_TO_BACK_STACK = 0;
+    /**
+     * Indicates that one or more fragments are popped from the back stack.
+     */
+    private static final int ACTION_POP_IMMEDIATE = 1;
+    /**
+     * Indicates that one fragment is going to be popped from the back stack mostly as a result of back press or up navigation.
+     */
+    private static final int ACTION_POP_ON_BACK_PRESS = 2;
+
     protected FragmentActivity mFragmentActivity;
+    protected Menu mMenu;
+    private DataProvider dataProvider;
 
     public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity) {
         super(activity, null);
@@ -44,7 +62,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     //Not putting this under the OnLifecycleEvent sine we need the savedInstanceState
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             startReactNative();
         }
     }
@@ -79,9 +97,36 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         super.onDestroy();
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            mFragmentActivity.onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        Logger.d(TAG, "Handling back press");
+        int backStackEntryCount = mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount();
+        if (backStackEntryCount == 1) {
+            Logger.d(TAG, "Last item in the back stack, will finish the activity.");
+            mFragmentActivity.finish();
+            return true;
+        } else {
+            handleUpNavigation(ACTION_POP_ON_BACK_PRESS);
+            return false;
+        }
+    }
+
     private void startReactNative() {
         String appName = dataProvider.getRootComponentName();
-        Logger.d(TAG, "Loading the react view inside MiniApp fragment.");
+        Logger.d(TAG, "Starting react native root component. Loading the react view inside a fragment.");
         startMiniAppFragment(appName, dataProvider.getProps());
     }
 
@@ -94,6 +139,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             props = new Bundle();
         }
         props.putString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME, componentName);
+        Logger.d(TAG, "startMiniAppFragment: fragmentClass->%s, componentName->%s, props->%s", fragmentClass.getSimpleName(), componentName, props);
         switchToFragment(fragmentClass, props);
     }
 
@@ -109,6 +155,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
             String tag = (bundle.containsKey(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG)) ? bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG) : bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
 
+            Logger.d(TAG, "Switching to a new fragment, tag: %s ", tag);
             switchToFragment(fragment, addToBackStackState, tag);
         } catch (Exception e) {
             Logger.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
@@ -123,6 +170,8 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
      */
     private void switchToFragment(@NonNull Fragment fragment,
                                   @AddToBackStackState int addToBackStackState, @Nullable String tag) {
+        handleUpNavigation(ACTION_PUSH_TO_BACK_STACK);
+
         final FragmentTransaction transaction = mFragmentActivity.getSupportFragmentManager().beginTransaction();
 
         transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
@@ -133,17 +182,57 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     }
 
     public boolean switchBackToFragment(@Nullable String tag) {
+        Logger.d(TAG, "switchBackToFragment, tag:  %s", tag);
         final FragmentManager manager = mFragmentActivity.getSupportFragmentManager();
 
         int backStackCount = manager.getBackStackEntryCount();
         if (backStackCount == 1) {
             if (tag == null || tag.equals(manager.getBackStackEntryAt(0).getName())) {
+                Logger.d(TAG, "Last fragment in the stack, will finish the activity.");
                 mFragmentActivity.finish();
                 return true;
             }
         }
 
-        return manager.popBackStackImmediate(tag, 0);
+        boolean result = manager.popBackStackImmediate(tag, 0);
+        handleUpNavigation(ACTION_POP_IMMEDIATE);
+        return result;
+    }
+
+    /**
+     * Shows the up arrow based on the back stack count.
+     *
+     * @param action ACTION_PUSH_TO_BACK_STACK | ACTION_POP_ON_BACK_PRESS | ACTION_POP_IMMEDIATE
+     */
+    private void handleUpNavigation(int action) {
+        Logger.d(TAG, "Handling up navigation for action %d", action);
+        if (mFragmentActivity instanceof AppCompatActivity) {
+            ActionBar actionBar = ((AppCompatActivity) mFragmentActivity).getSupportActionBar();
+            if (actionBar != null) {
+                boolean displayHomeAsUpEnabled = shouldShowHomeAsUpEnabled(action);
+                actionBar.setDisplayHomeAsUpEnabled(displayHomeAsUpEnabled);
+            }
+        } else {
+            android.app.ActionBar actionBar = mFragmentActivity.getActionBar();
+            if (actionBar != null) {
+                boolean displayHomeAsUpEnabled = shouldShowHomeAsUpEnabled(action);
+                actionBar.setDisplayHomeAsUpEnabled(displayHomeAsUpEnabled);
+            }
+        }
+    }
+
+    /**
+     * Based on the push or pop action, decide whether or not to show home as up enabled.
+     *
+     * @param action ACTION_PUSH_TO_BACK_STACK | ACTION_POP_ON_BACK_PRESS | ACTION_POP_IMMEDIATE
+     * @return true | false
+     */
+    private boolean shouldShowHomeAsUpEnabled(int action) {
+        if (action == ACTION_PUSH_TO_BACK_STACK || action == ACTION_POP_ON_BACK_PRESS || action == ACTION_POP_IMMEDIATE) {
+            return mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount() > action;
+        } else {
+            throw new IllegalArgumentException("Action not supported. Should never reach here. ");
+        }
     }
 
     public interface DataProvider {

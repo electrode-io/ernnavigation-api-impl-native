@@ -27,4 +27,3 @@ public class DefaultMiniAppFragment extends ElectrodeReactCoreFragment<Electrode
         return null;
     }
 }
-

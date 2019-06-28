@@ -64,4 +64,3 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
         super.onDestroyView();
     }
 }
-
