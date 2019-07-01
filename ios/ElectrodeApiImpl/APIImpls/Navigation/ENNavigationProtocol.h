@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <ElectrodeApiImpl/ElectrodeApiImpl-Swift.h>
+//change the blow line to `#import <ElectrodeApiImpl/ElectrodeApiImpl-Swift.h>` to compile the project
+#import <ElectrodeContainer/ElectrodeContainer-Swift.h>
 @class NavigationBar;
 @class EnNavigationAPI;
 
