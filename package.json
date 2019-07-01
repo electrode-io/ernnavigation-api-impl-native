@@ -1,6 +1,6 @@
 {
   "name": "ernnavigation-api-impl-native",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
@@ -39,6 +39,20 @@
           }
         ],
         "pbxproj": {
+          "addHeader": [
+            {
+              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.h",
+              "group": "APIImpls",
+              "path": "APIImpls",
+              "public": true
+            },
+            {
+              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.h",
+              "group": "APIImpls",
+              "path": "APIImpls",
+              "public": true
+            }
+          ],
           "addSource": [
             {
               "from": "ios/ElectrodeApiImpl/APIImpls/*.swift",
