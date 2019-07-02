@@ -28,3 +28,4 @@ FOUNDATION_EXPORT const unsigned char ElectrodeContainerVersionString[];
 #import <ElectrodeApiImpl/ElectrodeBridgeEvent.h>
 #import <ElectrodeApiImpl/ElectrodeBridgeRequest.h>
 #import <ElectrodeApiImpl/ElectrodeLogger.h>
+#import <ElectrodeApiImpl/ElectrodeReactNative.h>
