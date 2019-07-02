@@ -31,28 +31,14 @@
           },
           {
             "dest": "{{{projectName}}}/APIImpls",
-            "source": "ios/ElectrodeApiImpl/APIImpls/Core/*.*"
+            "source": "ios/ElectrodeApiImpl/APIImpls/Core/*.swift"
           },
           {
             "dest": "{{{projectName}}}/APIImpls",
-            "source": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.*"
+            "source": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.swift"
           }
         ],
         "pbxproj": {
-          "addHeader": [
-            {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.h",
-              "group": "APIImpls",
-              "path": "APIImpls",
-              "public": true
-            },
-            {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.h",
-              "group": "APIImpls",
-              "path": "APIImpls",
-              "public": true
-            }
-          ],
           "addSource": [
             {
               "from": "ios/ElectrodeApiImpl/APIImpls/*.swift",
@@ -60,22 +46,12 @@
               "path": "APIImpls"
             },
             {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.h",
+              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.swift",
               "group": "APIImpls",
               "path": "APIImpls"
             },
             {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.m",
-              "group": "APIImpls",
-              "path": "APIImpls"
-            },
-            {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.h",
-              "group": "APIImpls",
-              "path": "APIImpls"
-            },
-            {
-              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.m",
+              "from": "ios/ElectrodeApiImpl/APIImpls/Navigation/*.swift",
               "group": "APIImpls",
               "path": "APIImpls"
             }
