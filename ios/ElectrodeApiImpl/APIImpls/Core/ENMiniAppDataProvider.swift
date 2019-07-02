@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol ENMiniAppDataProvider: class {
+@objc public protocol ENMiniAppDataProvider: class {
     var miniAppName: String { get }
     var properties: NSDictionary? { get set }
 }

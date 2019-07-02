@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ENCoreDelegate: NSObject {
+@objcMembers public class ENCoreDelegate: NSObject {
     var viewController: MiniAppNavViewController?
 
     func viewDidLoad(viewController: UIViewController) {

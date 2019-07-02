@@ -8,8 +8,8 @@
 
 import Foundation
 
-typealias MiniAppFinishedCallback = (String?) -> Void
+public typealias MiniAppFinishedCallback = (String?) -> Void
 
-protocol ENMiniAppNavDataProvider: ENMiniAppDataProvider {
+@objc public protocol ENMiniAppNavDataProvider: ENMiniAppDataProvider {
     var finishedCallback: MiniAppFinishedCallback? { get set }
 }
