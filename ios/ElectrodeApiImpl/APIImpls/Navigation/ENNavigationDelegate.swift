@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ENNavigationDelegate: ENCoreDelegate {
+@objcMembers public class ENNavigationDelegate: ENCoreDelegate {
 
     var navigationAPI: EnNavigationAPI?
     var delegate: ENNavigationProtocol?
