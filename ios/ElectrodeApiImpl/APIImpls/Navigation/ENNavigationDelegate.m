@@ -132,11 +132,20 @@
     vc.navigationItem.rightBarButtonItems = rightButtons;
 }
 
+- (UIImage *)resizeImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
 - (ENBarButtonItem *)getUIBarButtonItem: (NavigationBarButton *) navigationButton {
     ENBarButtonItem *button;
     if (navigationButton.icon) {
         NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:navigationButton.icon]];
         UIImage * image = [UIImage imageWithData:imageData];
+        UIImage *myIcon = [self resizeImage:image scaledToSize:CGSizeMake(22, 22)];
         button = [[ENBarButtonItem alloc]initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];
     } else {
         button = [[ENBarButtonItem alloc]initWithTitle:navigationButton.title style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];

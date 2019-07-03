@@ -127,13 +127,35 @@ import UIKit
         viewController.navigationItem.rightBarButtonItems = rightButtons
     }
 
+    private func resizeImage(image: UIImage?, targetSize: CGSize) -> UIImage? {
+        if let img = image {
+            let size = img.size
+            let widthRatio  = targetSize.width  / size.width
+            let heightRatio = targetSize.height / size.height
+            var newSize: CGSize
+            if(widthRatio > heightRatio) {
+                newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+            } else {
+                newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+            }
+            let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+            UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+            img.draw(in: rect)
+            let newImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            return newImage
+        }
+        return nil
+    }
+
     func getUIBarButtonItem(navigationButton: NavigationBarButton) -> ENBarButtonItem {
         var button = ENBarButtonItem()
         if let icon = navigationButton.icon, let url = URL(string: icon) {
             do {
                 let imageData = try Data(contentsOf: url, options: [])
                 let image = UIImage(data: imageData)
-                button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
+                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: 22, height: 22))
+                button = ENBarButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
             } catch {
                 NSLog("Cannot get image data")
             }
