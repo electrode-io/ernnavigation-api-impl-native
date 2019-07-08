@@ -39,7 +39,7 @@ import UIKit
 
     private func createView(name: String, properties: NSDictionary?) -> UIView? {
         let viewController = ElectrodeReactNative.sharedInstance().miniApp(withName: name, properties: properties as? [AnyHashable : Any])
-        if let rnView = viewController?.view {
+        if let rnView = viewController.view {
             rnView.translatesAutoresizingMaskIntoConstraints = false
             return rnView
         }

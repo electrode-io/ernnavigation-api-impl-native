@@ -13,6 +13,8 @@
 
 @implementation ENNavigationDelegate
 
+CGFloat const NavButtonSize = 22;
+
 -(void)viewDidLoad:(UIViewController *)viewController {
     if ([viewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController *)viewController;
@@ -145,7 +147,7 @@
     if (navigationButton.icon) {
         NSData *imageData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:navigationButton.icon]];
         UIImage * image = [UIImage imageWithData:imageData];
-        UIImage *myIcon = [self resizeImage:image scaledToSize:CGSizeMake(22, 22)];
+        UIImage *myIcon = [self resizeImage:image scaledToSize:CGSizeMake(NavButtonSize, NavButtonSize)];
         button = [[ENBarButtonItem alloc]initWithImage:myIcon style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];
     } else {
         button = [[ENBarButtonItem alloc]initWithTitle:navigationButton.title style:UIBarButtonItemStylePlain target:self action:@selector(clickButtonWithbuttonId:)];

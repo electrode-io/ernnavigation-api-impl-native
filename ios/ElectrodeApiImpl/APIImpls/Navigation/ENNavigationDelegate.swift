@@ -10,6 +10,7 @@ import UIKit
 
 @objcMembers public class ENNavigationDelegate: ENCoreDelegate {
 
+    static let buttonWidth: CGFloat = 22
     var navigationAPI: EnNavigationAPI?
     var delegate: ENNavigationProtocol?
 
@@ -154,7 +155,7 @@ import UIKit
             do {
                 let imageData = try Data(contentsOf: url, options: [])
                 let image = UIImage(data: imageData)
-                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: 22, height: 22))
+                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
                 button = ENBarButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
             } catch {
                 NSLog("Cannot get image data")
