@@ -14,7 +14,7 @@ import UIKit
     var navigationAPI: EnNavigationAPI?
     var delegate: ENNavigationProtocol?
 
-    override func viewDidLoad(viewController: UIViewController) {
+    override public func viewDidLoad(viewController: UIViewController) {
         if let navigationVC = viewController as? UINavigationController {
             if let vc = navigationVC as? ENMiniAppNavDataProvider {
                 let miniAppName = vc.miniAppName
