@@ -55,6 +55,14 @@
               "group": "APIImpls",
               "path": "APIImpls"
             }
+          ],
+          "addHeader": [
+            {
+              "from": "ios/ElectrodeApiImpl/APIImpls/Core/*.swift",
+              "group": "APIImpls",
+              "path": "APIImpls",
+              "public": true
+            }
           ]
         }
       }
