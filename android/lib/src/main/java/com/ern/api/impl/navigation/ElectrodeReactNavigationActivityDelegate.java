@@ -155,8 +155,10 @@ public class ElectrodeReactNavigationActivityDelegate extends ElectrodeReactFrag
 
     @Override
     public void onDestroy() {
-        mMenu.clear();
-        mMenu = null;
+        if (mMenu != null) {
+            mMenu.clear();
+            mMenu = null;
+        }
         super.onDestroy();
     }
 }

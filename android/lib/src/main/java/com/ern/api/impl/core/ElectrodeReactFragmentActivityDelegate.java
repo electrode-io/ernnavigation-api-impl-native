@@ -42,7 +42,10 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     private static final int ACTION_POP_ON_BACK_PRESS = 2;
 
     protected FragmentActivity mFragmentActivity;
+
+    @Nullable
     protected Menu mMenu;
+
     private DataProvider dataProvider;
 
     public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity) {
