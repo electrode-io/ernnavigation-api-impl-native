@@ -37,8 +37,8 @@ import UIKit
         }
     }
 
-    private func createView(name: String, properties: NSDictionary?) -> UIView? {
-        let viewController = ElectrodeReactNative.sharedInstance().miniApp(withName: name, properties: properties as? [AnyHashable : Any])
+    private func createView(name: String, properties: [AnyHashable : Any]?) -> UIView? {
+        let viewController = ElectrodeReactNative.sharedInstance().miniApp(withName: name, properties: properties)
         if let rnView = viewController.view {
             rnView.translatesAutoresizingMaskIntoConstraints = false
             return rnView

@@ -64,7 +64,7 @@ class ENNavigationAPIImpl: NSObject {
                         return block(message, nil)
                     })
                 } else {
-                    self.delegate?.handleNavigationRequestWithPath(routeData: ernData as NSDictionary, completion: { (message) in
+                    self.delegate?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
                         return block(message, nil)
                     })
                 }

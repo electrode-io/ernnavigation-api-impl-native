@@ -10,10 +10,10 @@ import UIKit
 
 class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let miniAppName: String
-    let properties: NSDictionary?
+    let properties: [AnyHashable : Any]?
     var finishedCallback: MiniAppFinishedCallback?
     var delegate: ENNavigationDelegate?
-    init(properties: NSDictionary?, miniAppName: String) {
+    init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties
         super.init(nibName: nil, bundle: nil)
@@ -40,7 +40,7 @@ class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         self.delegate?.viewDidDisapper()
     }
 
-    func handleNavigationRequestWithPath(routeData: NSDictionary, completion: ERNNavigationCompletionBlock) {
+    func handleNavigationRequestWithPath(routeData: [AnyHashable: Any], completion: ERNNavigationCompletionBlock) {
         self.delegate?.handleNavigationRequestWithPath(routeData: routeData, completion: completion)
     }
 
