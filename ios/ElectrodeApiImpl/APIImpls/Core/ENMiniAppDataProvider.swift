@@ -10,5 +10,5 @@ import Foundation
 
 @objc public protocol ENMiniAppDataProvider: class {
     var miniAppName: String { get }
-    var properties: NSDictionary? { get set }
+    var properties: [AnyHashable : Any]? { get set }
 }

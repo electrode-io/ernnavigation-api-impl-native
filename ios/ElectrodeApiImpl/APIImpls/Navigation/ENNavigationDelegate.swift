@@ -88,7 +88,7 @@ import UIKit
         return
     }
 
-    func handleNavigationRequestWithPath(routeData: NSDictionary, completion: ERNNavigationCompletionBlock) {
+    func handleNavigationRequestWithPath(routeData: [AnyHashable : Any], completion: ERNNavigationCompletionBlock) {
         let path = routeData["path"] as? String ?? ""
         let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
         if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
