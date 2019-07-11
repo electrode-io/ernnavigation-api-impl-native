@@ -67,6 +67,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     //Not putting this under the OnLifecycleEvent sine we need the savedInstanceState
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             startReactNative();
         }
@@ -113,19 +114,6 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             return true;
         }
         return false;
-    }
-
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        final boolean isMenuKey = (keyCode == KeyEvent.KEYCODE_MENU);
-
-        if (isMenuKey
-                && ElectrodeReactContainer.isReactNativeDeveloperSupport()
-                && canShowDeveloperMenu()) {
-            showDeveloperMenu();
-            return true;
-        }
-
-        return super.onKeyUp(keyCode, event);
     }
 
     @Override
