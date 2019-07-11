@@ -1,6 +1,7 @@
 package com.ern.api.impl.core;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,6 +21,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.AddToBackStackState;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
+import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
@@ -111,6 +113,19 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             return true;
         }
         return false;
+    }
+
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        final boolean isMenuKey = (keyCode == KeyEvent.KEYCODE_MENU);
+
+        if (isMenuKey
+                && ElectrodeReactContainer.isReactNativeDeveloperSupport()
+                && canShowDeveloperMenu()) {
+            showDeveloperMenu();
+            return true;
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
