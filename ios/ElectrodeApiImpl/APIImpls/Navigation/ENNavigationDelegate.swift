@@ -16,8 +16,7 @@ import UIKit
 
     override public func viewDidLoad(viewController: UIViewController) {
         if let navigationVC = viewController as? UINavigationController {
-            if let vc = navigationVC as? ENMiniAppNavDataProvider {
-                let miniAppName = vc.miniAppName
+            if let vc = navigationVC as? ENMiniAppNavDataProvider, let miniAppName = vc.miniAppName {
                 let properties = vc.properties
                 let finishedCallback = vc.finishedCallback
                 let miniappVC = MiniAppNavViewController(properties: properties, miniAppName: miniAppName)
