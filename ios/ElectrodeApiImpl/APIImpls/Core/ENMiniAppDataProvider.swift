@@ -9,6 +9,6 @@
 import Foundation
 
 @objc public protocol ENMiniAppDataProvider: class {
-    var miniAppName: String { get }
+    var rootComponentName: String { get }
     var properties: [AnyHashable : Any]? { get set }
 }
