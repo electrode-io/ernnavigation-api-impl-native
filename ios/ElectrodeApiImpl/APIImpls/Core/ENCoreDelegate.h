@@ -10,7 +10,7 @@
 @class MiniAppNavViewController;
 
 @protocol EnMiniAppDataProvider <NSObject>
-- (NSString *_Nonnull) miniAppName;
+- (NSString *_Nonnull) rootComponentName;
 - (NSDictionary *_Nullable) properties;
 @end
 

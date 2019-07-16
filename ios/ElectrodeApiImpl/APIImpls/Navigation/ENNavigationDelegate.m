@@ -21,7 +21,7 @@ CGFloat const NavButtonSize = 22;
         if(![navigationController conformsToProtocol:@protocol(EnMiniAppNavDataProvider)]) {
             [NSException raise:@"viewController does not conform to EnMiniAppNavDataProvider" format:@"The view controller must implement EnMiniAppDataProvider protocol"];
         }
-        NSString *miniAppName = [(id<EnMiniAppNavDataProvider>)navigationController miniAppName];
+        NSString *miniAppName = [(id<EnMiniAppNavDataProvider>)navigationController rootComponentName];
         NSDictionary *properties = [(id<EnMiniAppNavDataProvider>)navigationController properties];
         MiniAppFinishedCallback finishedCallback = [(id<EnMiniAppNavDataProvider>)navigationController finishedCallback];
         MiniAppNavViewController *vc = [[MiniAppNavViewController alloc] initWithProperties:properties withMiniAppName:miniAppName];
