@@ -13,7 +13,8 @@
 
 package com.ern.api.impl;
 
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
 * This class is a generated place holder for your EnNavigation implementations.!

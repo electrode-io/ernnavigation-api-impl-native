@@ -16,8 +16,7 @@
 
 package com.walmartlabs.electrode.reactnative.bridge;
 
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 public interface RequestDispatcher {
 
     void dispatchRequest(@NonNull final ElectrodeBridgeRequest bridgeRequest, @NonNull final ElectrodeBridgeResponseListener<Object> responseListener);
