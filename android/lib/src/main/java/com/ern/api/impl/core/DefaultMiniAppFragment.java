@@ -26,4 +26,20 @@ public class DefaultMiniAppFragment extends ElectrodeReactCoreFragment<Electrode
     public Bundle initialProps() {
         return null;
     }
+
+    @Override
+    public int fragmentLayoutId() {
+        return NONE;
+    }
+
+    @Override
+    public int reactViewContainerId() {
+        return NONE;
+    }
+
+    @Override
+    public int toolBarId() {
+        return NONE;
+    }
 }
+

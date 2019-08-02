@@ -28,6 +28,7 @@ public interface MiniAppNavRequestListener extends ElectrodeReactFragmentDelegat
      * @param navigationBar {@link NavigationBar}
      * @param navBarButtonClickListener {@link OnNavBarItemClickListener}
      */
+    @Deprecated
     void updateNavBar(@NonNull NavigationBar navigationBar, @NonNull OnNavBarItemClickListener navBarButtonClickListener);
 
     /**

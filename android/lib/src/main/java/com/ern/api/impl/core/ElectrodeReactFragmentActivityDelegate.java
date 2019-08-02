@@ -30,24 +30,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
     private static final String TAG = ElectrodeReactFragmentActivityDelegate.class.getSimpleName();
 
-    /**
-     * Indicates that a new fragment is going to be pushed to the back stack.
-     */
-    private static final int ACTION_PUSH_TO_BACK_STACK = 0;
-    /**
-     * Indicates that one or more fragments are popped from the back stack.
-     */
-    private static final int ACTION_POP_IMMEDIATE = 1;
-    /**
-     * Indicates that one fragment is going to be popped from the back stack mostly as a result of back press or up navigation.
-     */
-    private static final int ACTION_POP_ON_BACK_PRESS = 2;
-
     protected FragmentActivity mFragmentActivity;
-
-    @Nullable
-    protected Menu mMenu;
-
     private DataProvider dataProvider;
 
     public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity) {
@@ -103,8 +86,14 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         super.onDestroy();
     }
 
+    /***
+     *
+     * @param menu
+     * @return
+     * @deprecated This delegate is no longer needed. remove from your activity.
+     */
+    @Deprecated
     public boolean onCreateOptionsMenu(Menu menu) {
-        mMenu = menu;
         return true;
     }
 
@@ -125,7 +114,6 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             mFragmentActivity.finish();
             return true;
         } else {
-            handleUpNavigation(ACTION_POP_ON_BACK_PRESS);
             return false;
         }
     }
@@ -157,34 +145,21 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
                                   @AddToBackStackState int addToBackStackState) {
         try {
             Fragment fragment = (Fragment) fragmentClass.newInstance();
-            fragment.setArguments(bundle);
 
             String tag = (bundle.containsKey(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG)) ? bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG) : bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
-
             Logger.d(TAG, "Switching to a new fragment, tag: %s ", tag);
-            switchToFragment(fragment, addToBackStackState, tag);
+
+            final FragmentTransaction transaction = mFragmentActivity.getSupportFragmentManager().beginTransaction();
+            if (ADD_TO_BACKSTACK == addToBackStackState) {
+                transaction.addToBackStack(tag);
+            }
+            bundle.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount() > 0);
+            fragment.setArguments(bundle);
+            transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
+            transaction.commit();
         } catch (Exception e) {
             Logger.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
         }
-    }
-
-    /**
-     * Switch to {@param fragment}, adding to fragment back stack if specified.
-     *
-     * @param fragment            {@link Fragment} to be switched.
-     * @param addToBackStackState {@link AddToBackStackState}
-     */
-    private void switchToFragment(@NonNull Fragment fragment,
-                                  @AddToBackStackState int addToBackStackState, @Nullable String tag) {
-        handleUpNavigation(ACTION_PUSH_TO_BACK_STACK);
-
-        final FragmentTransaction transaction = mFragmentActivity.getSupportFragmentManager().beginTransaction();
-
-        transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
-        if (ADD_TO_BACKSTACK == addToBackStackState) {
-            transaction.addToBackStack(tag);
-        }
-        transaction.commit();
     }
 
     public boolean switchBackToFragment(@Nullable String tag) {
@@ -201,44 +176,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         }
 
         boolean result = manager.popBackStackImmediate(tag, 0);
-        handleUpNavigation(ACTION_POP_IMMEDIATE);
         return result;
-    }
-
-    /**
-     * Shows the up arrow based on the back stack count.
-     *
-     * @param action ACTION_PUSH_TO_BACK_STACK | ACTION_POP_ON_BACK_PRESS | ACTION_POP_IMMEDIATE
-     */
-    private void handleUpNavigation(int action) {
-        Logger.d(TAG, "Handling up navigation for action %d", action);
-        if (mFragmentActivity instanceof AppCompatActivity) {
-            ActionBar actionBar = ((AppCompatActivity) mFragmentActivity).getSupportActionBar();
-            if (actionBar != null) {
-                boolean displayHomeAsUpEnabled = shouldShowHomeAsUpEnabled(action);
-                actionBar.setDisplayHomeAsUpEnabled(displayHomeAsUpEnabled);
-            }
-        } else {
-            android.app.ActionBar actionBar = mFragmentActivity.getActionBar();
-            if (actionBar != null) {
-                boolean displayHomeAsUpEnabled = shouldShowHomeAsUpEnabled(action);
-                actionBar.setDisplayHomeAsUpEnabled(displayHomeAsUpEnabled);
-            }
-        }
-    }
-
-    /**
-     * Based on the push or pop action, decide whether or not to show home as up enabled.
-     *
-     * @param action ACTION_PUSH_TO_BACK_STACK | ACTION_POP_ON_BACK_PRESS | ACTION_POP_IMMEDIATE
-     * @return true | false
-     */
-    private boolean shouldShowHomeAsUpEnabled(int action) {
-        if (action == ACTION_PUSH_TO_BACK_STACK || action == ACTION_POP_ON_BACK_PRESS || action == ACTION_POP_IMMEDIATE) {
-            return mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount() > action;
-        } else {
-            throw new IllegalArgumentException("Action not supported. Should never reach here. ");
-        }
     }
 
     public interface DataProvider {

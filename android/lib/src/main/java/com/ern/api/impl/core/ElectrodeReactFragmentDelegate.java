@@ -8,14 +8,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.ernnavigationApi.ern.model.ErnRoute;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
@@ -28,8 +35,12 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
 
     protected final Fragment mFragment;
     protected T mMiniAppRequestListener;
-    private ReactRootView miniAppView;
     private DataProvider mDataProvider;
+
+    private ReactRootView mMiniAppView;
+    private View mRootView;
+
+    private String miniAppComponentName;
 
     protected ElectrodeReactFragmentDelegate(@NonNull Fragment fragment) {
         mFragment = fragment;
@@ -58,23 +69,76 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mFragment.getArguments() == null) {
-            throw new IllegalStateException("Looks like the the fragment arguments are not set. \"miniAppComponentName\" is a required property");
+            throw new IllegalStateException("Looks like the the fragment arguments are not set. \"miniAppComponentName\" is a required property with a string value");
         }
 
-        String miniAppComponentName = mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
+        miniAppComponentName = mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
         if (TextUtils.isEmpty(miniAppComponentName)) {
             throw new IllegalStateException("Missing key \"miniAppComponentName\" in args");
         }
 
         Logger.d(TAG, "delegate.onCreateView() called. Component name: " + miniAppComponentName);
         assert miniAppComponentName != null;
-        miniAppView = (ReactRootView) mMiniAppRequestListener.createReactNativeView(miniAppComponentName, initialProps());
-        return miniAppView;
+
+
+        if (mMiniAppView == null) {
+            mMiniAppView = (ReactRootView) mMiniAppRequestListener.createReactNativeView(miniAppComponentName, initialProps(savedInstanceState != null));
+        }
+
+        boolean showHomeAsUpEnabled = mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false);
+        if (mDataProvider.fragmentLayoutId() != DataProvider.NONE) {
+            if (mRootView == null) {
+                mRootView = inflater.inflate(mDataProvider.fragmentLayoutId(), container, false);
+
+                setUpToolBarIfPresent();
+
+                if (mDataProvider.reactViewContainerId() == DataProvider.NONE) {
+                    throw new IllegalStateException("Missing a ViewGroup resource id to mount the ReactNative view. Did you forget to override reactViewContainerId() inside the ElectrodeReactFragmentDelegate.DataProvider implementation.");
+                }
+
+                View view = mRootView.findViewById(mDataProvider.reactViewContainerId());
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).addView(mMiniAppView);
+                } else {
+                    throw new IllegalStateException("reactViewContainerId() should represent a ViewGroup to be able to add a react root view inside it.");
+                }
+            }
+            handleUpNavigation(showHomeAsUpEnabled);
+            return mRootView;
+        } else {
+            handleUpNavigation(showHomeAsUpEnabled);
+            return mMiniAppView;
+        }
+    }
+
+    private void setUpToolBarIfPresent() {
+        if (mDataProvider.toolBarId() != DataProvider.NONE) {
+            Toolbar toolBar = mRootView.findViewById(mDataProvider.toolBarId());
+            if (mFragment.getActivity() instanceof AppCompatActivity) {
+                AppCompatActivity appCompatActivity = (AppCompatActivity) mFragment.getActivity();
+                if (appCompatActivity.getSupportActionBar() == null) {
+                    appCompatActivity.setSupportActionBar(toolBar);
+                } else {
+                    Logger.w(TAG, "Hiding fragment layout toolBar. The Activity already has an action bar setup.");
+                    toolBar.setVisibility(View.GONE);
+                }
+            } else {
+                Logger.w(TAG, "Ignoring toolbar, looks like the activity is not an AppCompatActivity. Make sure you configure thr toolbar in your fragments onCreateView()");
+            }
+        }
     }
 
     @NonNull
-    private Bundle initialProps() {
+    private Bundle initialProps(boolean isFragmentBeingReconstructed) {
         final Bundle initialProps = mFragment.getArguments() == null ? new Bundle() : mFragment.getArguments();
+
+        //NOTE: If/When the system re-constructs a fragment from a previous state a stored Bundle is getting converted to a ParcelableData.
+        //When this bundle is send across React native , RN frameworks WritableArray does not support parcelable conversion.
+        //To avoid this issue we recreate the ErnRoute object from the bundle and regenerate a new bundle which again replaces the  ParcelableData with proper bundle object.
+        //Checking for the existence of "path" key since that is the only required property to successfully build an ErnRoute object.
+        if (isFragmentBeingReconstructed && initialProps.containsKey("path")) {
+            initialProps.putAll(new ErnRoute(initialProps).toBundle());
+        }
 
         Bundle props = mDataProvider.initialProps();
         if (props != null) {
@@ -125,12 +189,13 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    @CallSuper
     public void onDestroy() {
         Logger.d(TAG, "inside onDestroy");
-        if (miniAppView != null) {
+        if (mMiniAppView != null) {
             assert mFragment.getArguments() != null;
-            mMiniAppRequestListener.removeReactNativeView(Objects.requireNonNull(mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME)));
-            miniAppView = null;
+            mMiniAppRequestListener.removeReactNativeView(miniAppComponentName, mMiniAppView);
+            mMiniAppView = null;
         }
     }
 
@@ -146,10 +211,26 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
         return "NAME_NOT_SET_YET";
     }
 
+    private void handleUpNavigation(boolean showHomeAsUpEnabled) {
+        if (mFragment.getActivity() instanceof AppCompatActivity) {
+            ActionBar actionBar = ((AppCompatActivity) mFragment.getActivity()).getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(showHomeAsUpEnabled);
+            }
+        } else if (mFragment.getActivity() != null) {
+            android.app.ActionBar actionBar = mFragment.getActivity().getActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(showHomeAsUpEnabled);
+            }
+        }
+    }
+
     /**
      * This needs to be implemented by the fragment. The APIs in this interface should ask for data that needs to be provided by the fragment.
      */
     public interface DataProvider {
+        int NONE = 0;
+
         /**
          * Initial properties needed for rendering the react component
          *
@@ -157,6 +238,31 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
          */
         @Nullable
         Bundle initialProps();
+
+
+        /***
+         * Return the layout xml that will be used by the fragment to create the view.
+         * This is the layout where you can place your toolbar(optional) and an empty view group to inflate the react native view.
+         * @return int, a valid @{@link LayoutRes } or {@link #NONE}
+         */
+        @LayoutRes
+        int fragmentLayoutId();
+
+        /**
+         * Return the container ViewGroup id to which a react native view can be added.
+         *
+         * @return int a valid {@link IdRes} or {@link #NONE}
+         */
+        @IdRes
+        int reactViewContainerId();
+
+        /**
+         * Provide the id of the toolbar if tool bar is part of the fragment layout, return NONE otherwise.
+         *
+         * @return a valid {@link IdRes} or {@link #NONE}
+         */
+        @IdRes
+        int toolBarId();
     }
 
     /***
@@ -181,12 +287,16 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
          */
         View createReactNativeView(@NonNull String appName, @Nullable Bundle props);
 
-        /**
-         * Un mounts a given react native view component. Typically done when your fragment is destroyed.
-         *
-         * @param appName React native root component name
-         */
+        @Deprecated
         void removeReactNativeView(@NonNull String appName);
+
+        /**
+         * Un-mounts a given react native view component. Typically done when your fragment is destroyed.
+         *
+         * @param componentName viewComponentName
+         * @param reactRootView {@link ReactRootView} instance
+         */
+        void removeReactNativeView(@NonNull String componentName, @NonNull ReactRootView reactRootView);
 
         /**
          * starts a new fragment and inflate it with the given react component.
