@@ -34,7 +34,7 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable final ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: NAVIGATE");
-            if (!validateRoute(ernRoute, responseListener)) return;
+            if (!validate(ernRoute, responseListener)) return;
 
             if (validateLiveDataObservers()) {
                 final Bundle bundle = ernRoute.toBundle();
@@ -50,7 +50,7 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: UPDATE");
-            if (!validateRoute(ernRoute, responseListener)) return;
+            if (!validate(ernRoute, responseListener)) return;
             if (validateLiveDataObservers()) {
                 final Bundle bundle = ernRoute.toBundle();
                 bundle.putString(KEY_NAV_TYPE, Type.UPDATE.toString());
@@ -65,9 +65,13 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: BACK");
-            final Bundle bundle = ernRoute != null ? ernRoute.toBundle() : new Bundle();
-            bundle.putString(KEY_NAV_TYPE, Type.BACK.toString());
-            post(bundle, responseListener);
+            if (validateLiveDataObservers()) {
+                final Bundle bundle = ernRoute != null ? ernRoute.toBundle() : new Bundle();
+                bundle.putString(KEY_NAV_TYPE, Type.BACK.toString());
+                post(bundle, responseListener);
+            } else {
+                throwNoFragmentOrActivityListenerError(ernRoute, responseListener);
+            }
         }
     };
 
@@ -75,12 +79,16 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable String payload, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: FINISH");
-            final Bundle bundle = new Bundle();
-            if (payload != null) {
-                bundle.putString("jsonPayload", payload);
+            if (validateLiveDataObservers()) {
+                final Bundle bundle = new Bundle();
+                if (payload != null) {
+                    bundle.putString("jsonPayload", payload);
+                }
+                bundle.putString(KEY_NAV_TYPE, Type.FINISH.toString());
+                post(bundle, responseListener);
+            } else {
+                throwNoFragmentOrActivityListenerError(null, responseListener);
             }
-            bundle.putString(KEY_NAV_TYPE, Type.FINISH.toString());
-            post(bundle, responseListener);
         }
     };
 
@@ -101,7 +109,7 @@ public final class ReactNavigationViewModel extends ViewModel {
         routeLiveData.postValue(route);
     }
 
-    private boolean validateRoute(@Nullable ErnRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
+    private boolean validate(@Nullable ErnRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
         if (ernRoute == null) {
             responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "Empty route received."));
             return false;
@@ -119,7 +127,7 @@ public final class ReactNavigationViewModel extends ViewModel {
     }
 
     private void throwNoFragmentOrActivityListenerError(@Nullable ErnRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
-        responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "No activity or fragment is currently handling this navigation request: " + ernRoute.getPath()));
+        responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "No activity or fragment is currently handling this navigation request: " + (ernRoute != null ? ernRoute.getPath() : "")));
     }
 
     private RequestHandlerHandle requestHandle;
@@ -152,6 +160,8 @@ public final class ReactNavigationViewModel extends ViewModel {
             finishRequestHandle = null;
         }
     }
+
+    private boolean unregistered;
 
     public LiveData<Route> getRouteLiveData() {
         return routeLiveData;

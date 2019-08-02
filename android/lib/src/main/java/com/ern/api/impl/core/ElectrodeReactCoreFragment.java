@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment;
 public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmentDelegate> extends Fragment implements ElectrodeReactFragmentDelegate.DataProvider {
     private static final String TAG = ElectrodeReactCoreFragment.class.getSimpleName();
 
-    private T electrodeReactFragmentDelegate;
+    protected T electrodeReactFragmentDelegate;
 
     @NonNull
     protected abstract T createFragmentDelegate();
@@ -38,6 +38,7 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
         super.onCreate(savedInstanceState);
         getLifecycle().addObserver(electrodeReactFragmentDelegate);
         electrodeReactFragmentDelegate.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -62,5 +63,19 @@ public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmen
     public void onDestroyView() {
         electrodeReactFragmentDelegate.onDestroyView();
         super.onDestroyView();
+    }
+
+    @Override
+    public int fragmentLayoutId() {
+        return NONE;
+    }
+
+    @Override
+    public int reactViewContainerId() {
+        return NONE;
+    }
+
+    public int toolBarId() {
+        return NONE;
     }
 }
