@@ -16,8 +16,6 @@
 
 package com.walmartlabs.electrode.reactnative.bridge;
 
-import android.support.annotation.NonNull;
-
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import java.util.ArrayList;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import androidx.annotation.NonNull;
 
 /**
  * Client facing class.
