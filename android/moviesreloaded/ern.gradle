@@ -1,0 +1,17 @@
+// WORKSPACE is defined in Looper as the root working directory for the job
+// When running on local workstation, we're just using HOME
+final String HOMEDIR = System.getenv('WORKSPACE') ?: System.getProperty('user.home')
+
+task createErnDevContainer(type: Exec) {
+    commandLine "ern", "create-container", "--descriptor", "MoviesReloaded:android:1000.0.0", "--fromGitBranches"
+}
+
+task publishErnContainer(type: Exec) {
+    commandLine "ern", "publish-container", "-p", "maven", "--url", "file://${HOMEDIR}/.m2/repository", "--platform", "android"
+}
+
+task createAndPublishErnDevContainer() {
+    dependsOn 'createErnDevContainer'
+    dependsOn 'publishErnContainer'
+    tasks.findByName('publishErnContainer').mustRunAfter 'createErnDevContainer'
+}
