@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
-import com.walmartlabs.ern.navigation.BuildConfig;
+import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,7 +48,7 @@ final class MenuUtil {
     }
 
     private static boolean canLoadIconFromURI(String icon) {
-        return BuildConfig.DEBUG && URLUtil.isValidUrl(icon) && Patterns.WEB_URL.matcher(icon).matches();
+        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon) && Patterns.WEB_URL.matcher(icon).matches();
     }
 
     private static MenuItem addButtonAsMenuItem(@NonNull NavigationBarButton button, @NonNull Menu menu, @NonNull final OnNavBarItemClickListener navBarButtonClickListener, @Nullable MenuItemDataProvider menuItemDataProvider, @NonNull Context context) {
