@@ -161,8 +161,6 @@ public final class ReactNavigationViewModel extends ViewModel {
         }
     }
 
-    private boolean unregistered;
-
     public LiveData<Route> getRouteLiveData() {
         return routeLiveData;
     }

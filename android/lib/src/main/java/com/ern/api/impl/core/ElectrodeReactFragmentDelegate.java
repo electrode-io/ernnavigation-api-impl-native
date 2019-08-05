@@ -204,6 +204,12 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
         mMiniAppRequestListener = null;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return super.toString() + miniAppComponentName;
+    }
+
     protected String getReactComponentName() {
         if (mFragment.getArguments() != null && mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME) != null) {
             return mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);

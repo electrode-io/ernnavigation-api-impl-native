@@ -43,13 +43,13 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
         @Override
         public void onChanged(@Nullable Route route) {
             if (route != null && !route.isCompleted()) {
-                Logger.d(TAG, "Received a new navigation route: " + route.getArguments());
+                Logger.d(TAG, "Delegate:%s received a new navigation route: %s",  ElectrodeReactFragmentNavDelegate.this, route.getArguments());
 
                 if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
                 }
 
-                //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side is not looking for Parcelable deserialization yet.
+                //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side does not support Parcelable deserialization yet.
                 ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(ReactNavigationViewModel.KEY_NAV_TYPE));
                 switch (navType) {
                     case NAVIGATE:
@@ -68,9 +68,9 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
                 if (!route.isCompleted()) {
                     throw new IllegalStateException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a nav type.");
                 }
-                Logger.d(TAG, "Nav request handling completed");
+                Logger.d(TAG, "Nav request handling completed by delegate: %s", ElectrodeReactFragmentNavDelegate.this);
             } else {
-                Logger.i(TAG, "Ignoring already handled route");
+                Logger.d(TAG, "Delegate:%s has ignored an already handled route: %s, ", ElectrodeReactFragmentNavDelegate.this, route != null ? route.getArguments() : null);
             }
         }
     };
