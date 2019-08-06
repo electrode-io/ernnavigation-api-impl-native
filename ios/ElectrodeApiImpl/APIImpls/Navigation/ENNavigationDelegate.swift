@@ -123,7 +123,7 @@ import UIKit
         }
         var rightButtons = [ENBarButtonItem]()
         for rightButton in rightNavigationButtons {
-            rightButtons.append(self.getUIBarButtonItem(navigationButton: rightButton))
+            rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton), at: 0)
         }
         viewController.navigationItem.rightBarButtonItems = rightButtons
     }
