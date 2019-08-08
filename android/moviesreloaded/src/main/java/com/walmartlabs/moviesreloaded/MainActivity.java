@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements ElectrodeReactFra
 
     public static final int DEFAULT_TITLE = -1;
 
-    private ElectrodeReactNavigationActivityDelegate mElectrodeReactNavDelegate;
+    private ElectrodeReactFragmentActivityDelegate mElectrodeReactNavDelegate;
 
     /**
      * Return the title for
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ElectrodeReactFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mElectrodeReactNavDelegate = new ElectrodeReactNavigationActivityDelegate(this);
+        mElectrodeReactNavDelegate = new ElectrodeReactFragmentActivityDelegate(this);
         this.getLifecycle().addObserver(mElectrodeReactNavDelegate);
         mElectrodeReactNavDelegate.onCreate(savedInstanceState);
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements ElectrodeReactFra
 
     @Override
     public void updateNavBar(@NonNull NavigationBar navigationBar, @NonNull OnNavBarItemClickListener navBarButtonClickListener) {
-        mElectrodeReactNavDelegate.updateNavBar(navigationBar, navBarButtonClickListener);
+        //Do Nothing. This method will be removed in a future release as it's deprecated.
     }
 
     @Override
