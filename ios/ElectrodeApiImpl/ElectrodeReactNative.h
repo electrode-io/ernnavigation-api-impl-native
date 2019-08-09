@@ -61,6 +61,7 @@ extern NSString * const ERNDebugEnabledConfig;
 
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark - ElectrodeReactNative
+NS_ASSUME_NONNULL_BEGIN
 /**
  Container for Electrode plugins and React Native bundles that isolates
  logic, files and set up from Native engineers.
@@ -99,5 +100,6 @@ extern NSString * const ERNDebugEnabledConfig;
  @return A UIViewController containing the view of the miniapp.
  */
 - (UIViewController *)miniAppWithName:(NSString *)name
-                           properties:(NSDictionary *)properties;
+                           properties:(NSDictionary *_Nullable)properties;
 @end
+NS_ASSUME_NONNULL_END
