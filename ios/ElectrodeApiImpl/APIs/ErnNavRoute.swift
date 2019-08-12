@@ -1,5 +1,5 @@
 #if swift(>=4.0)
-@objcMembers public class ErnRoute: ElectrodeObject, Bridgeable {
+@objcMembers public class ErnNavRoute: ElectrodeObject, Bridgeable {
 
     private static let tag = String(describing: type(of: self))
 
@@ -33,7 +33,7 @@
         if let path = dictionary["path"] as? String  {
                   self.path = path
         } else {
-            assertionFailure("\(ErnRoute.tag) missing one or more required properties [path] ")
+            assertionFailure("\(ErnNavRoute.tag) missing one or more required properties [path] ")
             self.path = dictionary["path"] as! String
         }
 
@@ -73,7 +73,7 @@
 }
 #else
 
-public class ErnRoute: ElectrodeObject, Bridgeable {
+public class ErnNavRoute: ElectrodeObject, Bridgeable {
 
     private static let tag = String(describing: type(of: self))
 
@@ -107,7 +107,7 @@ public class ErnRoute: ElectrodeObject, Bridgeable {
         if let path = dictionary["path"] as? String  {
                   self.path = path
         } else {
-            assertionFailure("\(ErnRoute.tag) missing one or more required properties [path] ")
+            assertionFailure("\(ErnNavRoute.tag) missing one or more required properties [path] ")
             self.path = dictionary["path"] as! String
         }
 
