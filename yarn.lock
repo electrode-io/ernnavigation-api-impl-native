@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-ernnavigation-api@1.0.0:
-  version "1.0.0"
-  resolved "http://npme.walmart.com/ernnavigation-api/-/ernnavigation-api-1.0.0.tgz#fdd65818092691071976d43df5a501e6096bf1a0"
-  integrity sha512-5i2n6VY+T9/qojiVMLR7y9kczSs0F1L1CSZP754iib0M8nUIbeZdLyqgZgvTvD+s0foowGPkf8O+nTbax58yjg==
+ernnavigation-api@1.1.0:
+  version "1.1.0"
+  resolved "http://npme.walmart.com/ernnavigation-api/-/ernnavigation-api-1.1.0.tgz#87f2b7b649c55fdde69f4c4717fc95409289214d"
+  integrity sha512-IAQVOHiBT8bJDU9SYSa5hkvk2Gj+Fp3E1GgIMokR8h6aaDgk+ZtV6EYfW1P6IA+jvnwaICnNeDlABS1VraZU5Q==
   dependencies:
     react-native-electrode-bridge "1.5.x"
 
