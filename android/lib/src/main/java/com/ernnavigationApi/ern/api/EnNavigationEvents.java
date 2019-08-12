@@ -20,11 +20,8 @@ import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeEvent;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeHolder;
 import com.walmartlabs.electrode.reactnative.bridge.EventListenerProcessor;
 import com.walmartlabs.electrode.reactnative.bridge.EventProcessor;
-import com.walmartlabs.electrode.reactnative.bridge.None;
-import java.util.*;
-import java.util.UUID;
 
-    import com.ernnavigationApi.ern.model.ErnRoute;
+import java.util.UUID;
 
 final class EnNavigationEvents implements EnNavigationApi.Events {
     EnNavigationEvents() {}

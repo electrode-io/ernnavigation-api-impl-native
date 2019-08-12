@@ -15,15 +15,13 @@ package com.ernnavigationApi.ern.api;
 
 import androidx.annotation.NonNull;
 
-import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeHolder;
+import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeRequestHandler;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;
 import com.walmartlabs.electrode.reactnative.bridge.None;
 import com.walmartlabs.electrode.reactnative.bridge.RequestHandlerProcessor;
 import com.walmartlabs.electrode.reactnative.bridge.RequestProcessor;
 import com.walmartlabs.electrode.reactnative.bridge.RequestHandlerHandle;
-import java.util.*;
-import com.ernnavigationApi.ern.model.ErnRoute;
 
 
 final class EnNavigationRequests implements EnNavigationApi.Requests {
@@ -31,8 +29,8 @@ final class EnNavigationRequests implements EnNavigationApi.Requests {
 
 
     @Override
-    public RequestHandlerHandle registerBackRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnRoute, None> handler) {
-        return new RequestHandlerProcessor<>(REQUEST_BACK, ErnRoute.class, None.class, handler).execute();
+    public RequestHandlerHandle registerBackRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnNavRoute, None> handler) {
+        return new RequestHandlerProcessor<>(REQUEST_BACK, ErnNavRoute.class, None.class, handler).execute();
     }
 
     @Override
@@ -41,19 +39,19 @@ final class EnNavigationRequests implements EnNavigationApi.Requests {
     }
 
     @Override
-    public RequestHandlerHandle registerNavigateRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnRoute, None> handler) {
-        return new RequestHandlerProcessor<>(REQUEST_NAVIGATE, ErnRoute.class, None.class, handler).execute();
+    public RequestHandlerHandle registerNavigateRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnNavRoute, None> handler) {
+        return new RequestHandlerProcessor<>(REQUEST_NAVIGATE, ErnNavRoute.class, None.class, handler).execute();
     }
 
     @Override
-    public RequestHandlerHandle registerUpdateRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnRoute, None> handler) {
-        return new RequestHandlerProcessor<>(REQUEST_UPDATE, ErnRoute.class, None.class, handler).execute();
+    public RequestHandlerHandle registerUpdateRequestHandler(@NonNull final ElectrodeBridgeRequestHandler<ErnNavRoute, None> handler) {
+        return new RequestHandlerProcessor<>(REQUEST_UPDATE, ErnNavRoute.class, None.class, handler).execute();
     }
 
     //------------------------------------------------------------------------------------------------------------------------------------
 
     @Override
-    public void back(ErnRoute route,@NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+    public void back(ErnNavRoute route, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
         new RequestProcessor<>(REQUEST_BACK,  route, None.class, responseListener).execute();
     }
     @Override
@@ -61,11 +59,11 @@ final class EnNavigationRequests implements EnNavigationApi.Requests {
         new RequestProcessor<>(REQUEST_FINISH,  finalPayload, None.class, responseListener).execute();
     }
     @Override
-    public void navigate(ErnRoute route,@NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+    public void navigate(ErnNavRoute route, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
         new RequestProcessor<>(REQUEST_NAVIGATE,  route, None.class, responseListener).execute();
     }
     @Override
-    public void update(ErnRoute updatedRoute,@NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+    public void update(ErnNavRoute updatedRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
         new RequestProcessor<>(REQUEST_UPDATE,  updatedRoute, None.class, responseListener).execute();
     }
 }

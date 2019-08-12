@@ -22,13 +22,12 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.ernnavigationApi.ern.model.ErnRoute;
+import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDelegate.MiniAppRequestListener> implements LifecycleObserver {
     private static final String TAG = ElectrodeReactFragmentDelegate.class.getSimpleName();
@@ -134,10 +133,10 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
 
         //NOTE: If/When the system re-constructs a fragment from a previous state a stored Bundle is getting converted to a ParcelableData.
         //When this bundle is send across React native , RN frameworks WritableArray does not support parcelable conversion.
-        //To avoid this issue we recreate the ErnRoute object from the bundle and regenerate a new bundle which again replaces the  ParcelableData with proper bundle object.
-        //Checking for the existence of "path" key since that is the only required property to successfully build an ErnRoute object.
+        //To avoid this issue we recreate the ErnNavRoute object from the bundle and regenerate a new bundle which again replaces the  ParcelableData with proper bundle object.
+        //Checking for the existence of "path" key since that is the only required property to successfully build an ErnNavRoute object.
         if (isFragmentBeingReconstructed && initialProps.containsKey("path")) {
-            initialProps.putAll(new ErnRoute(initialProps).toBundle());
+            initialProps.putAll(new ErnNavRoute(initialProps).toBundle());
         }
 
         Bundle props = mDataProvider.initialProps();

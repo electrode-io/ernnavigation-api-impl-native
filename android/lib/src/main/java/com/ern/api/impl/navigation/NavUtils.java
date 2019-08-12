@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
@@ -22,7 +23,7 @@ public final class NavUtils {
     /**
      * Extracts the value for the key 'path' from the given bundle. Return null if the key is not present or if the value is not of {@link String} type..
      *
-     * @param args {@link Bundle} Generally a bundle representation of {@link com.ernnavigationApi.ern.model.ErnRoute}
+     * @param args {@link Bundle} Generally a bundle representation of {@link ErnNavRoute}
      * @return String
      */
     @Nullable
@@ -40,7 +41,7 @@ public final class NavUtils {
     /**
      * Extracts the value for the key 'jsonPayload' from the given bundle. Return null if the key is not present or if the value cannot be converted to a {@link JSONObject}.
      *
-     * @param args {@link Bundle} Generally a bundle representation of {@link com.ernnavigationApi.ern.model.ErnRoute}
+     * @param args {@link Bundle} Generally a bundle representation of {@link ErnNavRoute}
      * @return JSONObject or null.
      */
     @Nullable
@@ -62,7 +63,7 @@ public final class NavUtils {
     /**
      * Extracts the value for the key 'jsonPayload' from the given bundle. Return null if the key is not present or if the value cannot be converted to a {@link JSONObject}.
      *
-     * @param args {@link Bundle} Generally a bundle representation of {@link com.ernnavigationApi.ern.model.ErnRoute}
+     * @param args {@link Bundle} Generally a bundle representation of {@link ErnNavRoute}
      * @return JSONObject or null.
      */
     @Nullable

@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.ernnavigationApi.ern.api.EnNavigationApi;
-import com.ernnavigationApi.ern.model.ErnRoute;
+import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.walmartlabs.electrode.reactnative.bridge.BridgeFailureMessage;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeRequestHandler;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;
@@ -30,9 +30,9 @@ public final class ReactNavigationViewModel extends ViewModel {
     }
 
     private final MutableLiveData<Route> routeLiveData = new MutableLiveData<>();
-    private final ElectrodeBridgeRequestHandler<ErnRoute, None> navRequestHandler = new ElectrodeBridgeRequestHandler<ErnRoute, None>() {
+    private final ElectrodeBridgeRequestHandler<ErnNavRoute, None> navRequestHandler = new ElectrodeBridgeRequestHandler<ErnNavRoute, None>() {
         @Override
-        public void onRequest(@Nullable final ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+        public void onRequest(@Nullable final ErnNavRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: NAVIGATE");
             if (!validate(ernRoute, responseListener)) return;
 
@@ -46,9 +46,9 @@ public final class ReactNavigationViewModel extends ViewModel {
         }
     };
 
-    private final ElectrodeBridgeRequestHandler<ErnRoute, None> updateRequestHandler = new ElectrodeBridgeRequestHandler<ErnRoute, None>() {
+    private final ElectrodeBridgeRequestHandler<ErnNavRoute, None> updateRequestHandler = new ElectrodeBridgeRequestHandler<ErnNavRoute, None>() {
         @Override
-        public void onRequest(@Nullable ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+        public void onRequest(@Nullable ErnNavRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: UPDATE");
             if (!validate(ernRoute, responseListener)) return;
             if (validateLiveDataObservers()) {
@@ -61,9 +61,9 @@ public final class ReactNavigationViewModel extends ViewModel {
         }
     };
 
-    private final ElectrodeBridgeRequestHandler<ErnRoute, None> backRequestHandler = new ElectrodeBridgeRequestHandler<ErnRoute, None>() {
+    private final ElectrodeBridgeRequestHandler<ErnNavRoute, None> backRequestHandler = new ElectrodeBridgeRequestHandler<ErnNavRoute, None>() {
         @Override
-        public void onRequest(@Nullable ErnRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+        public void onRequest(@Nullable ErnNavRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: BACK");
             if (validateLiveDataObservers()) {
                 final Bundle bundle = ernRoute != null ? ernRoute.toBundle() : new Bundle();
@@ -109,7 +109,7 @@ public final class ReactNavigationViewModel extends ViewModel {
         routeLiveData.postValue(route);
     }
 
-    private boolean validate(@Nullable ErnRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
+    private boolean validate(@Nullable ErnNavRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
         if (ernRoute == null) {
             responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "Empty route received."));
             return false;
@@ -126,7 +126,7 @@ public final class ReactNavigationViewModel extends ViewModel {
         return routeLiveData.hasActiveObservers();
     }
 
-    private void throwNoFragmentOrActivityListenerError(@Nullable ErnRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
+    private void throwNoFragmentOrActivityListenerError(@Nullable ErnNavRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
         responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "No activity or fragment is currently handling this navigation request: " + (ernRoute != null ? ernRoute.getPath() : "")));
     }
 
