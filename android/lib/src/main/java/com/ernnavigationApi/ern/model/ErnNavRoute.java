@@ -16,33 +16,31 @@ package com.ernnavigationApi.ern.model;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.walmartlabs.electrode.reactnative.bridge.Bridgeable;
 
-import static com.walmartlabs.electrode.reactnative.bridge.util.BridgeArguments.*;
-
-public class ErnRoute implements Parcelable, Bridgeable {
+public class ErnNavRoute implements Parcelable, Bridgeable {
 
     private String path;
     private String jsonPayload;
     private NavigationBar navigationBar;
 
-    private ErnRoute() {}
+    private ErnNavRoute() {}
 
-    private ErnRoute(Builder builder) {
+    private ErnNavRoute(Builder builder) {
         this.path = builder.path;
         this.jsonPayload = builder.jsonPayload;
         this.navigationBar = builder.navigationBar;
     }
 
-    private ErnRoute(Parcel in) {
+    private ErnNavRoute(Parcel in) {
         this(in.readBundle());
     }
 
-    public ErnRoute(@NonNull Bundle bundle) {
+    public ErnNavRoute(@NonNull Bundle bundle) {
         if(!bundle.containsKey("path")){
             throw new IllegalArgumentException("path property is required");
         }
@@ -52,15 +50,15 @@ public class ErnRoute implements Parcelable, Bridgeable {
         this.navigationBar = bundle.containsKey("navigationBar") ? new NavigationBar(bundle.getBundle("navigationBar")) : null;
     }
 
-    public static final Creator<ErnRoute> CREATOR = new Creator<ErnRoute>() {
+    public static final Creator<ErnNavRoute> CREATOR = new Creator<ErnNavRoute>() {
         @Override
-        public ErnRoute createFromParcel(Parcel in) {
-            return new ErnRoute(in);
+        public ErnNavRoute createFromParcel(Parcel in) {
+            return new ErnNavRoute(in);
         }
 
         @Override
-        public ErnRoute[] newArray(int size) {
-            return new ErnRoute[size];
+        public ErnNavRoute[] newArray(int size) {
+            return new ErnNavRoute[size];
         }
     };
 
@@ -144,8 +142,8 @@ public class ErnRoute implements Parcelable, Bridgeable {
         }
 
         @NonNull
-        public ErnRoute build() {
-            return new ErnRoute(this);
+        public ErnNavRoute build() {
+            return new ErnNavRoute(this);
         }
     }
 }
