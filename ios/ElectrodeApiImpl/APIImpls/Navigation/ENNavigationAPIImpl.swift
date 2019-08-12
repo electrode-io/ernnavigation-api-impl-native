@@ -34,7 +34,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerUpdateRequestHandler() {
         _ = self.navigationAPI.requests.registerUpdateRequestHandler(handler: { (data, block) in
-            if let d = data as? ErnRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
+            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
                 if let navBarDict = ernData["navigationBar"] as? [AnyHashable : Any] {
                     let navBar = NavigationBar(dictionary: navBarDict)
                     self.delegate?.updateNavigationBar(navBar: navBar, completion: { (message) in
@@ -47,7 +47,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerBackRequestHandler() {
         _ = self.navigationAPI.requests.registerBackRequestHandler(handler: { (data, block) in
-            let d = data as? ErnRoute
+            let d = data as? ErnNavRoute
             let ernData = d?.toDictionary() as? [AnyHashable : Any]
             let path = ernData?["path"] as? String ?? nil
             self.delegate?.popToViewControllerWithPath(path: path, completion: { (message) in
@@ -58,7 +58,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerNavigationRequestHandler() {
         _ = self.navigationAPI.requests.registerNavigateRequestHandler(handler: { (data, block) in
-            if let d = data as? ErnRoute, let ernData = d.toDictionary() as? [AnyHashable : Any], let path = ernData["path"] as? String {
+            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any], let path = ernData["path"] as? String {
                 if path == "finishFlow" {
                     self.delegate?.handleFinishFlow(finalPayLoad: ernData["jsonPayload"] as? String, completion: { (message) in
                         return block(message, nil)
