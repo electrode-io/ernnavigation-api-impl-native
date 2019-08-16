@@ -3,7 +3,7 @@
 
     public override func registerBackRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestBack,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -19,7 +19,7 @@
 
     public override func registerNavigateRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestNavigate,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -27,7 +27,7 @@
 
     public override func registerUpdateRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestUpdate,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -53,8 +53,8 @@
     //------------------------------------------------------------------------------------------------------------------------------------
 
 
-    public override func back(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func back(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestBack,
             requestPayload: route,
             respClass: None.self,
@@ -75,8 +75,8 @@
         requestProcessor.execute()
     }
 
-    public override func navigate(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func navigate(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestNavigate,
             requestPayload: route,
             respClass: None.self,
@@ -86,8 +86,8 @@
         requestProcessor.execute()
     }
 
-    public override func update(updatedRoute: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func update(updatedRoute: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestUpdate,
             requestPayload: updatedRoute,
             respClass: None.self,
@@ -102,7 +102,7 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
 
     public override func registerBackRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestBack,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -118,7 +118,7 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
 
     public override func registerNavigateRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestNavigate,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -126,7 +126,7 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
 
     public override func registerUpdateRequestHandler(handler:  @escaping ElectrodeBridgeRequestCompletionHandler) -> UUID?{
         let requestHandlerProcessor = ElectrodeRequestHandlerProcessor(requestName: EnNavigationAPI.kRequestUpdate,
-    reqClass: ErnRoute.self, 
+    reqClass: ErnNavRoute.self, 
     respClass: None.self,
     requestCompletionHandler: handler)
         return requestHandlerProcessor.execute()
@@ -152,8 +152,8 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
       return ElectrodeBridgeHolder.unregisterRequestHandler(with: uuid)
     }
 
-    public override func back(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func back(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestBack,
             requestPayload: route,
             respClass: None.self,
@@ -208,8 +208,8 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
       return ElectrodeBridgeHolder.unregisterRequestHandler(with: uuid)
     }
 
-    public override func navigate(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func navigate(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestNavigate,
             requestPayload: route,
             respClass: None.self,
@@ -236,8 +236,8 @@ public class EnNavigationRequests: EnNavigationAPIRequests {
       return ElectrodeBridgeHolder.unregisterRequestHandler(with: uuid)
     }
 
-    public override func update(updatedRoute: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
-        let requestProcessor = ElectrodeRequestProcessor<ErnRoute, None, Any>(
+    public override func update(updatedRoute: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+        let requestProcessor = ElectrodeRequestProcessor<ErnNavRoute, None, Any>(
             requestName: EnNavigationAPI.kRequestUpdate,
             requestPayload: updatedRoute,
             respClass: None.self,
