@@ -58,23 +58,10 @@ import UIKit
     }
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
-        if let payLoad = finalPayload, let payloadDict = self.convertStringToDictionary(jsonPayLoad: payLoad), payloadDict.count > 0 {
-            let path = payloadDict["page"] as? String ?? ""
-            if path == "finishFlow" {
-                self.viewController?.dismiss(animated: true, completion: {
-                    completion("Finished status")
-                    if ((self.viewController?.finishedCallback) != nil) {
-                        self.viewController?.finishedCallback?(nil)
-                    }
-                })
-            }
-            return
-        } else {
-            if ((self.viewController?.finishedCallback) != nil) {
-                self.viewController?.finishedCallback?(nil)
-            }
-            return completion("Finished status")
+        if ((self.viewController?.finishedCallback) != nil) {
+            self.viewController?.finishedCallback?(finalPayload)
         }
+        return completion("Finished status")
     }
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
