@@ -1,15 +1,12 @@
 package com.ern.api.impl.core;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -21,7 +18,6 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.AddToBackStackState;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
-import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
@@ -32,6 +28,17 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
     protected FragmentActivity mFragmentActivity;
     private DataProvider dataProvider;
+
+    private boolean mUpEnabledForRoot;
+
+    /**
+     * Set this to true if you want to enable up navigation for the root component.
+     *
+     * PS: This method needs to be called before {@link #onCreate(Bundle)} is called.
+     */
+    public void setUpEnabledForRoot(boolean upEnabledForRoot) {
+        mUpEnabledForRoot = upEnabledForRoot;
+    }
 
     public ElectrodeReactFragmentActivityDelegate(@NonNull FragmentActivity activity) {
         super(activity, null);
@@ -153,13 +160,18 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             if (ADD_TO_BACKSTACK == addToBackStackState) {
                 transaction.addToBackStack(tag);
             }
-            bundle.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount() > 0);
+            bundle.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, shouldShowUpEnabled());
             fragment.setArguments(bundle);
             transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
             transaction.commit();
         } catch (Exception e) {
             Logger.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
         }
+    }
+
+    private boolean shouldShowUpEnabled() {
+        int backStackCount = mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount();
+        return backStackCount > 0 || (backStackCount == 0 && mUpEnabledForRoot);
     }
 
     public boolean switchBackToFragment(@Nullable String tag) {
