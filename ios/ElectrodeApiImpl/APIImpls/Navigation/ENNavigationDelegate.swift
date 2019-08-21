@@ -104,7 +104,7 @@ import UIKit
     }
 
     func getNavBarTitle(title: String, viewController: UIViewController) {
-        viewController.title = title
+        viewController.navigationController?.navigationBar.topItem?.title = title
     }
 
     func getNavBarButtons(buttons: [NavigationBarButton], viewController: UIViewController) {
