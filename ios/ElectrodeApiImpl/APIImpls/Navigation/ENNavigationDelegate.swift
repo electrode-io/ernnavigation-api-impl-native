@@ -58,26 +58,8 @@ import UIKit
     }
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
-        if let payLoad = finalPayload {
-            let payloadDict = self.convertStringToDictionary(jsonPayLoad: payLoad)
-            let path = payloadDict?["page"] as? String ?? ""
-            if path == "finishFlow" {
-                self.viewController?.dismiss(animated: true, completion: {
-                    self.finishedCallBack(finalPayLoad: nil)
-                })
-            } else {
-                self.viewController?.finishedCallback?(finalPayload)
-            }
-        } else {
-            self.finishedCallBack(finalPayLoad: nil)
-        }
+        self.finishedCallBack(finalPayLoad: finalPayload)
         return completion("Finished status")
-    }
-    
-    private func finishedCallBack(finalPayLoad: String?) {
-        if ((self.viewController?.finishedCallback) != nil) {
-            self.viewController?.finishedCallback?(finalPayLoad)
-        }
     }
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
@@ -91,18 +73,30 @@ import UIKit
         return
     }
 
+    private func finishedCallBack(finalPayLoad: String?) {
+        if ((self.viewController?.finishedCallback) != nil) {
+            self.viewController?.finishedCallback?(finalPayLoad)
+        }
+    }
+
     func handleNavigationRequestWithPath(routeData: [AnyHashable : Any], completion: ERNNavigationCompletionBlock) {
         let path = routeData["path"] as? String ?? ""
-        let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
-        if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
-            let navBar = NavigationBar(dictionary: navigationBarDict)
-            self.getNavBarTitle(title: navBar.title, viewController: vc)
-            if let buttons = navBar.buttons {
-                self.getNavBarButtons(buttons: buttons, viewController: vc)
+        if path == "finishFlow" {
+            self.viewController?.dismiss(animated: true, completion: {
+                self.finishedCallBack(finalPayLoad: nil)
+            })
+        } else {
+            let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
+            if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
+                let navBar = NavigationBar(dictionary: navigationBarDict)
+                vc.title = navBar.title
+                if let buttons = navBar.buttons {
+                    self.getNavBarButtons(buttons: buttons, viewController: vc)
+                }
             }
+            vc.finishedCallback = self.viewController?.finishedCallback
+            self.viewController?.navigationController?.pushViewController(vc, animated: true)
         }
-        vc.finishedCallback = self.viewController?.finishedCallback
-        self.viewController?.navigationController?.pushViewController(vc, animated: true)
         return completion("success")
     }
 
@@ -188,3 +182,4 @@ import UIKit
         return nil
     }
 }
+

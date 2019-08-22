@@ -58,16 +58,10 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerNavigationRequestHandler() {
         _ = self.navigationAPI.requests.registerNavigateRequestHandler(handler: { (data, block) in
-            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any], let path = ernData["path"] as? String {
-                if path == "finishFlow" {
-                    self.delegate?.handleFinishFlow(finalPayLoad: ernData["jsonPayload"] as? String, completion: { (message) in
-                        return block(message, nil)
-                    })
-                } else {
-                    self.delegate?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
-                        return block(message, nil)
-                    })
-                }
+            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
+                self.delegate?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
+                    return block(message, nil)
+                })
             }
         })
     }
