@@ -63,7 +63,7 @@ import UIKit
             let path = payloadDict?["page"] as? String ?? ""
             if path == "finishFlow" {
                 self.viewController?.dismiss(animated: true, completion: {
-                    self.finishedCallBack(finalPayLoad: finalPayload)
+                    self.finishedCallBack(finalPayLoad: nil)
                 })
             } else {
                 self.viewController?.finishedCallback?(finalPayload)
