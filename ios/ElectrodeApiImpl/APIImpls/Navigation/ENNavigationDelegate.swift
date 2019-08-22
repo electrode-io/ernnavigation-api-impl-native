@@ -58,8 +58,9 @@ import UIKit
     }
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
+        let payloadJson = self.convertStringToJSONObject(jsonPayLoad: finalPayload)
         if ((self.viewController?.finishedCallback) != nil) {
-            self.viewController?.finishedCallback?(finalPayload)
+            self.viewController?.finishedCallback?(payloadJson)
         }
         return completion("Finished status")
     }
@@ -160,11 +161,13 @@ import UIKit
         }
     }
 
-    private func convertStringToDictionary(jsonPayLoad: String) -> [String: Any]? {
+    private func convertStringToJSONObject(jsonPayLoad: String?) -> AnyObject? {
         do {
-            if let data = jsonPayLoad.data(using: String.Encoding.utf8) {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                return json
+            if let payload = jsonPayLoad, let data = payload.data(using: String.Encoding.utf8) {
+                let json = try JSONSerialization.jsonObject(with: data, options: [.allowFragments])
+                return json as AnyObject
+            } else {
+                return nil
             }
         } catch let error as NSError {
             NSLog(error.description)

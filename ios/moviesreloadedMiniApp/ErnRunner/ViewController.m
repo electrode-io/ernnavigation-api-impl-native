@@ -17,7 +17,7 @@
 #import "RunnerConfig.h"
 #import <ElectrodeContainer/ElectrodeContainer.h>
 
-typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
+typedef void (^MiniAppFinishedCallback)(id _Nullable);
 
 @implementation ViewController
 
@@ -51,8 +51,13 @@ typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
 }
 
 - (MiniAppFinishedCallback _Nullable)finishedCallback {
-    return ^(NSString *payload){
-        exit(0);
+    return ^(NSObject *payload){
+        if ([payload isKindOfClass:[NSDictionary class]]) {
+            NSDictionary * dict = (NSDictionary *)payload;
+            NSLog(@"finishedCallback: %@", dict);
+        } else {
+            NSLog(@"finishedCallback: %@", payload);
+        }
     };
 }
 
