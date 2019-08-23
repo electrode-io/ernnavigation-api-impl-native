@@ -83,7 +83,8 @@ import UIKit
         let path = routeData["path"] as? String ?? ""
         if path == "finishFlow" {
             self.viewController?.dismiss(animated: true, completion: {
-                self.finishedCallBack(finalPayLoad: nil)
+                let jsonPayLoad = routeData["jsonPayload"] as? String
+                self.finishedCallBack(finalPayLoad: jsonPayLoad)
             })
         } else {
             let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
