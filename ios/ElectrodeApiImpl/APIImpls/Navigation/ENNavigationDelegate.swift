@@ -82,10 +82,8 @@ import UIKit
     func handleNavigationRequestWithPath(routeData: [AnyHashable : Any], completion: ERNNavigationCompletionBlock) {
         let path = routeData["path"] as? String ?? ""
         if path == "finishFlow" {
-            self.viewController?.dismiss(animated: true, completion: {
-                let jsonPayLoad = routeData["jsonPayload"] as? String
-                self.finishedCallBack(finalPayLoad: jsonPayLoad)
-            })
+            let jsonPayLoad = routeData["jsonPayload"] as? String
+            self.finishedCallBack(finalPayLoad: jsonPayLoad)
         } else {
             let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
             if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
