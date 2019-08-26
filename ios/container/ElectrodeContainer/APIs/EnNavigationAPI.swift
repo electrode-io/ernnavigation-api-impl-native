@@ -81,7 +81,7 @@
     }
 
 
-    public func back(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func back(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
@@ -89,11 +89,11 @@
         assertionFailure("should override")
     }
 
-    public func navigate(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func navigate(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
-    public func update(updatedRoute: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func update(updatedRoute: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
@@ -181,7 +181,7 @@ public class EnNavigationAPIRequests: NSObject {
     }
 
 
-    public func back(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func back(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
@@ -189,11 +189,11 @@ public class EnNavigationAPIRequests: NSObject {
         assertionFailure("should override")
     }
 
-    public func navigate(route: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func navigate(route: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
-    public func update(updatedRoute: ErnRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
+    public func update(updatedRoute: ErnNavRoute, responseCompletionHandler: @escaping ElectrodeBridgeResponseCompletionHandler) {
         assertionFailure("should override")
     }
 
