@@ -34,6 +34,7 @@ import UIKit
                 } else if let finishedCallback = vc.finishedCallback {
                     miniappVC.finishedCallback = finishedCallback
                 }
+                miniappVC.navigateWithRoute = vc.navigateWithRoute
                 navigationVC.navigationBar.isTranslucent = false
                 navigationVC.pushViewController(miniappVC, animated: false)
             }
@@ -101,20 +102,23 @@ import UIKit
             let jsonPayLoad = routeData["jsonPayload"] as? String
             self.finishedCallBack(finalPayLoad: jsonPayLoad)
         } else {
-            let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
-            if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
-                let navBar = NavigationBar(dictionary: navigationBarDict)
-                vc.title = navBar.title
-                if let buttons = navBar.buttons {
-                    self.getNavBarButtons(buttons: buttons, viewController: vc)
+            if !(self.viewController?.navigateWithRoute?(routeData) ?? false) {
+                let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
+                if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
+                    let navBar = NavigationBar(dictionary: navigationBarDict)
+                    vc.title = navBar.title
+                    if let buttons = navBar.buttons {
+                        self.getNavBarButtons(buttons: buttons, viewController: vc)
+                    }
                 }
+                if let finish = self.viewController?.finish {
+                    vc.finish = finish
+                } else if let finishedCallback = self.viewController?.finishedCallback {
+                    vc.finishedCallback = finishedCallback
+                }
+                vc.navigateWithRoute = self.viewController?.navigateWithRoute
+                self.viewController?.navigationController?.pushViewController(vc, animated: true)
             }
-            if let finish = self.viewController?.finish {
-                vc.finish = finish
-            } else if let finishedCallback = self.viewController?.finishedCallback {
-                vc.finishedCallback = finishedCallback
-            }
-            self.viewController?.navigationController?.pushViewController(vc, animated: true)
         }
         return completion("success")
     }

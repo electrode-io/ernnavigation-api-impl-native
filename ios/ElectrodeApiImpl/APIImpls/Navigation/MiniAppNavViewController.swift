@@ -16,12 +16,13 @@
 
 import UIKit
 
-class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
+public class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let miniAppName: String
     let properties: [AnyHashable : Any]?
     var finishedCallback: MiniAppFinishedCallback?
     var finish: Payload?
     var delegate: ENNavigationDelegate?
+    var navigateWithRoute: NavigateWithRoute?
     init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties
@@ -32,19 +33,19 @@ class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = ENNavigationDelegate()
         self.delegate?.viewDidLoad(viewController: self)
         self.delegate?.delegate = self
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.delegate?.viewWillAppear()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.delegate?.viewDidDisapper()
     }

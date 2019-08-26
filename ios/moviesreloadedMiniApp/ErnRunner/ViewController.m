@@ -19,13 +19,14 @@
 
 typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
 typedef void(^Payload)(NSDictionary *_Nullable);
+typedef BOOL(^NavigateWithRoute)(NSDictionary *_Nullable);
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+
     ENNavigationDelegate *delegate = [[ENNavigationDelegate alloc] init];
     [delegate viewDidLoadWithViewController:self];
 }
@@ -61,6 +62,12 @@ typedef void(^Payload)(NSDictionary *_Nullable);
     };
 }
 
+-(NavigateWithRoute _Nonnull)navigateWithRoute {
+    return ^BOOL(NSDictionary * _Nullable dict) {
+        return false;
+    };
+}
+
 @synthesize finishedCallback;
 
 @synthesize properties;
@@ -69,4 +76,5 @@ typedef void(^Payload)(NSDictionary *_Nullable);
 
 @synthesize finish;
 
+@synthesize navigateWithRoute;
 @end
