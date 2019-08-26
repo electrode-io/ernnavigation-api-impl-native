@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 Walmart Labs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ern.api.impl.navigation;
 
 
@@ -5,13 +21,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -22,7 +34,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.ern.api.impl.core.ActivityDelegateConstants;
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.NavigationBar;
