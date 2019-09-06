@@ -9,7 +9,9 @@
 import Foundation
 
 public typealias MiniAppFinishedCallback = (String?) -> Void
+public typealias Payload = ([AnyHashable: Any]?) -> Void
 
 @objc public protocol ENMiniAppNavDataProvider: ENMiniAppDataProvider {
-    var finishedCallback: MiniAppFinishedCallback? { get set }
+    @objc optional var finishedCallback: MiniAppFinishedCallback? { get set }
+    @objc optional var finish: Payload? { get set }
 }

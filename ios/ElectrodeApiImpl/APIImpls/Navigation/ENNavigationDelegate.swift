@@ -19,10 +19,13 @@ import UIKit
             if let vc = navigationVC as? ENMiniAppNavDataProvider {
                 let miniAppName = vc.rootComponentName
                 let properties = vc.properties
-                let finishedCallback = vc.finishedCallback
                 let miniappVC = MiniAppNavViewController(properties: properties, miniAppName: miniAppName)
                 miniappVC.view.frame = UIScreen.main.bounds
-                miniappVC.finishedCallback = finishedCallback
+                if let finish = vc.finish {
+                    miniappVC.finish = finish
+                } else if let finishedCallback = vc.finishedCallback {
+                    miniappVC.finishedCallback = finishedCallback
+                }
                 navigationVC.navigationBar.isTranslucent = false
                 navigationVC.pushViewController(miniappVC, animated: false)
             }
@@ -58,7 +61,12 @@ import UIKit
     }
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
-        self.finishedCallBack(finalPayLoad: finalPayload)
+        let payloadDict = finalPayload?.convertStringToDict()
+        if ((self.viewController?.finish) != nil) {
+            self.viewController?.finish?(payloadDict)
+        } else {
+            self.finishedCallBack(finalPayLoad: finalPayload)
+        }
         return completion("Finished status")
     }
 
@@ -93,7 +101,11 @@ import UIKit
                     self.getNavBarButtons(buttons: buttons, viewController: vc)
                 }
             }
-            vc.finishedCallback = self.viewController?.finishedCallback
+            if let finish = self.viewController?.finish {
+                vc.finish = finish
+            } else if let finishedCallback = self.viewController?.finishedCallback {
+                vc.finishedCallback = finishedCallback
+            }
             self.viewController?.navigationController?.pushViewController(vc, animated: true)
         }
         return completion("success")
@@ -168,17 +180,20 @@ import UIKit
             ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
         }
     }
+}
 
-    private func convertStringToDictionary(jsonPayLoad: String) -> [String: Any]? {
+extension String {
+    func convertStringToDict() -> [AnyHashable: Any]? {
         do {
-            if let data = jsonPayLoad.data(using: String.Encoding.utf8) {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                return json
+            if let data = self.data(using: String.Encoding.utf8), let dict = try JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [AnyHashable: Any] {
+                return dict
+            } else {
+                return nil
             }
         } catch let error as NSError {
-            NSLog(error.description)
+            let logger = ElectrodeConsoleLogger.sharedInstance()
+            logger.log(.error, message: error.description)
         }
         return nil
     }
 }
-

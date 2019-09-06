@@ -18,6 +18,7 @@
 #import <ElectrodeContainer/ElectrodeContainer.h>
 
 typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
+typedef void(^Payload)(NSDictionary *_Nullable);
 
 @implementation ViewController
 
@@ -51,8 +52,12 @@ typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
 }
 
 - (MiniAppFinishedCallback _Nullable)finishedCallback {
-    return ^(NSString *payload){
-        exit(0);
+    return nil;
+}
+
+- (Payload _Nullable)finish {
+    return ^(NSDictionary *payload){
+        return;
     };
 }
 
@@ -61,4 +66,7 @@ typedef void(^MiniAppFinishedCallback)(NSString *_Nullable);
 @synthesize properties;
 
 @synthesize rootComponentName;
+
+@synthesize finish;
+
 @end
