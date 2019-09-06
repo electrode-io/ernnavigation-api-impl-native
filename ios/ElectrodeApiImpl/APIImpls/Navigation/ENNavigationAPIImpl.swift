@@ -1,10 +1,18 @@
-//
-//  ENNavigationAPIImpl.swift
-//  ErnRunner
-//
-//  Created by Lianci Liu on 6/27/19.
-//  Copyright © 2019 Walmart. All rights reserved.
-//
+/*
+ * Copyright 2019 Walmart Labs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import Foundation
 
@@ -34,7 +42,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerUpdateRequestHandler() {
         _ = self.navigationAPI.requests.registerUpdateRequestHandler(handler: { (data, block) in
-            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
+            if let d = data as? ErnRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
                 if let navBarDict = ernData["navigationBar"] as? [AnyHashable : Any] {
                     let navBar = NavigationBar(dictionary: navBarDict)
                     self.delegate?.updateNavigationBar(navBar: navBar, completion: { (message) in
@@ -47,7 +55,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerBackRequestHandler() {
         _ = self.navigationAPI.requests.registerBackRequestHandler(handler: { (data, block) in
-            let d = data as? ErnNavRoute
+            let d = data as? ErnRoute
             let ernData = d?.toDictionary() as? [AnyHashable : Any]
             let path = ernData?["path"] as? String ?? nil
             self.delegate?.popToViewControllerWithPath(path: path, completion: { (message) in
@@ -58,7 +66,7 @@ class ENNavigationAPIImpl: NSObject {
 
     func registerNavigationRequestHandler() {
         _ = self.navigationAPI.requests.registerNavigateRequestHandler(handler: { (data, block) in
-            if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
+            if let d = data as? ErnRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
                 self.delegate?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
                     return block(message, nil)
                 })
