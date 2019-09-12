@@ -43,19 +43,36 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         return DEFAULT_TITLE;
     }
 
+    /**
+     * Override this method to hide/show the nav bar.
+     *
+     * @return false | true Default: false
+     */
+    protected boolean hideNavBar() {
+        return false;
+    }
+
+    /**
+     * Override if you need to provide a custom delegate.
+     *
+     * @return ElectrodeReactFragmentActivityDelegate
+     */
+    @NonNull
+    protected ElectrodeReactFragmentActivityDelegate createElectrodeDelegate() {
+        return new ElectrodeReactFragmentActivityDelegate(this);
+    }
+
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(mainLayout());
 
-        mElectrodeReactNavDelegate = new ElectrodeReactFragmentActivityDelegate(this);
+        mElectrodeReactNavDelegate = createElectrodeDelegate();
         getLifecycle().addObserver(mElectrodeReactNavDelegate);
         mElectrodeReactNavDelegate.onCreate(savedInstanceState);
 
-        if (title() != DEFAULT_TITLE && getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(title()));
-        }
+        setupNavBar();
     }
 
     @Override
@@ -83,6 +100,16 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
             return true;
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    private void setupNavBar() {
+        if (getSupportActionBar() != null) {
+            if (hideNavBar()) {
+                getSupportActionBar().hide();
+            } else if (title() != DEFAULT_TITLE) {
+                getSupportActionBar().setTitle(getString(title()));
+            }
+        }
     }
 
     @Nullable
