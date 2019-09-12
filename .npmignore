@@ -1,0 +1,14 @@
+ios/ElectrodeApiImpl/Libraries
+ios/container/*
+ios/moviesreloadedMiniApp/
+*.xcodeproj
+android/moviesreloaded/
+android/lib/build/
+android/.gradle
+android/.idea/
+android/local.properties
+*.iml
+android/gradle*
+*.gradle
+*.png
+*.xml
