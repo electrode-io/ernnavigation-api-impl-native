@@ -52,13 +52,23 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         return false;
     }
 
+    /**
+     * Override if you need to provide a custom delegate.
+     *
+     * @return ElectrodeReactFragmentActivityDelegate
+     */
+    @NonNull
+    protected ElectrodeReactFragmentActivityDelegate createElectrodeDelegate() {
+        return new ElectrodeReactFragmentActivityDelegate(this);
+    }
+
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(mainLayout());
 
-        mElectrodeReactNavDelegate = new ElectrodeReactFragmentActivityDelegate(this);
+        mElectrodeReactNavDelegate = createElectrodeDelegate();
         getLifecycle().addObserver(mElectrodeReactNavDelegate);
         mElectrodeReactNavDelegate.onCreate(savedInstanceState);
 
