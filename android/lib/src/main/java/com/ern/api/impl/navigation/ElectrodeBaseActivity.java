@@ -43,6 +43,15 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         return DEFAULT_TITLE;
     }
 
+    /**
+     * Override this method to hide/show the nav bar.
+     *
+     * @return false | true Default: false
+     */
+    protected boolean hideNavBar() {
+        return false;
+    }
+
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +62,7 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         getLifecycle().addObserver(mElectrodeReactNavDelegate);
         mElectrodeReactNavDelegate.onCreate(savedInstanceState);
 
-        if (title() != DEFAULT_TITLE && getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(title()));
-        }
+        setupNavBar();
     }
 
     @Override
@@ -83,6 +90,16 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
             return true;
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    private void setupNavBar() {
+        if (getSupportActionBar() != null) {
+            if (hideNavBar()) {
+                getSupportActionBar().hide();
+            } else if (title() != DEFAULT_TITLE) {
+                getSupportActionBar().setTitle(getString(title()));
+            }
+        }
     }
 
     @Nullable
