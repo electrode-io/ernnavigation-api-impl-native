@@ -1,6 +1,6 @@
 {
   "name": "ernnavigation-api-impl-native",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "license": "Apache-2.0",
   "dependencies": {
     "ernnavigation-api": "1.1.0"
