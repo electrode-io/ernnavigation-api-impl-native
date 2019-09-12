@@ -23,5 +23,5 @@ public typealias NavigateWithRoute = ([AnyHashable: Any]) -> Bool
 @objc public protocol ENMiniAppNavDataProvider: ENMiniAppDataProvider {
     @objc optional var finishedCallback: MiniAppFinishedCallback? { get set }
     @objc optional var finish: Payload? { get set }
-    @objc optional var navigateWithRoute: NavigateWithRoute { get set }
+    @objc optional var navigateWithRoute: NavigateWithRoute? { get set }
 }
