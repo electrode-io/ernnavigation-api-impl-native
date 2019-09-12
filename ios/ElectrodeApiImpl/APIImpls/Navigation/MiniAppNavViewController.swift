@@ -16,36 +16,36 @@
 
 import UIKit
 
-public class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
+open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let miniAppName: String
     let properties: [AnyHashable : Any]?
-    var finishedCallback: MiniAppFinishedCallback?
-    var finish: Payload?
+    public var finishedCallback: MiniAppFinishedCallback?
+    public var finish: Payload?
     var delegate: ENNavigationDelegate?
-    var navigateWithRoute: NavigateWithRoute?
-    init(properties: [AnyHashable: Any]?, miniAppName: String) {
+    public var navigateWithRoute: NavigateWithRoute?
+    public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = ENNavigationDelegate()
         self.delegate?.viewDidLoad(viewController: self)
         self.delegate?.delegate = self
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.delegate?.viewWillAppear()
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.delegate?.viewDidDisapper()
     }
