@@ -203,8 +203,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             }
         }
 
-        boolean result = manager.popBackStackImmediate(tag, 0);
-        return result;
+        return manager.popBackStackImmediate(tag, 0);
     }
 
     public interface DataProvider {
