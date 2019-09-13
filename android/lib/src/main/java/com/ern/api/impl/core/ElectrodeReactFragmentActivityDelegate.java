@@ -148,31 +148,45 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
     }
 
     public void startMiniAppFragment(@NonNull String componentName, @Nullable Bundle props) {
-        startMiniAppFragment(dataProvider.miniAppFragmentClass(), componentName, props);
+        StartMiniAppConfig config = new StartMiniAppConfig.Builder().fragmentClass(dataProvider.miniAppFragmentClass()).build();
+        startMiniAppFragment(componentName, props, config);
     }
 
+    /**
+     * @deprecated Start using {@link #startMiniAppFragment(String, Bundle, StartMiniAppConfig)}
+     */
+    @Deprecated
     public void startMiniAppFragment(@NonNull Class<? extends Fragment> fragmentClass, @NonNull String componentName, @Nullable Bundle props) {
+        StartMiniAppConfig config = new StartMiniAppConfig.Builder().fragmentClass(fragmentClass).build();
+        startMiniAppFragment(componentName, props, config);
+    }
+
+    public void startMiniAppFragment(@NonNull String componentName, @Nullable Bundle props, @NonNull StartMiniAppConfig startMiniAppConfig) {
         if (props == null) {
             props = new Bundle();
         }
         props.putString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME, componentName);
-        Logger.d(TAG, "startMiniAppFragment: fragmentClass->%s, componentName->%s, props->%s", fragmentClass.getSimpleName(), componentName, props);
-        switchToFragment(fragmentClass, props);
+
+        if (startMiniAppConfig.fragmentClass == null) {
+            throw new IllegalStateException("Should never reach here. At this point startMiniAppConfig should have a fragment class defined.");
+        }
+
+        Logger.d(TAG, "startMiniAppFragment: fragmentClass->%s, componentName->%s, props->%s", startMiniAppConfig.fragmentClass.getSimpleName(), componentName, props);
+
+        switchToFragment(props, ADD_TO_BACKSTACK, startMiniAppConfig);
     }
 
-    private void switchToFragment(@NonNull Class<?> fragmentClass, @NonNull Bundle bundle) {
-        switchToFragment(fragmentClass, bundle, ADD_TO_BACKSTACK);
-    }
-
-    private void switchToFragment(@NonNull Class<?> fragmentClass, @NonNull Bundle bundle,
-                                  @AddToBackStackState int addToBackStackState) {
+    private void switchToFragment(@NonNull Bundle bundle,
+                                  @AddToBackStackState int addToBackStackState, @NonNull StartMiniAppConfig startMiniAppConfig) {
         try {
-            Fragment fragment = (Fragment) fragmentClass.newInstance();
+            Fragment fragment = startMiniAppConfig.fragmentClass.newInstance();
 
             String tag = (bundle.containsKey(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG)) ? bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_TAG) : bundle.getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
             Logger.d(TAG, "Switching to a new fragment, tag: %s ", tag);
 
-            final FragmentTransaction transaction = mFragmentActivity.getSupportFragmentManager().beginTransaction();
+            final FragmentManager fragmentManager = startMiniAppConfig.fragmentManager != null ? startMiniAppConfig.fragmentManager : mFragmentActivity.getSupportFragmentManager();
+            final FragmentTransaction transaction = fragmentManager.beginTransaction();
+
             if (ADD_TO_BACKSTACK == addToBackStackState) {
                 transaction.addToBackStack(tag);
             }
@@ -181,7 +195,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
             transaction.commit();
         } catch (Exception e) {
-            Logger.e(TAG, "Failed to create " + fragmentClass.getName() + " fragment", e);
+            Logger.e(TAG, "Failed to create " + startMiniAppConfig.fragmentClass.getName() + " fragment", e);
         }
     }
 
@@ -203,8 +217,7 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             }
         }
 
-        boolean result = manager.popBackStackImmediate(tag, 0);
-        return result;
+        return manager.popBackStackImmediate(tag, 0);
     }
 
     public interface DataProvider {
@@ -243,5 +256,39 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
          */
         @NonNull
         Class<? extends Fragment> miniAppFragmentClass();
+    }
+
+    /**
+     * Class that defines the custom configurations that can be passed while starting a new MiniApp fragment.
+     */
+    public static class StartMiniAppConfig {
+        @Nullable
+        final FragmentManager fragmentManager;
+        @Nullable
+        final Class<? extends Fragment> fragmentClass;
+
+        private StartMiniAppConfig(Builder builder) {
+            fragmentManager = builder.fragmentManager;
+            fragmentClass = builder.fragmentClass;
+        }
+
+        public static class Builder {
+            FragmentManager fragmentManager;
+            Class<? extends Fragment> fragmentClass;
+
+            public Builder fragmentManager(@Nullable FragmentManager fragmentManager) {
+                this.fragmentManager = fragmentManager;
+                return this;
+            }
+
+            public Builder fragmentClass(@NonNull Class<? extends Fragment> fragmentClass) {
+                this.fragmentClass = fragmentClass;
+                return this;
+            }
+
+            public StartMiniAppConfig build() {
+                return new StartMiniAppConfig(this);
+            }
+        }
     }
 }

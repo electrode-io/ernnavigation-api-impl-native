@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate.StartMiniAppConfig;
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.NavigationBar;
@@ -54,7 +55,7 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
         @Override
         public void onChanged(@Nullable Route route) {
             if (route != null && !route.isCompleted()) {
-                Logger.d(TAG, "Delegate:%s received a new navigation route: %s",  ElectrodeReactFragmentNavDelegate.this, route.getArguments());
+                Logger.d(TAG, "Delegate:%s received a new navigation route: %s", ElectrodeReactFragmentNavDelegate.this, route.getArguments());
 
                 if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
@@ -196,12 +197,28 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
             if (!mMiniAppRequestListener.navigate(route) && !mFragmentNavigator.navigate(route)) {
                 Bundle arguments = route.getArguments();
                 assert path != null;
-                mMiniAppRequestListener.startMiniAppFragment(path, arguments);
+                if (shouldUseChildFragmentManager()) {
+                    StartMiniAppConfig config = new StartMiniAppConfig.Builder().fragmentManager(mFragment.getChildFragmentManager()).build();
+                    ((MiniAppNavConfigRequestListener) mMiniAppRequestListener).startMiniAppFragment(path, arguments, config);
+                } else {
+                    mMiniAppRequestListener.startMiniAppFragment(path, arguments);
+                }
             }
             route.setResult(true, "Navigation completed.");
         } else {
             route.setResult(false, "Navigation failed. Received empty/null path");
         }
+    }
+
+    private boolean shouldUseChildFragmentManager() {
+        if (mFragment instanceof UseChildFragmentManagerIndicator) {
+            if (mFragment.getActivity() instanceof MiniAppNavConfigRequestListener) {
+                return true;
+            } else {
+                Logger.w(TAG, "Will not use fragment's child fragment manager.\nTo use this, please make sure the parent activity implements MiniAppNavConfigRequestListener");
+            }
+        }
+        return false;
     }
 
     private boolean updateNavBar(@Nullable Bundle arguments) {
@@ -235,6 +252,14 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
         boolean navigate(Route route);
     }
 
+    /**
+     * Marker interface that tells the delegate that the new fragment needs to be added through the childFragmentManager instead of the activity fragment manager.
+     * <p>
+     * Note: For this to work properly, make sure that the parent activity of your Fragment implements {@link MiniAppNavConfigRequestListener}
+     */
+    public interface UseChildFragmentManagerIndicator {
+
+    }
 
     private void updateNavBar(@NonNull NavigationBar navigationBar) {
         updateTitle(navigationBar);
