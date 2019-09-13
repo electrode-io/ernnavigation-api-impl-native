@@ -20,7 +20,7 @@ import com.facebook.react.ReactRootView;
 
 import org.json.JSONObject;
 
-public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeReactFragmentActivityDelegate.DataProvider, MiniAppNavRequestListener {
+public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeReactFragmentActivityDelegate.DataProvider, MiniAppNavConfigRequestListener {
     public static final int DEFAULT_TITLE = -1;
 
     protected ElectrodeReactFragmentActivityDelegate mElectrodeReactNavDelegate;
@@ -168,6 +168,11 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     @Override
     public void startMiniAppFragment(@NonNull Class<? extends Fragment> fragmentClass, @NonNull String componentName, @Nullable Bundle props) {
         mElectrodeReactNavDelegate.startMiniAppFragment(fragmentClass, componentName, props);
+    }
+
+    @Override
+    public void startMiniAppFragment(@NonNull String componentName, @Nullable Bundle props, @NonNull ElectrodeReactFragmentActivityDelegate.StartMiniAppConfig startMiniAppConfig) {
+        mElectrodeReactNavDelegate.startMiniAppFragment(componentName, props, startMiniAppConfig);
     }
 
     @Nullable
