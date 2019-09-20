@@ -35,6 +35,7 @@ import UIKit
                     miniappVC.finishedCallback = finishedCallback
                 }
                 miniappVC.navigateWithRoute = vc.navigateWithRoute
+                miniappVC.globalProperties = vc.globalProperties ?? nil
                 navigationVC.navigationBar.isTranslucent = false
                 navigationVC.pushViewController(miniappVC, animated: false)
             }
@@ -103,7 +104,8 @@ import UIKit
             self.finishedCallBack(finalPayLoad: jsonPayLoad)
         } else {
             if !(self.viewController?.navigateWithRoute?(routeData) ?? false) {
-                let vc = MiniAppNavViewController(properties: routeData, miniAppName: path)
+                let combinedRouteData = self.combineRouteData(routeData: routeData, globalProperties: self.viewController?.globalProperties)
+                let vc = MiniAppNavViewController(properties: combinedRouteData, miniAppName: path)
                 if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
                     let navBar = NavigationBar(dictionary: navigationBarDict)
                     vc.title = navBar.title
@@ -117,10 +119,18 @@ import UIKit
                     vc.finishedCallback = finishedCallback
                 }
                 vc.navigateWithRoute = self.viewController?.navigateWithRoute
+                vc.globalProperties = self.viewController?.globalProperties
                 self.viewController?.navigationController?.pushViewController(vc, animated: true)
             }
         }
         return completion("success")
+    }
+
+    private func combineRouteData(routeData: [AnyHashable: Any], globalProperties: [AnyHashable: Any]?) -> [AnyHashable: Any] {
+        guard let globalProps = globalProperties else {
+            return routeData
+        }
+        return routeData.merging(globalProps) {(current, _) in current }
     }
 
     func getNavBarTitle(title: String, viewController: UIViewController) {

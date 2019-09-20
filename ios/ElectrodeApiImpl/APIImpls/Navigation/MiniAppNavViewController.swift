@@ -18,11 +18,12 @@ import UIKit
 
 open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let miniAppName: String
-    let properties: [AnyHashable : Any]?
+    let properties: [AnyHashable: Any]?
     public var finishedCallback: MiniAppFinishedCallback?
     public var finish: Payload?
     var delegate: ENNavigationDelegate?
     public var navigateWithRoute: NavigateWithRoute?
+    public var globalProperties: [AnyHashable: Any]?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties
