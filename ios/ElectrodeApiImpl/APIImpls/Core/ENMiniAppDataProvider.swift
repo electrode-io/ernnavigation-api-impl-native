@@ -19,4 +19,5 @@ import Foundation
 @objc public protocol ENMiniAppDataProvider: class {
     var rootComponentName: String { get }
     var properties: [AnyHashable : Any]? { get set }
+    @objc optional var globalProperties: [AnyHashable: Any]? { get set }
 }
