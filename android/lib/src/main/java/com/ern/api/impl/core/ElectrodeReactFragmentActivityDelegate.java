@@ -192,7 +192,8 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
             }
             bundle.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, shouldShowUpEnabled());
             fragment.setArguments(bundle);
-            transaction.replace(dataProvider.getFragmentContainerId(), fragment, tag);
+            int fragmentContainerId = (startMiniAppConfig.fragmentContainerId != 0) ? startMiniAppConfig.fragmentContainerId : dataProvider.getFragmentContainerId();
+            transaction.replace(fragmentContainerId, fragment, tag);
             transaction.commit();
         } catch (Exception e) {
             Logger.e(TAG, "Failed to create " + startMiniAppConfig.fragmentClass.getName() + " fragment", e);
@@ -267,14 +268,25 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
         @Nullable
         final Class<? extends Fragment> fragmentClass;
 
+        /**
+         * Id for the fragment container.
+         *
+         * @return IdRes of the fragment holder in your layout xml.
+         */
+        @IdRes
+        final int fragmentContainerId;
+
         private StartMiniAppConfig(Builder builder) {
             fragmentManager = builder.fragmentManager;
             fragmentClass = builder.fragmentClass;
+            fragmentContainerId = builder.fragmentContainerId;
         }
 
         public static class Builder {
             FragmentManager fragmentManager;
             Class<? extends Fragment> fragmentClass;
+            @IdRes
+            int fragmentContainerId = 0;
 
             public Builder fragmentManager(@Nullable FragmentManager fragmentManager) {
                 this.fragmentManager = fragmentManager;
@@ -283,6 +295,11 @@ public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivi
 
             public Builder fragmentClass(@NonNull Class<? extends Fragment> fragmentClass) {
                 this.fragmentClass = fragmentClass;
+                return this;
+            }
+
+            public Builder fragmentContainerId(@IdRes int fragmentContainerId) {
+                this.fragmentContainerId = fragmentContainerId;
                 return this;
             }
 
