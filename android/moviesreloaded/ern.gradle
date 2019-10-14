@@ -3,7 +3,7 @@
 final String HOMEDIR = System.getenv('WORKSPACE') ?: System.getProperty('user.home')
 
 task createErnDevContainer(type: Exec) {
-    commandLine "ern", "create-container", "--descriptor", "MoviesReloaded:android:1000.0.0", "--fromGitBranches"
+    commandLine "ern", "create-container", "--miniapps", "https://github.com/electrode-io/MoviesReloadedMiniApp.git", "--platform", "android"
 }
 
 task publishErnContainer(type: Exec) {
