@@ -4,25 +4,25 @@
 
 ernnavigation-api@1.1.0:
   version "1.1.0"
-  resolved "http://npme.walmart.com/ernnavigation-api/-/ernnavigation-api-1.1.0.tgz#87f2b7b649c55fdde69f4c4717fc95409289214d"
+  resolved "https://registry.yarnpkg.com/ernnavigation-api/-/ernnavigation-api-1.1.0.tgz#87f2b7b649c55fdde69f4c4717fc95409289214d"
   integrity sha512-IAQVOHiBT8bJDU9SYSa5hkvk2Gj+Fp3E1GgIMokR8h6aaDgk+ZtV6EYfW1P6IA+jvnwaICnNeDlABS1VraZU5Q==
   dependencies:
     react-native-electrode-bridge "1.5.x"
 
 events@^1.1.1:
   version "1.1.1"
-  resolved "http://npme.walmart.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
+  resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
 
 react-native-electrode-bridge@1.5.x:
-  version "1.5.17"
-  resolved "http://npme.walmart.com/react-native-electrode-bridge/-/react-native-electrode-bridge-1.5.17.tgz#7aa9ad920d8f704482dd63f12c8ac55570a1d2fd"
-  integrity sha512-IUaOusHhkoH6pbAe7c6j3enqrgBEwulnQiNrR3f7tNaouHYK25fZk6gV+MsDNAW7dlT7YQJLTs7swxqj1ne7ag==
+  version "1.5.19"
+  resolved "https://registry.yarnpkg.com/react-native-electrode-bridge/-/react-native-electrode-bridge-1.5.19.tgz#146051a478a0a709bc15e6d9746f7ea23061d46a"
+  integrity sha512-15PTawA0jYSpcG0Ej8GXjwOFCAWW4hbP/NK7ZAL/gxVifhiBhN2GcCxAP76hd4iwJCNMDn6D6qmTh542/ck+Fw==
   dependencies:
     events "^1.1.1"
     uuid "^3.0.0"
 
 uuid@^3.0.0:
-  version "3.3.2"
-  resolved "http://npme.walmart.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
-  integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.3.tgz#4568f0216e78760ee1dbf3a4d2cf53e224112866"
+  integrity sha512-pW0No1RGHgzlpHJO1nsVrHKpOEIxkGg1xB+v0ZmdNH5OAeAwzAVrCnI2/6Mtx+Uys6iaylxa+D3g4j63IKKjSQ==
