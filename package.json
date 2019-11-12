@@ -22,8 +22,8 @@
       "android": {
         "root": "android",
         "dependencies": [
-          "androidx.appcompat:appcompat:1.0.2",
-          "androidx.lifecycle:lifecycle-extensions:2.0.0"
+          "androidx.appcompat:appcompat:1.1.0",
+          "androidx.lifecycle:lifecycle-extensions:2.1.0"
         ],
         "copy": [
           {
