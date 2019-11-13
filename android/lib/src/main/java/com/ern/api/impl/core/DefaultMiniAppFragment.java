@@ -24,7 +24,10 @@ import androidx.annotation.Nullable;
 
 /**
  * Fragment that hosts a react native view component.
+ *
+ * @deprecated use {@link MiniAppFragment}
  */
+@Deprecated
 public class DefaultMiniAppFragment extends ElectrodeReactCoreFragment<ElectrodeReactFragmentDelegate> {
 
     public DefaultMiniAppFragment() {

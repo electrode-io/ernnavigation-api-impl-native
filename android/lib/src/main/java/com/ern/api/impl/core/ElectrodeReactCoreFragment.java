@@ -30,7 +30,9 @@ import androidx.fragment.app.Fragment;
  * Fragment that is used by the electrode navigation api native implementation.
  * <p>
  * This fragment when instantiated listens for navigation requests initiated through the navigation api.
+ * @deprecated use {@link ElectrodeBaseFragment}
  */
+@Deprecated
 public abstract class ElectrodeReactCoreFragment<T extends ElectrodeReactFragmentDelegate> extends Fragment implements ElectrodeReactFragmentDelegate.DataProvider {
     private static final String TAG = ElectrodeReactCoreFragment.class.getSimpleName();
 

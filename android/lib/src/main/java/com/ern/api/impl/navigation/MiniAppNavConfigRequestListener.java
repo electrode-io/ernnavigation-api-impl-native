@@ -9,7 +9,9 @@ import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate;
 
 /**
  * Interface that exposes a way to provide more configuration while starting a MiniApp fragment.
+ * @deprecated use {@link ElectrodeNavigationActivityListener}
  */
+@Deprecated
 public interface MiniAppNavConfigRequestListener extends MiniAppNavRequestListener {
 
     /**
