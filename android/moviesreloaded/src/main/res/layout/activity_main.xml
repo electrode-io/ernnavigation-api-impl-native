@@ -1,14 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.walmartlabs.moviesreloaded.MainActivity">
+    android:gravity="center|center_horizontal"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
-    <FrameLayout android:id="@+id/miniapp_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <Button
+        android:id="@+id/id_button_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableTint="#005C1818"
+        android:gravity="center_horizontal"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_default"
+        android:textAllCaps="false" />
 
-    </FrameLayout>
-</RelativeLayout>
+    <Button
+        android:id="@+id/id_button_custom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_customview"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/id_button_navbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_customnavbar"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/id_button_bottomsheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_bottomsheet"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/id_button_persistent_bottomsheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_bottomsheet_persistent"
+        android:textAllCaps="false" />
+</LinearLayout>

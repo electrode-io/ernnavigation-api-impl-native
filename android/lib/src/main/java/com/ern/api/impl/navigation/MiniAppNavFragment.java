@@ -26,6 +26,10 @@ import androidx.annotation.Nullable;
 
 import com.ern.api.impl.core.ElectrodeReactCoreFragment;
 
+/**
+ * @deprecated use {@link MiniAppNavigationFragment}
+ */
+@Deprecated
 public class MiniAppNavFragment extends ElectrodeReactCoreFragment<ElectrodeReactFragmentNavDelegate> implements ElectrodeReactFragmentNavDelegate.FragmentNavigator {
 
 

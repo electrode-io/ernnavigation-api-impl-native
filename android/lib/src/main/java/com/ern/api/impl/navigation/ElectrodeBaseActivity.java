@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,16 +15,17 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate;
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ern.api.impl.core.ElectrodeBaseActivityDelegate;
+import com.ern.api.impl.core.LaunchConfig;
 import com.facebook.react.ReactRootView;
 
 import org.json.JSONObject;
 
-public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeReactFragmentActivityDelegate.DataProvider, MiniAppNavConfigRequestListener {
+public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeNavigationActivityListener {
     public static final int DEFAULT_TITLE = -1;
+    public static final int NONE = 0;
 
-    protected ElectrodeReactFragmentActivityDelegate mElectrodeReactNavDelegate;
+    protected ElectrodeBaseActivityDelegate mElectrodeReactNavDelegate;
 
     /**
      * Override and provide the main layout resource.
@@ -34,6 +36,32 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     protected abstract int mainLayout();
 
     /**
+     * React Native component name that will be rendered when the activity is first launched.
+     *
+     * @return String
+     */
+    @NonNull
+    protected abstract String getRootComponentName();
+    
+    /**
+     * Id for the fragment container.
+     *
+     * @return IdRes of the fragment holder in your layout xml.
+     */
+    @IdRes
+    protected abstract int getFragmentContainerId();
+
+    /**
+     * Props that needs to be passed to the root component.
+     *
+     * @return Bundle
+     */
+    @Nullable
+    protected Bundle getProps() {
+        return null;
+    }
+
+    /**
      * Override to provide title for the landing page.
      *
      * @return int @{@link StringRes}
@@ -41,6 +69,16 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     @StringRes
     protected int title() {
         return DEFAULT_TITLE;
+    }
+    
+    /**
+     * Initial/Default fragment used by the activity to host a react native view.
+     *
+     * @return Class
+     */
+    @NonNull
+    protected Class<? extends Fragment> miniAppFragmentClass() {
+        return MiniAppNavigationFragment.class;
     }
 
     /**
@@ -58,15 +96,26 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
      * @return ElectrodeReactFragmentActivityDelegate
      */
     @NonNull
-    protected ElectrodeReactFragmentActivityDelegate createElectrodeDelegate() {
-        return new ElectrodeReactFragmentActivityDelegate(this);
+    protected ElectrodeBaseActivityDelegate createElectrodeDelegate() {
+        return new ElectrodeBaseActivityDelegate(this, getRootComponentName(), createDefaultLaunchConfig());
+    }
+
+    protected LaunchConfig createDefaultLaunchConfig() {
+        LaunchConfig defaultLaunchConfig = new LaunchConfig();
+        defaultLaunchConfig.setFragmentClass(miniAppFragmentClass());
+        defaultLaunchConfig.setFragmentContainerId(getFragmentContainerId());
+        defaultLaunchConfig.setFragmentManager(getSupportFragmentManager());
+        defaultLaunchConfig.updateInitialProps(getProps());
+        return defaultLaunchConfig;
     }
 
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(mainLayout());
+        if (mainLayout() != NONE) {
+            setContentView(mainLayout());
+        }
 
         mElectrodeReactNavDelegate = createElectrodeDelegate();
         getLifecycle().addObserver(mElectrodeReactNavDelegate);
@@ -112,19 +161,16 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         }
     }
 
-    @Nullable
     @Override
-    public Bundle getProps() {
-        return null;
+    public boolean navigate(@Nullable String pageName, @NonNull Bundle data) {
+        //Adding navigate(route) for backward compatibility
+        return navigate(new Route.Builder(data).build());
     }
 
-    @NonNull
-    @Override
-    public Class<? extends Fragment> miniAppFragmentClass() {
-        return MiniAppNavFragment.class;
-    }
-
-    @Override
+    /**
+     * @deprecated override {@link #navigate(String, Bundle)} instead.
+     */
+    @Deprecated
     public boolean navigate(Route route) {
         return false;
     }
@@ -135,14 +181,8 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    @Deprecated
-    public void updateNavBar(@NonNull NavigationBar navigationBar, @NonNull OnNavBarItemClickListener navBarButtonClickListener) {
-        //Do Nothing. This method will be removed in a future release as it's deprecated.
-    }
-
-    @Override
-    public boolean backToMiniApp(@Nullable String miniAppComponentName) {
-        return mElectrodeReactNavDelegate.switchBackToFragment(miniAppComponentName);
+    public boolean backToMiniApp(@Nullable String tag, @Nullable Bundle data) {
+        return mElectrodeReactNavDelegate.switchBackToFragment(tag, data);
     }
 
     @Override
@@ -151,28 +191,13 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void removeReactNativeView(@NonNull String appName) {
-        mElectrodeReactNavDelegate.removeMiniAppView(appName);
-    }
-
-    @Override
     public void removeReactNativeView(@NonNull String appName, @NonNull ReactRootView reactRootView) {
         mElectrodeReactNavDelegate.removeMiniAppView(appName, reactRootView);
     }
 
     @Override
-    public void startMiniAppFragment(@NonNull String componentName, @Nullable Bundle props) {
-        mElectrodeReactNavDelegate.startMiniAppFragment(componentName, props);
-    }
-
-    @Override
-    public void startMiniAppFragment(@NonNull Class<? extends Fragment> fragmentClass, @NonNull String componentName, @Nullable Bundle props) {
-        mElectrodeReactNavDelegate.startMiniAppFragment(fragmentClass, componentName, props);
-    }
-
-    @Override
-    public void startMiniAppFragment(@NonNull String componentName, @Nullable Bundle props, @NonNull ElectrodeReactFragmentActivityDelegate.StartMiniAppConfig startMiniAppConfig) {
-        mElectrodeReactNavDelegate.startMiniAppFragment(componentName, props, startMiniAppConfig);
+    public void startMiniAppFragment(@NonNull String componentName, @NonNull LaunchConfig launchConfig) {
+        mElectrodeReactNavDelegate.startMiniAppFragment(componentName, launchConfig);
     }
 
     @Nullable

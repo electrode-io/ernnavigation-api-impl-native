@@ -45,6 +45,12 @@ import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * This class is deprecated as a more simplified version of this is now available.
+ *
+ * @deprecated Use {@link ElectrodeBaseFragmentDelegate}
+ */
+@Deprecated
 public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDelegate.MiniAppRequestListener> implements LifecycleObserver {
     private static final String TAG = ElectrodeReactFragmentDelegate.class.getSimpleName();
 
@@ -248,7 +254,9 @@ public class ElectrodeReactFragmentDelegate<T extends ElectrodeReactFragmentDele
 
     /**
      * This needs to be implemented by the fragment. The APIs in this interface should ask for data that needs to be provided by the fragment.
+     * @deprecated This interface is no longer required by the new delegate {@link ElectrodeBaseFragmentDelegate}
      */
+    @Deprecated
     public interface DataProvider {
         int NONE = 0;
 

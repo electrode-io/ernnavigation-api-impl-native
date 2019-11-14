@@ -37,7 +37,10 @@ import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
-
+/**
+ * @deprecated use {@link ElectrodeBaseActivityDelegate}
+ */
+@Deprecated
 public class ElectrodeReactFragmentActivityDelegate extends ElectrodeReactActivityDelegate implements LifecycleObserver {
 
     private static final String TAG = ElectrodeReactFragmentActivityDelegate.class.getSimpleName();

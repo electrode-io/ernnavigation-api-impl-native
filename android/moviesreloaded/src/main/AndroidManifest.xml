@@ -20,6 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".demo.defaultbehavior.DefaultActivity" />
+        <activity android:name=".demo.customview.CustomActivity" />
+        <activity android:name=".demo.navmenuhandler.NavMenuActivity" />
+        <activity android:name=".demo.bottomsheet.modal.ModalBottomSheetActivity" android:theme="@style/TransparentTheme"/>
+        <activity android:name=".demo.bottomsheet.persistent.PersistentBottomSheetActivity" android:theme="@style/TransparentTheme"/>
     </application>
 
 </manifest>

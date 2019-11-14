@@ -24,6 +24,10 @@ import com.ernnavigationApi.ern.model.NavigationBar;
 
 import org.json.JSONObject;
 
+/**
+ * @deprecated use {@link ElectrodeNavigationActivityListener}
+ */
+@Deprecated
 public interface MiniAppNavRequestListener extends ElectrodeReactFragmentDelegate.MiniAppRequestListener {
     /**
      * Use to delegate a navigate call to the parent activity.
