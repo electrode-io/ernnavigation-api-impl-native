@@ -11,4 +11,3 @@ android/local.properties
 android/gradle*
 *.gradle
 *.png
-*.xml
