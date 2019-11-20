@@ -193,6 +193,7 @@ import UIKit
         } else {
             button = ENBarButtonItem(title: navigationButton.title, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
         }
+        button.isEnabled = !(navigationButton.disabled ?? false)
         button.stringTag = navigationButton.id
         return button
     }
