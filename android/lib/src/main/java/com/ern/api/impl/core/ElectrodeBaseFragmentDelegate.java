@@ -183,32 +183,37 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @SuppressWarnings("unused")
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
+        Logger.v(TAG, "onStart(): " + getReactComponentName());
     }
 
     @SuppressWarnings("unused")
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
+        Logger.v(TAG, "onResume(): " + getReactComponentName());
     }
 
     @SuppressWarnings("unused")
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void onPause() {
+        Logger.v(TAG, "onPause(): " + getReactComponentName());
     }
 
     @SuppressWarnings("unused")
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
+        Logger.v(TAG, "onStop(): " + getReactComponentName());
     }
 
     @SuppressWarnings("unused")
     public void onDestroyView() {
+        Logger.v(TAG, "onDestroyView(): " + getReactComponentName());
     }
 
     @SuppressWarnings("unused")
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     @CallSuper
     public void onDestroy() {
-        Logger.v(TAG, "inside onDestroy");
+        Logger.v(TAG, "onDestroy(): " + getReactComponentName());
         if (mMiniAppView != null) {
             mElectrodeActivityListener.removeReactNativeView(mMiniAppComponentName, mMiniAppView);
             mMiniAppView = null;
@@ -217,6 +222,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
     @SuppressWarnings("unused")
     public void onDetach() {
+        Logger.v(TAG, "onDetach(): " + getReactComponentName());
     }
 
     @NonNull

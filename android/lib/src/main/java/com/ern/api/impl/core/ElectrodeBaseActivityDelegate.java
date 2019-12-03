@@ -56,22 +56,26 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
+        Logger.v(TAG, "onStart()" + getMainComponentName());
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @Override
     public void onResume() {
         super.onResume();
+        Logger.v(TAG, "onResume()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     @Override
     public void onPause() {
         super.onPause();
+        Logger.v(TAG, "onPause()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
+        Logger.v(TAG, "onStop()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -79,6 +83,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
     public void onDestroy() {
         mFragmentActivity = null;
         super.onDestroy();
+        Logger.v(TAG, "onDestroy()");
     }
 
     @SuppressWarnings("unused")
