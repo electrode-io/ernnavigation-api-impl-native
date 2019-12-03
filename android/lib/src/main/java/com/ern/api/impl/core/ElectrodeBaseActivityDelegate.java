@@ -89,8 +89,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
     @SuppressWarnings("unused")
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            mFragmentActivity.onBackPressed();
-            return true;
+            return onBackPressed();
         }
         return false;
     }
