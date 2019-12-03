@@ -37,7 +37,7 @@ import UIKit
                 miniappVC.navigateWithRoute = vc.navigateWithRoute
                 miniappVC.globalProperties = vc.globalProperties ?? nil
                 navigationVC.navigationBar.isTranslucent = false
-                navigationVC.pushViewController(miniappVC, animated: false)
+                navigationVC.pushViewControllerWithoutBackButtonTitle(miniappVC, animated: false)
             }
         } else {
             super.viewDidLoad(viewController: viewController)
@@ -120,7 +120,7 @@ import UIKit
                 }
                 vc.navigateWithRoute = self.viewController?.navigateWithRoute
                 vc.globalProperties = self.viewController?.globalProperties
-                self.viewController?.navigationController?.pushViewController(vc, animated: true)
+                self.viewController?.navigationController?.pushViewControllerWithoutBackButtonTitle(vc, animated: true)
             }
         }
         return completion("success")
