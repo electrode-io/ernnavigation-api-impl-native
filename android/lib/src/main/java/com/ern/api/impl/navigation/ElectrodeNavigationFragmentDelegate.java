@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.ern.api.impl.core.ActivityDelegateConstants;
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.core.LaunchConfig;
@@ -23,6 +24,7 @@ import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
+import java.util.List;
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
     private static final String TAG = ElectrodeNavigationFragmentDelegate.class.getSimpleName();
 
@@ -50,27 +52,50 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
                 }
+                Fragment topOfTheStackFragment = getTopOfTheStackFragment();
 
                 //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side does not support Parcelable deserialization yet.
                 ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(ReactNavigationViewModel.KEY_NAV_TYPE));
-                switch (navType) {
-                    case NAVIGATE:
-                        navigate(route);
-                        break;
-                    case UPDATE:
-                        update(route);
-                        break;
-                    case BACK:
-                        back(route);
-                        break;
-                    case FINISH:
-                        finish(route);
-                        break;
+                if (topOfTheStackFragment == mFragment) {
+                    switch (navType) {
+                        case NAVIGATE:
+                            navigate(route);
+                            break;
+                        case UPDATE:
+                            update(route);
+                            break;
+                        case BACK:
+                            back(route);
+                            break;
+                        case FINISH:
+                            finish(route);
+                            break;
+                    }
+                } else if (topOfTheStackFragment instanceof ComponentAsOverlay) {
+                    Logger.d(TAG, "Delegating %s request to an overlay component.", navType);
+                    ComponentAsOverlay overlayFragment = (ComponentAsOverlay) topOfTheStackFragment;
+                    switch (navType) {
+                        case NAVIGATE:
+                            overlayFragment.navigate(route);
+                            break;
+                        case UPDATE:
+                            overlayFragment.update(route);
+                            break;
+                        case BACK:
+                            overlayFragment.back(route);
+                            break;
+                        case FINISH:
+                            overlayFragment.finish(route);
+                            break;
+                    }
+                } else {
+                    throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top fragment should implement ComponentAsOverlay.");
                 }
+
                 if (!route.isCompleted()) {
-                    throw new IllegalStateException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a nav type.");
+                    throw new RuntimeException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a navigation request");
                 }
-                Logger.d(TAG, "Nav request handling completed by delegate: %s", ElectrodeNavigationFragmentDelegate.this);
+                Logger.d(TAG, "Nav request handling completed by: %s", topOfTheStackFragment);
             } else {
                 Logger.d(TAG, "Delegate: %s has ignored an already handled route: %s, ", ElectrodeNavigationFragmentDelegate.this, route != null ? route.getArguments() : null);
             }
@@ -111,14 +136,24 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @CallSuper
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mNavViewModel = ViewModelProviders.of(mFragment).get(ReactNavigationViewModel.class);
-        mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
+
+        Bundle args = mFragment.getArguments();
+        // We only register navigation view model if the fragment was replaced by the fragment transaction manager.
+        // If a fragment was added by calling fragmentTransactionManager.add() or show() then the parent fragment would handle the navigation calls.
+        // This is because calling add() or show() will not trigger a lifecycle method (onPause() or onStop()) on the previous fragment.
+        // Not registering a view model in this case will prevent multiple request handlers getting registered at the same time.
+        if (args != null && args.getBoolean(ActivityDelegateConstants.KEY_FRAGMENT_TRANSACTION_REPLACE)) {
+            mNavViewModel = ViewModelProviders.of(mFragment).get(ReactNavigationViewModel.class);
+            mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
+        }
     }
 
     @CallSuper
     public void onResume() {
         super.onResume();
-        mNavViewModel.registerNavRequestHandler();
+        if (mNavViewModel != null) {
+            mNavViewModel.registerNavRequestHandler();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -143,7 +178,9 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @CallSuper
     public void onPause() {
         super.onPause();
-        mNavViewModel.unRegisterNavRequestHandler();
+        if (mNavViewModel != null) {
+            mNavViewModel.unRegisterNavRequestHandler();
+        }
     }
 
     @Override
@@ -159,13 +196,15 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         mMenuItemDataProvider = menuItemDataProvider;
     }
 
-    private void back(@NonNull Route route) {
+    public void back(@NonNull Route route) {
+        Logger.v(TAG, "handling back call inside %s", getReactComponentName());
         //Manage fragment back-stack popping. If the given route.path is not in the stack pop a new fragment.
         boolean result = mElectrodeActivityListener.backToMiniApp(route.getArguments().getString("path"), route.getArguments());
         route.setResult(result, !result ? "back navigation failed. component not found in the back stack" : null);
     }
 
-    private void update(@NonNull Route route) {
+    public void update(@NonNull Route route) {
+        Logger.v(TAG, "handling update call inside %s", getReactComponentName());
         if (mFragment.getArguments() != null) {
             mFragment.getArguments().putAll(route.getArguments());
         }
@@ -173,13 +212,14 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         route.setResult(true, !result ? "failed to update nav bar." : null);
     }
 
-    private void finish(@NonNull Route route) {
-        Logger.d(TAG, "finish triggered by RN. Hosting activity will be notified.");
+    public void finish(@NonNull Route route) {
+        Logger.v(TAG, "handling finish call inside %s", getReactComponentName());
         mElectrodeActivityListener.finishFlow(NavUtils.getPayload(route.getArguments()));
         route.setResult(true, null);
     }
 
-    private void navigate(@NonNull Route route) {
+    public void navigate(@NonNull Route route) {
+        Logger.v(TAG, "handling navigate call inside %s", getReactComponentName());
         final String path = NavUtils.getPath(route.getArguments());
         Logger.d(TAG, "navigating to: " + path);
 
@@ -219,6 +259,17 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
      *                     Update this config with new props, different fragment class names, layouts etc.
      */
     protected void updateNextPageLaunchConfig(@NonNull final String nextPageName, @NonNull final LaunchConfig launchConfig) {
+    }
+
+    @Nullable
+    private Fragment getTopOfTheStackFragment() {
+        if (mFragment.getActivity() != null) {
+            List<Fragment> fragments = mFragment.getActivity().getSupportFragmentManager().getFragments();
+            if (fragments.size() > 0) {
+                return fragments.get(fragments.size() - 1);
+            }
+        }
+        return null;
     }
 
     private boolean updateNavBar(@Nullable Bundle arguments) {

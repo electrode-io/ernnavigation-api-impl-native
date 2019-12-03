@@ -17,6 +17,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
+import static com.ern.api.impl.core.ActivityDelegateConstants.KEY_FRAGMENT_TRANSACTION_REPLACE;
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
 public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegate implements LifecycleObserver {
@@ -145,8 +146,16 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             }
 
             if (fragmentContainerId != LaunchConfig.NONE) {
-                Logger.d(TAG, "replacing fragment inside fragment container");
-                transaction.replace(fragmentContainerId, fragment, tag);
+                if (launchConfig.mShowAsOverlay) {
+                    Logger.d(TAG, "performing ADD fragment inside fragment container");
+                    transaction.add(fragmentContainerId, fragment, tag);
+                } else {
+                    Logger.d(TAG, "performing REPLACE fragment inside fragment container");
+                    if (fragment.getArguments() != null) {
+                        fragment.getArguments().putBoolean(KEY_FRAGMENT_TRANSACTION_REPLACE, true);
+                    }
+                    transaction.replace(fragmentContainerId, fragment, tag);
+                }
             } else {
                 throw new RuntimeException("Missing fragmentContainerId to add the " + fragment.getClass().getSimpleName() + ". Should never reach here.");
             }

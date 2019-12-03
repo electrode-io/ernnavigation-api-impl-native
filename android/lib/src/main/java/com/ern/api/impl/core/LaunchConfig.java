@@ -59,6 +59,12 @@ public class LaunchConfig {
     boolean mForceUpEnabled;
 
     /**
+     * Shows your next page view component as an overLay on top of the existing screen
+     * This flag is ignored if the component is the root component.
+     */
+    boolean mShowAsOverlay;
+
+    /**
      * Set this value to manage the fragment back stack
      */
     @AddToBackStackState
@@ -139,5 +145,15 @@ public class LaunchConfig {
      */
     public void setForceUpEnabled(boolean forceUpEnabled) {
         mForceUpEnabled = forceUpEnabled;
+    }
+
+    /**
+     * Shows your next page view component as an overLay on top of the existing screen
+     * This flag is ignored if the component is the root component.
+     *
+     * @param showAsOverlay true | false
+     */
+    public void setShowAsOverlay(boolean showAsOverlay) {
+        mShowAsOverlay = showAsOverlay;
     }
 }
