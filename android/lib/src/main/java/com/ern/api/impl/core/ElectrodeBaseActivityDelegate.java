@@ -17,6 +17,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
+import static com.ern.api.impl.core.ActivityDelegateConstants.KEY_FRAGMENT_TRANSACTION_REPLACE;
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
 public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegate implements LifecycleObserver {
@@ -56,22 +57,26 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
+        Logger.v(TAG, "onStart()" + getMainComponentName());
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @Override
     public void onResume() {
         super.onResume();
+        Logger.v(TAG, "onResume()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     @Override
     public void onPause() {
         super.onPause();
+        Logger.v(TAG, "onPause()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
+        Logger.v(TAG, "onStop()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -79,13 +84,13 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
     public void onDestroy() {
         mFragmentActivity = null;
         super.onDestroy();
+        Logger.v(TAG, "onDestroy()");
     }
 
     @SuppressWarnings("unused")
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            mFragmentActivity.onBackPressed();
-            return true;
+            return onBackPressed();
         }
         return false;
     }
@@ -141,8 +146,16 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             }
 
             if (fragmentContainerId != LaunchConfig.NONE) {
-                Logger.d(TAG, "replacing fragment inside fragment container");
-                transaction.replace(fragmentContainerId, fragment, tag);
+                if (launchConfig.mShowAsOverlay) {
+                    Logger.d(TAG, "performing ADD fragment inside fragment container");
+                    transaction.add(fragmentContainerId, fragment, tag);
+                } else {
+                    Logger.d(TAG, "performing REPLACE fragment inside fragment container");
+                    if (fragment.getArguments() != null) {
+                        fragment.getArguments().putBoolean(KEY_FRAGMENT_TRANSACTION_REPLACE, true);
+                    }
+                    transaction.replace(fragmentContainerId, fragment, tag);
+                }
             } else {
                 throw new RuntimeException("Missing fragmentContainerId to add the " + fragment.getClass().getSimpleName() + ". Should never reach here.");
             }
