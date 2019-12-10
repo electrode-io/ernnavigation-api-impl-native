@@ -19,6 +19,8 @@
 #import "ElectrodePluginConfig.h"
 
 
+@protocol APIImplsConfigWrapperDelegate <NSObject>
+@end
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL debugEnabled;
 @property (nonatomic, copy) NSString *packagerHost;
 @property (nonatomic, copy) NSString *packagerPort;
+@property (nonatomic, copy) NSString *bundleStoreHostPort;
+@end
+
+@protocol MiniAppViewDelegate <NSObject>
+- (void)rootViewDidChangeIntrinsicSize:(UIView *)rootView;
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
  logic, files and set up from Native engineers.
  */
 @interface ElectrodeReactNative : NSObject
+
+/**
+ To load default bundle. Always `localhost:8080`
+ */
+@property (nonatomic, copy) NSString *defaultHostAndPort;
 
 /**
  Create a singleton instance of ElectrodeReactNative with the ability to set
@@ -73,15 +85,42 @@ NS_ASSUME_NONNULL_BEGIN
                            properties:(NSDictionary * _Nullable)properties;
 
 /**
- Returns a react native miniapp (from a JSBundle) inside a view controller.
+ Returns a react native miniapp (from a JSBundle).
 
  @param name The name of the mini app, preferably the same name as the jsbundle
  without the extension.
  @param properties Any configuration to set up the mini app with.
- @return A UIViewController containing the view of the miniapp.
+ @return a UIView of the miniapp.
  */
 - (UIView *)miniAppViewWithName:(NSString *)name
                      properties:(NSDictionary *_Nullable)properties;
+
+/**
+ Returns a react native miniapp (from a JSBundle).
+
+ @param name The name of the mini app, that is registered with the AppComponent.
+ @param properties initialprops for a React Native miniapp.
+ @param sizeFlexibilty defines size flexibility type of the root view
+ @return a UIView of the miniapp.
+ */
+- (UIView *)miniAppViewWithName:(NSString *)name
+                     properties:(NSDictionary *_Nullable)properties
+                sizeFlexibility:(NSInteger)sizeFlexibilty
+        __attribute((deprecated("use -miniAppViewWithName:properties:sizeFlexibility:delegate instead")));
+
+/**
+ Returns a react native miniapp (from a JSBundle).
+
+ @param name The name of the mini app, that is registered with the AppComponent.
+ @param properties initialprops for a React Native miniapp.
+ @param sizeFlexibilty defines size flexibility type of the root view
+ @param delegate
+ @return a UIView of the miniapp.
+ */
+- (UIView *)miniAppViewWithName:(NSString *)name
+                     properties:(NSDictionary *_Nullable)properties
+                sizeFlexibility:(NSInteger)sizeFlexibilty
+                       delegate:(id<MiniAppViewDelegate> _Nullable)delegate;
 
 /**
  Call this to update an RCTRootView with new props. Calling this with new props will cause the view to be rerendered.

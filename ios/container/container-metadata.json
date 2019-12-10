@@ -1,12 +1,13 @@
 {
-  "ernVersion": "1000.0.0",
+  "ernVersion": "0.38.9",
   "jsApiImpls": [],
   "miniApps": [
-    "git+ssh://git@github.com/electrode-io/MoviesReloadedMiniApp.git#a0b3dc3fe654fef8500bb3a2637c157f36272a68"
+    "file:/var/folders/vg/6fjqmgw94tlgtzlq08m5k7l9dwst6y/T/tmp-10108HXptnVXNIriW"
   ],
   "nativeDeps": [
-    "react-native@0.59.4",
-    "ernnavigation-api@1.0.5",
+    "react-native@0.60.5",
+    "ernnavigation-api@1.1.0",
+    "ernnavigation-api-impl-native@1.2.14",
     "react-native-electrode-bridge@1.5.19"
   ],
   "platform": "ios"

@@ -68,13 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  if (backedTextInputView.attributedText.string.length != 0) {
-    return;
-  }
-
-  backedTextInputView.font = _textAttributes.effectiveFont;
-  backedTextInputView.textColor = _textAttributes.effectiveForegroundColor;
-  backedTextInputView.textAlignment = _textAttributes.alignment;
+  backedTextInputView.reactTextAttributes = _textAttributes;
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -289,16 +283,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-    
+
   if (textInputView.secureTextEntry != secureTextEntry) {
     textInputView.secureTextEntry = secureTextEntry;
-      
+
     // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
     NSAttributedString *originalText = [textInputView.attributedText copy];
     self.backedTextInputView.attributedText = [NSAttributedString new];
     self.backedTextInputView.attributedText = originalText;
   }
-    
+
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -379,7 +373,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
@@ -405,7 +399,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   NSString *previousText = backedTextInputView.attributedText.string ?: @"";
-  
+
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
   } else {
@@ -433,8 +427,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-  // Detect when `backedTextInputView` updates happend that didn't invoke `shouldChangeTextInRange`
-  // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
+  // Detect when `backedTextInputView` updates happened that didn't invoke `shouldChangeTextInRange`
+  // (e.g. typing simplified Chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.
   NSRange currentRange;
