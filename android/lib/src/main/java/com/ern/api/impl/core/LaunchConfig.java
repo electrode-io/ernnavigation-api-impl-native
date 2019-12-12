@@ -156,4 +156,8 @@ public class LaunchConfig {
     public void setShowAsOverlay(boolean showAsOverlay) {
         mShowAsOverlay = showAsOverlay;
     }
+
+    public boolean isShowAsOverlay() {
+        return mShowAsOverlay;
+    }
 }

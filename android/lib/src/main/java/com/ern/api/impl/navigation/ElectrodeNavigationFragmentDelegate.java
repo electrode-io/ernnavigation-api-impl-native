@@ -1,11 +1,13 @@
 package com.ern.api.impl.navigation;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,9 +24,12 @@ import com.ern.api.impl.core.LaunchConfig;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
+import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
+import java.io.IOException;
 import java.util.List;
+
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
     private static final String TAG = ElectrodeNavigationFragmentDelegate.class.getSimpleName();
 
@@ -42,6 +47,14 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     @Nullable
     private Menu mMenu;
+
+    private OnBackPressedCallback mBackPressedCallback;
+
+    /**
+     * Click listener that gets instantiated when React Native sends a left button configuration inside the {@link NavigationBar} object  as part of the navigate() or update() api call.
+     */
+    @Nullable
+    private OnHomeAsUpClickedCallback mOnHomeAsUpClickedCallback;
 
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
@@ -72,7 +85,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                             break;
                     }
                 } else if (topOfTheStackFragment instanceof ComponentAsOverlay) {
-                    Logger.d(TAG, "Delegating %s request to an overlay component.", navType);
+                    // When the top of the stack fragment is an overlay, the non-overlay fragment below it acts as the parent who is handling it's overlay children and it's navigation flows.
+                    // This is because, overlay fragments are added to the stack by calling FragmentTransactionManager's add() method and not replace().
+                    // When added, the new fragment's onResume() state is reached by keeping the parent fragment also in a resumed state. Hence the parent need to delegate the navigation calls to the child overlays.
+                    Logger.i(TAG, "Delegating %s request to an overlay component.", navType);
                     ComponentAsOverlay overlayFragment = (ComponentAsOverlay) topOfTheStackFragment;
                     switch (navType) {
                         case NAVIGATE:
@@ -89,7 +105,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                             break;
                     }
                 } else {
-                    throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top fragment should implement ComponentAsOverlay.");
+                    throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment should implement ComponentAsOverlay. topOfTheStackFragment:" + topOfTheStackFragment);
                 }
 
                 if (!route.isCompleted()) {
@@ -131,6 +147,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFragment.setHasOptionsMenu(true);
+        mBackPressedCallback = new BackPressedCallback(false);
+        mFragment.requireActivity().getOnBackPressedDispatcher().addCallback(mBackPressedCallback);
     }
 
     @CallSuper
@@ -167,9 +185,18 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @CallSuper
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (mFragment.getActivity() != null) {
-                mFragment.getActivity().onBackPressed();
-                return true;
+            Fragment fragment = getTopOfTheStackFragment();
+            if (mFragment == fragment) {
+                if ((mOnHomeAsUpClickedCallback != null && mOnHomeAsUpClickedCallback.onHomAsUpClicked())) {
+                    return true;
+                } else {
+                    mFragment.requireActivity().onBackPressed();
+                    return true;
+                }
+            } else if (fragment instanceof ComponentAsOverlay) {
+                return fragment.onOptionsItemSelected(item);
+            } else {
+                throw new IllegalStateException("Should never reach here, Looks like the top of the stack fragment is not this(" + this + ") or implements ComponentAsOverlay. topOfTheStackFragment: " + fragment);
             }
         }
         return false;
@@ -224,7 +251,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         Logger.d(TAG, "navigating to: " + path);
 
         if (path != null && path.length() != 0) {
-            //If the hosting activity or fragment has not handled the navigation fall back to the default.
+            // If the hosting activity or fragment has not handled the navigation, fall back to the default.
             if (!mElectrodeActivityListener.navigate(path, route.getArguments()) && (mFragmentNavigator == null || !mFragmentNavigator.navigate(path, route.getArguments()))) {
                 LaunchConfig launchConfig = createNextLaunchConfig(route);
                 if (mOnUpdateNextPageLaunchConfigListener != null) {
@@ -246,19 +273,11 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
      */
     private LaunchConfig createNextLaunchConfig(@NonNull Route route) {
         LaunchConfig config = new LaunchConfig();
+        boolean showAsOverlay = route.getArguments().getBoolean("overlay");
         config.updateInitialProps(route.getArguments());
         config.setFragmentManager(mFragmentConfig != null && mFragmentConfig.mUseChildFragmentManager ? mFragment.getChildFragmentManager() : null);
+        config.setShowAsOverlay(showAsOverlay);
         return config;
-    }
-
-    /**
-     * Override this method if you want to update launch config before starting the next fragment.
-     *
-     * @param nextPageName {@link String} Next page name
-     * @param launchConfig {@link LaunchConfig} with default config values pre-populated for the next page fragment launch.
-     *                     Update this config with new props, different fragment class names, layouts etc.
-     */
-    protected void updateNextPageLaunchConfig(@NonNull final String nextPageName, @NonNull final LaunchConfig launchConfig) {
     }
 
     @Nullable
@@ -332,10 +351,76 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private void updateNavBar(@NonNull NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
         updateTitle(navigationBar);
-
+        updateHomeAsUpIndicator(navigationBar.getLeftButton());
         if (mMenu != null && mFragment.getActivity() != null) {
             MenuUtil.updateMenuItems(mMenu, navigationBar, mNavBarButtonClickListener, mMenuItemDataProvider, mFragment.getActivity());
         }
+    }
+
+    private void updateHomeAsUpIndicator(@Nullable NavigationBarLeftButton leftButton) {
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            if (leftButton != null) {
+                if(mOnHomeAsUpClickedCallback == null) {
+                    mOnHomeAsUpClickedCallback = new HomeAsUpClickedCallback(leftButton);
+                }
+                if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
+                    Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
+                    supportActionBar.setDisplayHomeAsUpEnabled(false);
+                    return;
+                } else if (setHomeAsUpIndicatorIcon(supportActionBar, leftButton)) {
+                    return;
+                }
+            }
+            //Default action
+            Logger.d(TAG, "Defaulting DisplayHomeAsUp indicator for component: %s", getReactComponentName());
+            supportActionBar.setHomeAsUpIndicator(0);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        } else {
+            Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
+        }
+    }
+
+    private boolean setHomeAsUpIndicatorIcon(@NonNull ActionBar supportActionBar, @NonNull NavigationBarLeftButton leftButton) {
+        if (mFragment.getActivity() != null) {
+            Logger.d(TAG, "Updating DisplayHomeAsUp indicator");
+            final String iconName = leftButton.getIcon();
+            if(iconName == null) {
+                Logger.d(TAG, "No left icon provided");
+                return false;
+            }
+            if (mMenuItemDataProvider != null && mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName) != MenuItemDataProvider.NONE) {
+                Logger.d(TAG, "Setting up-indicator provided by native for component: %s", getReactComponentName());
+                supportActionBar.setHomeAsUpIndicator(mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName));
+                return true;
+            } else if (MenuUtil.canLoadIconFromURI(iconName)) {
+                try {
+                    Drawable iconDrawable = MenuUtil.getBitmapFromURL(mFragment.getActivity(), iconName);
+                    supportActionBar.setHomeAsUpIndicator(iconDrawable);
+                    return true;
+                } catch (IOException e) {
+                    Logger.w(TAG, "Load failed for left icon from URL: " + iconName);
+                }
+            } else {
+                int icon = mFragment.getActivity().getResources().getIdentifier(iconName, "drawable", mFragment.getActivity().getPackageName());
+                if (icon != 0) {
+                    supportActionBar.setHomeAsUpIndicator(icon);
+                    return true;
+                } else {
+                    Logger.w(TAG, "Left Icon not found for button:%s", leftButton.getId());
+                }
+            }
+        }
+        Logger.v(TAG, "No custom up indicator set.");
+        return false;
+    }
+
+    @Nullable
+    private ActionBar getSupportActionBar() {
+        if (mFragment.getActivity() instanceof AppCompatActivity) {
+            return ((AppCompatActivity) mFragment.getActivity()).getSupportActionBar();
+        }
+        return null;
     }
 
     private void updateTitle(@NonNull NavigationBar navigationBar) {
@@ -355,5 +440,55 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                     actionBar.setTitle(navigationBar.getTitle());
                 }
             }
+    }
+
+    private interface OnHomeAsUpClickedCallback {
+        boolean onHomAsUpClicked();
+    }
+
+    private class HomeAsUpClickedCallback implements OnHomeAsUpClickedCallback {
+        NavigationBarLeftButton mLeftButton;
+
+        HomeAsUpClickedCallback(@NonNull NavigationBarLeftButton button) {
+            mLeftButton = button;
+            if (mLeftButton.getId() != null) {
+                //Looks like we received a left button with an id, lets enable backPressedCallBack to handover the back click to react native.
+                mBackPressedCallback.setEnabled(true);
+            }
+        }
+
+        @Override
+        public boolean onHomAsUpClicked() {
+            if (mLeftButton.getId() != null) {
+                Logger.d(TAG, "Back clicked, firing event to React Native, id: %s", mLeftButton.getId());
+                EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private class BackPressedCallback extends OnBackPressedCallback {
+        /**
+         * Create a {@link OnBackPressedCallback}.
+         *
+         * @param enabled The default enabled state for this callback.
+         * @see #setEnabled(boolean)
+         */
+        private BackPressedCallback(boolean enabled) {
+            super(enabled);
+        }
+
+        @Override
+        public void handleOnBackPressed() {
+            if(mOnHomeAsUpClickedCallback == null) {
+                throw new IllegalStateException("Should never reach here. OnBackPressedCallback should only be enabled if the mOnHomeAsUpClickedCallback is set by React Native component via NavigationBarLeftButton");
+            }
+            if (mOnHomeAsUpClickedCallback.onHomAsUpClicked()) {
+                Logger.v(TAG, "back press handled by %s", getReactComponentName());
+            } else {
+                Logger.w(TAG, "back press not handled by %s", getReactComponentName());
+            }
+        }
     }
 }

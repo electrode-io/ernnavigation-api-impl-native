@@ -48,7 +48,7 @@ public class DefaultMenuItemProperties implements MenuItemProperties {
     }
 
     @Override
-    public boolean isHandleClickInActivity() {
+    public boolean shouldHandleClickOnNative() {
         return handleClickInActivity;
     }
 

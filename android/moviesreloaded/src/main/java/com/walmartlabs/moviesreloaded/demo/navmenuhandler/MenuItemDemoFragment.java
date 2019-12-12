@@ -13,6 +13,7 @@ import com.ern.api.impl.navigation.MenuItemProperties;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ern.api.impl.navigation.OnNavBarItemClickListener;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
+import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.moviesreloaded.R;
 
 public class MenuItemDemoFragment extends MiniAppNavigationFragment implements OnNavBarItemClickListener {
@@ -26,8 +27,8 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
         delegate.setMenuItemDataProvider(new MenuItemDataProvider() {
             @Nullable
             @Override
-            public MenuItemProperties menuItemPropertiesFor(@NonNull NavigationBarButton navigationBarButton) {
-                if ("MoviesReloaded.refresh".equals(navigationBarButton.getId())) {
+            public MenuItemProperties menuItemPropertiesFor(@NonNull NavigationBarButton rightButton) {
+                if ("MoviesReloaded.refresh".equals(rightButton.getId())) {
                     return new DefaultMenuItemProperties.Builder()
                             .icon(R.drawable.ic_refresh_24px)
                             .itemId(R.id.refresh)
@@ -35,6 +36,11 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
                             .build();
                 }
                 return null;
+            }
+
+            @Override
+            public int homeAsUpIndicatorOverride(@NonNull String iconName) {
+                return NONE;
             }
         });
         return delegate;

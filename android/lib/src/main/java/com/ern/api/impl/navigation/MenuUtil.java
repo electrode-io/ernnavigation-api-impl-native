@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
 import android.util.Patterns;
 import android.view.Menu;
@@ -58,14 +59,8 @@ final class MenuUtil {
         for (final NavigationBarButton button : navigationBar.getButtons()) {
             if ("right".equalsIgnoreCase(button.getLocation())) {
                 addButtonAsMenuItem(button, menu, navBarButtonClickListener, menuItemDataProvider, context);
-            } else {
-                Logger.w(TAG, "NavBarButton location type not supported yet: " + button.getLocation());
             }
         }
-    }
-
-    private static boolean canLoadIconFromURI(String icon) {
-        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon) && Patterns.WEB_URL.matcher(icon).matches();
     }
 
     private static MenuItem addButtonAsMenuItem(@NonNull NavigationBarButton button, @NonNull Menu menu, @NonNull final OnNavBarItemClickListener navBarButtonClickListener, @Nullable MenuItemDataProvider menuItemDataProvider, @NonNull Context context) {
@@ -91,15 +86,8 @@ final class MenuUtil {
             String iconLocation = button.getIcon();
             if (canLoadIconFromURI(iconLocation)) {
                 try {
-                    Logger.d(TAG, "Attempting to load icon from URL: " + iconLocation);
-                    StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
-                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
-                    StrictMode.setThreadPolicy(policy);
-                    URL iconUrl = new URL(iconLocation);
-                    Bitmap iconBitmap = BitmapFactory.decodeStream(iconUrl.openConnection().getInputStream());
-                    menuItem.setIcon(new BitmapDrawable(context.getResources(), iconBitmap));
+                    menuItem.setIcon(getBitmapFromURL(context, iconLocation));
                     menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    StrictMode.setThreadPolicy(oldPolicy);
                 } catch (IOException e) {
                     Logger.w(TAG, "Load failed for icon from URL: " + iconLocation);
                 }
@@ -118,11 +106,26 @@ final class MenuUtil {
             menuItem.setEnabled(!button.getDisabled());
         }
 
-        if (menuItemProperties == null || !menuItemProperties.isHandleClickInActivity()) {
+        if (menuItemProperties == null || !menuItemProperties.shouldHandleClickOnNative()) {
             registerItemClickListener(menuItem, button, navBarButtonClickListener);
         }
 
         return menuItem;
+    }
+
+    public static boolean canLoadIconFromURI(String icon) {
+        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon) && Patterns.WEB_URL.matcher(icon).matches();
+    }
+
+    public static Drawable getBitmapFromURL(Context context, String iconLocation) throws IOException {
+        Logger.d(TAG, "Attempting to load icon from URL: " + iconLocation);
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
+        StrictMode.setThreadPolicy(policy);
+        URL iconUrl = new URL(iconLocation);
+        Bitmap iconBitmap = BitmapFactory.decodeStream(iconUrl.openConnection().getInputStream());
+        StrictMode.setThreadPolicy(oldPolicy);
+        return new BitmapDrawable(context.getResources(), iconBitmap);
     }
 
     private static void registerItemClickListener(@NonNull final MenuItem menuItem, @NonNull final NavigationBarButton button, @NonNull final OnNavBarItemClickListener navBarButtonClickListener) {

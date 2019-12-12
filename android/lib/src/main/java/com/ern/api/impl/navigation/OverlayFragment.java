@@ -2,6 +2,8 @@ package com.ern.api.impl.navigation;
 
 import androidx.annotation.NonNull;
 
+import com.ern.api.impl.core.LaunchConfig;
+
 public class OverlayFragment extends MiniAppNavigationFragment implements ComponentAsOverlay {
 
     @Override
@@ -22,5 +24,12 @@ public class OverlayFragment extends MiniAppNavigationFragment implements Compon
     @Override
     public void finish(@NonNull Route route) {
         mElectrodeReactFragmentDelegate.finish(route);
+    }
+
+    @Override
+    public void updateNextPageLaunchConfig(@NonNull String nextPageName, @NonNull LaunchConfig defaultLaunchConfig) {
+        if (defaultLaunchConfig.isShowAsOverlay()) {
+            defaultLaunchConfig.setFragmentClass(OverlayFragment.class);
+        }
     }
 }
