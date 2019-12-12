@@ -36,5 +36,5 @@ public interface MenuItemProperties {
      *
      * @return true | false
      */
-    boolean isHandleClickInActivity();
+    boolean shouldHandleClickOnNative();
 }

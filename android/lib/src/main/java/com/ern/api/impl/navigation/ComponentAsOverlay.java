@@ -9,12 +9,24 @@ import androidx.fragment.app.Fragment;
  *
  * @see OverlayFragment, {@link ElectrodeNavigationFragmentDelegate#routeObserver}
  */
-interface ComponentAsOverlay {
+public interface ComponentAsOverlay {
+    /**
+     * Implementation should invoke {@link ElectrodeNavigationFragmentDelegate#navigate(Route)}
+     */
     void navigate(@NonNull Route route);
 
+    /**
+     * Implementation should invoke {@link ElectrodeNavigationFragmentDelegate#update(Route)}
+     */
     void update(@NonNull Route route);
 
+    /**
+     * Implementation should invoke {@link ElectrodeNavigationFragmentDelegate#back(Route)}
+     */
     void back(@NonNull Route route);
 
+    /**
+     * Implementation should invoke {@link ElectrodeNavigationFragmentDelegate#finish(Route)}
+     */
     void finish(@NonNull Route route);
 }
