@@ -271,7 +271,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
      * @param route {@link Route}
      * @return LaunchConfig
      */
-    private LaunchConfig createNextLaunchConfig(@NonNull Route route) {
+    protected LaunchConfig createNextLaunchConfig(@NonNull Route route) {
         LaunchConfig config = new LaunchConfig();
         boolean showAsOverlay = route.getArguments().getBoolean("overlay");
         config.updateInitialProps(route.getArguments());
@@ -281,7 +281,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     }
 
     @Nullable
-    private Fragment getTopOfTheStackFragment() {
+    protected Fragment getTopOfTheStackFragment() {
         if (mFragment.getActivity() != null) {
             List<Fragment> fragments = mFragment.getActivity().getSupportFragmentManager().getFragments();
             if (fragments.size() > 0) {
