@@ -49,10 +49,17 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            Logger.d(TAG, "Starting react native root component(%s). Loading the react view inside a fragment.", mRootComponentName);
-            startMiniAppFragment(mRootComponentName, mDefaultLaunchConfig);
+        if (savedInstanceState == null && mDefaultLaunchConfig.startRootInOnCreate) {
+            launchRootComponent();
         }
+    }
+
+    /**
+     * Replaces the current fragment with the root component.
+     */
+    public void launchRootComponent() {
+        Logger.d(TAG, "Starting react native root component(%s). Loading the react view inside a fragment.", mRootComponentName);
+        startMiniAppFragment(mRootComponentName, mDefaultLaunchConfig);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
