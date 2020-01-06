@@ -70,6 +70,11 @@ public class LaunchConfig {
     @AddToBackStackState
     int mAddToBackStack = ADD_TO_BACK_STACK;
 
+    /**
+     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     */
+    boolean startRootInOnCreate = true;
+
     public LaunchConfig() {
     }
 
@@ -159,5 +164,24 @@ public class LaunchConfig {
 
     public boolean isShowAsOverlay() {
         return mShowAsOverlay;
+    }
+
+    /**
+     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     * This is typically set when application/activity needs to take control of when the root component fragment needs to be started.
+     *
+     * @param startRootInOnCreate true | false Default value: true
+     */
+    public void setStartRootInOnCreate(boolean startRootInOnCreate) {
+        this.startRootInOnCreate = startRootInOnCreate;
+    }
+
+    /**
+     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     * This is typically set when application/activity needs to take control of when the root component fragment needs to be started.
+     */
+
+    public boolean isStartRootInOnCreate() {
+        return startRootInOnCreate;
     }
 }
