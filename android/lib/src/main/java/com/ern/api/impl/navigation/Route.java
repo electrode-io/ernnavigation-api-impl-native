@@ -56,7 +56,13 @@ public final class Route { //FIXME: The class will implement NavDirections from 
         return arguments;
     }
 
-    void setResult(boolean isSuccess, @Nullable String message) {
+    /**
+     * Call this method only when the request is fully handled as this will trigger a notification back to the api caller.
+     *
+     * @param isSuccess true | false
+     * @param message   optional message to pass back to the api caller, mainly used when the request fails.
+     */
+    public void setResult(boolean isSuccess, @Nullable String message) {
         if (result == null) {
             result = new RoutingResult(isSuccess, message);
             if (routingNotifier != null) {

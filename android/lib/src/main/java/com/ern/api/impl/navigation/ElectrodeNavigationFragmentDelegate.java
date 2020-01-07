@@ -35,7 +35,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     private ReactNavigationViewModel mNavViewModel;
     @Nullable
-    private FragmentNavigator mFragmentNavigator;
+    protected FragmentNavigator mFragmentNavigator;
     @Nullable
     private OnUpdateNextPageLaunchConfigListener mOnUpdateNextPageLaunchConfigListener;
 
