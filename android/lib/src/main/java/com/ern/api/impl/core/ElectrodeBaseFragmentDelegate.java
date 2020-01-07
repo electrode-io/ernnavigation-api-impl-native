@@ -88,8 +88,9 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
      */
     @SuppressWarnings("unused")
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (mFragment.getArguments() != null) {
-            mMiniAppComponentName = mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
+        Bundle args = mFragment.getArguments();
+        if (args != null) {
+            mMiniAppComponentName = args.getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
         }
 
         Logger.d(TAG, "onCreateView() called. MiniApp component name: " + mMiniAppComponentName);
@@ -131,8 +132,8 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             rootView = mMiniAppView;
         }
 
-        if(mFragment.getArguments() != null) {
-            setDisplayHomeAsUpEnabled(mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false));
+        if (args != null) {
+            setDisplayHomeAsUpEnabled(args.getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false));
         }
 
         return rootView;
