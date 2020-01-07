@@ -131,7 +131,9 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             rootView = mMiniAppView;
         }
 
-        setDisplayHomeAsUpEnabled(mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false));
+        if(mFragment.getArguments() != null) {
+            setDisplayHomeAsUpEnabled(mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false));
+        }
 
         return rootView;
     }
