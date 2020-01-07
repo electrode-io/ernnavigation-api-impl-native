@@ -20,7 +20,7 @@ import UIKit
 
     static let buttonWidth: CGFloat = 22
     var navigationAPI: EnNavigationAPI?
-    var delegate: ENNavigationProtocol?
+    weak var delegate: ENNavigationProtocol?
 
     override public func viewDidLoad(viewController: UIViewController) {
         if let navigationVC = viewController as? UINavigationController {
