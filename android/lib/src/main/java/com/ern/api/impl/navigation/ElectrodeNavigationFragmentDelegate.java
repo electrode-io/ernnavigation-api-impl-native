@@ -361,7 +361,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             if (leftButton != null) {
-                if(mOnHomeAsUpClickedCallback == null) {
+                if (mOnHomeAsUpClickedCallback == null) {
                     mOnHomeAsUpClickedCallback = new HomeAsUpClickedCallback(leftButton);
                 }
                 if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
@@ -385,7 +385,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mFragment.getActivity() != null) {
             Logger.d(TAG, "Updating DisplayHomeAsUp indicator");
             final String iconName = leftButton.getIcon();
-            if(iconName == null) {
+            if (iconName == null) {
                 Logger.d(TAG, "No left icon provided");
                 return false;
             }
@@ -481,7 +481,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         @Override
         public void handleOnBackPressed() {
-            if(mOnHomeAsUpClickedCallback == null) {
+            if (mOnHomeAsUpClickedCallback == null) {
                 throw new IllegalStateException("Should never reach here. OnBackPressedCallback should only be enabled if the mOnHomeAsUpClickedCallback is set by React Native component via NavigationBarLeftButton");
             }
             if (mOnHomeAsUpClickedCallback.onHomAsUpClicked()) {
