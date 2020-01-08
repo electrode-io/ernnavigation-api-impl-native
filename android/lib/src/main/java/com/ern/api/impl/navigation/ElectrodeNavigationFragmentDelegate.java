@@ -372,10 +372,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                     return;
                 }
             }
-            //Default action
-            Logger.d(TAG, "Defaulting DisplayHomeAsUp indicator for component: %s", getReactComponentName());
-            supportActionBar.setHomeAsUpIndicator(0);
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
+
+            if (mFragment.getArguments() != null) {
+                //Default action
+                Logger.d(TAG, "Defaulting DisplayHomeAsUp indicator for component: %s", getReactComponentName());
+                supportActionBar.setHomeAsUpIndicator(0);
+                supportActionBar.setDisplayHomeAsUpEnabled(mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED));
+            }
         } else {
             Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
         }
