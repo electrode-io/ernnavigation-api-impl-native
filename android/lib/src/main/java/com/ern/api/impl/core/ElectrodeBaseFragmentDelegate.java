@@ -132,10 +132,6 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             rootView = mMiniAppView;
         }
 
-        if (args != null) {
-            setDisplayHomeAsUpEnabled(args.getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, false));
-        }
-
         return rootView;
     }
 
@@ -240,20 +236,6 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             return mFragment.getArguments().getString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME);
         }
         return "NAME_NOT_SET_YET";
-    }
-
-    private void setDisplayHomeAsUpEnabled(boolean showHomeAsUp) {
-        if (mFragment.getActivity() instanceof AppCompatActivity) {
-            ActionBar actionBar = ((AppCompatActivity) mFragment.getActivity()).getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(showHomeAsUp);
-            }
-        } else if (mFragment.getActivity() != null) {
-            android.app.ActionBar actionBar = mFragment.getActivity().getActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(showHomeAsUp);
-            }
-        }
     }
 
     public interface ElectrodeActivityListener {

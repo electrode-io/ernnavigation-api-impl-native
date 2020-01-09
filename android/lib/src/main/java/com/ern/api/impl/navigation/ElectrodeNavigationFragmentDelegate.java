@@ -361,7 +361,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             if (leftButton != null) {
-                if(mOnHomeAsUpClickedCallback == null) {
+                if (mOnHomeAsUpClickedCallback == null) {
                     mOnHomeAsUpClickedCallback = new HomeAsUpClickedCallback(leftButton);
                 }
                 if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
@@ -372,10 +372,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                     return;
                 }
             }
-            //Default action
-            Logger.d(TAG, "Defaulting DisplayHomeAsUp indicator for component: %s", getReactComponentName());
-            supportActionBar.setHomeAsUpIndicator(0);
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
+
+            if (mFragment.getArguments() != null) {
+                //Default action
+                Logger.d(TAG, "Defaulting DisplayHomeAsUp indicator for component: %s", getReactComponentName());
+                supportActionBar.setHomeAsUpIndicator(0);
+                supportActionBar.setDisplayHomeAsUpEnabled(mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED));
+            }
         } else {
             Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
         }
@@ -385,7 +388,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mFragment.getActivity() != null) {
             Logger.d(TAG, "Updating DisplayHomeAsUp indicator");
             final String iconName = leftButton.getIcon();
-            if(iconName == null) {
+            if (iconName == null) {
                 Logger.d(TAG, "No left icon provided");
                 return false;
             }
@@ -481,7 +484,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         @Override
         public void handleOnBackPressed() {
-            if(mOnHomeAsUpClickedCallback == null) {
+            if (mOnHomeAsUpClickedCallback == null) {
                 throw new IllegalStateException("Should never reach here. OnBackPressedCallback should only be enabled if the mOnHomeAsUpClickedCallback is set by React Native component via NavigationBarLeftButton");
             }
             if (mOnHomeAsUpClickedCallback.onHomAsUpClicked()) {
