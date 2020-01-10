@@ -19,3 +19,7 @@ import UIKit
 class ENBarButtonItem: UIBarButtonItem {
     var stringTag: String?
 }
+
+class ENBarLeftButtonItem: ENBarButtonItem {
+    var currViewController: UIViewController?
+}
