@@ -14,7 +14,8 @@
 		304F3EA51EEF455C00F1E36B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 304F3EA41EEF455C00F1E36B /* Assets.xcassets */; };
 		304F3EA81EEF455C00F1E36B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 304F3EA61EEF455C00F1E36B /* LaunchScreen.storyboard */; };
 		304F3ED21EEF5AE500F1E36B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 304F3ED11EEF5AE500F1E36B /* ViewController.m */; };
-		9CED27C822FCD95500063FD9 /* ElectrodeContainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CED26FB22FCD4EC00063FD9 /* ElectrodeContainer.framework */; };
+		9CFFFE6A23C9305F00FD3588 /* ElectrodeContainer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CED26FB22FCD4EC00063FD9 /* ElectrodeContainer.framework */; };
+		9CFFFE6B23C9305F00FD3588 /* ElectrodeContainer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9CED26FB22FCD4EC00063FD9 /* ElectrodeContainer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				9CFFFE6B23C9305F00FD3588 /* ElectrodeContainer.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,7 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CED27C822FCD95500063FD9 /* ElectrodeContainer.framework in Frameworks */,
+				9CFFFE6A23C9305F00FD3588 /* ElectrodeContainer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,7 +360,6 @@
 		304F3EAD1EEF455C00F1E36B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = "";
@@ -375,7 +376,6 @@
 		304F3EAE1EEF455C00F1E36B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = "";
