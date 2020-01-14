@@ -112,6 +112,9 @@ import UIKit
                     if let buttons = navBar.buttons {
                         self.getNavBarButtons(buttons: buttons, viewController: vc)
                     }
+                    if let leftButton = navBar.leftButton {
+                        self.manageLeftButton(leftButton: leftButton, viewController: vc)
+                    }
                 }
                 if let finish = self.viewController?.finish {
                     vc.finish = finish
@@ -141,6 +144,7 @@ import UIKit
         var leftNavigationButtons = [NavigationBarButton]()
         var rightNavigationButtons = [NavigationBarButton]()
         for button in buttons {
+            //left button is deprecated
             if button.location == "left" {
                 leftNavigationButtons.append(button)
             } else {
@@ -156,6 +160,26 @@ import UIKit
             rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton), at: 0)
         }
         viewController.navigationItem.rightBarButtonItems = rightButtons
+    }
+
+    func manageLeftButton(leftButton: NavigationBarLeftButton, viewController: UIViewController) {
+        var button = ENBarLeftButtonItem()
+        if let icon = leftButton.icon, let url = URL(string: icon) {
+            do {
+                let imageData = try Data(contentsOf: url, options: [])
+                let image = UIImage(data: imageData)
+                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
+                button = ENBarLeftButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+            } catch {
+                NSLog("Cannot get image data")
+            }
+        } else {
+            button = ENBarLeftButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+        }
+        button.isEnabled = !(leftButton.disabled ?? false)
+        button.stringTag = leftButton.id
+        button.currViewController = viewController
+        viewController.navigationItem.leftBarButtonItem = button
     }
 
     private func resizeImage(image: UIImage?, targetSize: CGSize) -> UIImage? {
@@ -201,6 +225,21 @@ import UIKit
     @objc func clickButtonWithButtonId(_ sender: ENBarButtonItem) {
         if let stringTag = sender.stringTag {
             ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
+        }
+    }
+
+    @objc func clickLeftButtonWithButtonId(_ sender: ENBarLeftButtonItem) {
+        if let stringTag = sender.stringTag {
+            ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
+        } else {
+            if let vc = sender.currViewController {
+                let viewControllers = self.viewController?.navigationController?.viewControllers
+                if viewControllers?.count == 1 {
+                    vc.navigationController?.dismiss(animated: true, completion: nil)
+                } else {
+                    vc.navigationController?.popViewController(animated: true)
+                }
+            }
         }
     }
 }
