@@ -64,7 +64,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onStart() {
-        Logger.v(TAG, "onStart()" + getMainComponentName());
+        Logger.v(TAG, "onStart(): " + mRootComponentName);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
