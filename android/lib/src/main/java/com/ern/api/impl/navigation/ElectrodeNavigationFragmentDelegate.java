@@ -30,6 +30,8 @@ import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import java.io.IOException;
 import java.util.List;
 
+import static com.ern.api.impl.navigation.ReactNavigationViewModel.KEY_NAV_TYPE;
+
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
     private static final String TAG = ElectrodeNavigationFragmentDelegate.class.getSimpleName();
 
@@ -62,13 +64,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             if (route != null && !route.isCompleted()) {
                 Logger.d(TAG, "Delegate: %s received a new navigation route: %s", ElectrodeNavigationFragmentDelegate.this, route.getArguments());
 
-                if (!route.getArguments().containsKey(ReactNavigationViewModel.KEY_NAV_TYPE)) {
+                if (!route.getArguments().containsKey(KEY_NAV_TYPE)) {
                     throw new IllegalStateException("Missing NAV_TYPE in route arguments");
                 }
                 Fragment topOfTheStackFragment = getTopOfTheStackFragment();
 
                 //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side does not support Parcelable deserialization yet.
-                ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(ReactNavigationViewModel.KEY_NAV_TYPE));
+                ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(KEY_NAV_TYPE));
                 if (topOfTheStackFragment == mFragment) {
                     switch (navType) {
                         case NAVIGATE:
@@ -226,7 +228,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     public void back(@NonNull Route route) {
         Logger.v(TAG, "handling back call inside %s", getReactComponentName());
         //Manage fragment back-stack popping. If the given route.path is not in the stack pop a new fragment.
-        boolean result = mElectrodeActivityListener.backToMiniApp(route.getArguments().getString("path"), route.getArguments());
+        boolean result = mElectrodeActivityListener.backToMiniApp(route.getArguments().getString("path"), populateArgsForBack(route));
         route.setResult(result, !result ? "back navigation failed. component not found in the back stack" : null);
     }
 
@@ -263,6 +265,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         } else {
             route.setResult(false, "Navigation failed. Received empty/null path");
         }
+    }
+
+    private Bundle populateArgsForBack(@NonNull Route route) {
+        Bundle bundle = new Bundle(route.getArguments());
+        bundle.remove("path");
+        bundle.remove(KEY_NAV_TYPE);
+        return bundle.size() > 0 ? bundle : null;
     }
 
     /**

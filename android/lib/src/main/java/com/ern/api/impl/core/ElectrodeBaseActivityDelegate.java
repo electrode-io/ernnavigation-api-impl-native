@@ -202,6 +202,13 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
                 return true;
             }
         }
-        return manager.popBackStackImmediate(tag, 0);
+        boolean result = manager.popBackStackImmediate(tag, 0);
+        if (result && data != null && data.getBoolean("refreshOnBack", false)) {
+            Fragment currentFragment = manager.getFragments().get(manager.getBackStackEntryCount() - 1);
+            if (currentFragment instanceof UpdatePropsListener) {
+                ((UpdatePropsListener) currentFragment).refresh(data);
+            }
+        }
+        return result;
     }
 }

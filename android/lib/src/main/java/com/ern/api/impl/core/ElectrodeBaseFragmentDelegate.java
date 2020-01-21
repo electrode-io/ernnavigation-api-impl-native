@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -157,7 +156,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
     @NonNull
     private Bundle initialProps(boolean isFragmentBeingReconstructed) {
-        final Bundle props = mFragment.getArguments() == null ? new Bundle() : mFragment.getArguments();
+        final Bundle props = getDefaultProps();
 
         //NOTE: If/When the system re-constructs a fragment from a previous state a stored Bundle is getting converted to a ParcelableData.
         //When this bundle is send across React native , RN frameworks WritableArray does not support parcelable conversion.
@@ -167,12 +166,33 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             props.putAll(new ErnNavRoute(props).toBundle());
         }
 
+        addGlobalProps(props);
+        return props;
+    }
+
+    public void refresh(@Nullable Bundle data) {
+        if (mMiniAppView != null) {
+            Bundle props = getDefaultProps();
+            addGlobalProps(props);
+            if (data != null) {
+                props.putAll(data);
+            }
+            mMiniAppView.setAppProperties(props);
+        } else {
+            Logger.w(TAG, "Refresh called on a null mMiniAppView. Should never reach here");
+        }
+    }
+
+    @NonNull
+    private Bundle getDefaultProps() {
+        return mFragment.getArguments() == null ? new Bundle() : mFragment.getArguments();
+    }
+
+    private void addGlobalProps(@NonNull Bundle props) {
         Bundle globalProps = mElectrodeActivityListener.globalProps();
         if (globalProps != null) {
             props.putAll(globalProps);
         }
-
-        return props;
     }
 
     @SuppressWarnings("unused")
