@@ -17,6 +17,8 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
+import java.util.List;
+
 import static com.ern.api.impl.core.ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL;
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
 
@@ -146,7 +148,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         } else {
             final FragmentManager fragmentManager = getFragmentManager(launchConfig);
             int fragmentContainerId = (launchConfig.mFragmentContainerId != LaunchConfig.NONE) ? launchConfig.mFragmentContainerId : mDefaultLaunchConfig.mFragmentContainerId;
-            
+
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
 
             if (ADD_TO_BACKSTACK == launchConfig.mAddToBackStack) {
@@ -204,9 +206,12 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         }
         boolean result = manager.popBackStackImmediate(tag, 0);
         if (result && data != null && data.getBoolean("refresh", true)) {
-            Fragment currentFragment = manager.getFragments().get(manager.getBackStackEntryCount() - 1);
-            if (currentFragment instanceof UpdatePropsListener) {
-                ((UpdatePropsListener) currentFragment).refresh(data);
+            List<Fragment> fragments = mFragmentActivity.getSupportFragmentManager().getFragments();
+            if (fragments.size() > 0) {
+                Fragment currentFragment = fragments.get(fragments.size() - 1);
+                if (currentFragment instanceof UpdatePropsListener) {
+                    ((UpdatePropsListener) currentFragment).refresh(data);
+                }
             }
         }
         return result;
