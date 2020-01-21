@@ -46,6 +46,10 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         self.delegate?.viewWillAppear()
     }
 
+    func reloadView(ernNavRoute: [AnyHashable : Any]?) {
+        self.delegate?.reloadView(viewController: self, ernNavRoute: ernNavRoute)
+    }
+
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.delegate?.viewDidDisapper()
@@ -59,8 +63,8 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         self.delegate?.handleFinishFlow(finalPayload: finalPayLoad, completion: completion)
     }
 
-    func popToViewControllerWithPath(path: String?, completion: ERNNavigationCompletionBlock) {
-        self.delegate?.popToViewController(path: path, completion: completion)
+    func popToViewControllerWithPath(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
+        self.delegate?.popToViewController(ernNavRoute: ernNavRoute, completion: completion)
     }
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
