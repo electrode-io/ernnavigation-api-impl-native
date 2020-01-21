@@ -10,13 +10,14 @@ import androidx.annotation.Nullable;
 
 import com.ern.api.impl.core.ElectrodeBaseFragment;
 import com.ern.api.impl.core.LaunchConfig;
+import com.ern.api.impl.core.UpdatePropsListener;
 
 /**
  * Default fragment for Electrode Native Navigation
  * <p>
  * Use this fragment to host a React Native component that uses ern-navigation library to navigate between pages.
  */
-public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate> implements ElectrodeNavigationFragmentDelegate.FragmentNavigator, ElectrodeNavigationFragmentDelegate.OnUpdateNextPageLaunchConfigListener {
+public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate> implements ElectrodeNavigationFragmentDelegate.FragmentNavigator, ElectrodeNavigationFragmentDelegate.OnUpdateNextPageLaunchConfigListener, UpdatePropsListener {
     @NonNull
     @Override
     protected ElectrodeNavigationFragmentDelegate createFragmentDelegate() {
@@ -43,5 +44,10 @@ public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNa
         if (defaultLaunchConfig.isShowAsOverlay()) {
             defaultLaunchConfig.setFragmentClass(OverlayFragment.class);
         }
+    }
+
+    @Override
+    public void refresh(@Nullable Bundle data) {
+        mElectrodeReactFragmentDelegate.refresh(data);
     }
 }
