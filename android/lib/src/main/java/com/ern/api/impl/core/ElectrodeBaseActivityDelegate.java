@@ -203,7 +203,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             }
         }
         boolean result = manager.popBackStackImmediate(tag, 0);
-        if (result && data != null && data.getBoolean("refreshOnBack", false)) {
+        if (result && data != null && data.getBoolean("refresh", true)) {
             Fragment currentFragment = manager.getFragments().get(manager.getBackStackEntryCount() - 1);
             if (currentFragment instanceof UpdatePropsListener) {
                 ((UpdatePropsListener) currentFragment).refresh(data);
