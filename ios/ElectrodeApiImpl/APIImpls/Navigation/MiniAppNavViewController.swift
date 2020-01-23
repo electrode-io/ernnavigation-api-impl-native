@@ -71,3 +71,10 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         self.delegate?.updateNavigationBar(navBar: navBar, completion: completion)
     }
 }
+
+extension UINavigationController {
+    func pushViewControllerWithoutBackButtonTitle(_ viewController: UIViewController, animated: Bool = true) {
+        viewControllers.last?.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        pushViewController(viewController, animated: animated)
+    }
+}
