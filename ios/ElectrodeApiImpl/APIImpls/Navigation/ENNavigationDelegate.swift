@@ -55,17 +55,24 @@ import UIKit
         self.viewController?.navigationController?.navigationBar.isHidden = false
     }
 
-    func popToViewController(path: String?, completion: ERNNavigationCompletionBlock) {
-        if let p = path, let viewControllers = self.viewController?.navigationController?.viewControllers {
+    func popToViewController(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
+        let refresh = ernNavRoute?["refresh"] as? Bool ?? false
+        if let p = ernNavRoute?["path"] as? String, let viewControllers = self.viewController?.navigationController?.viewControllers {
             for vc in viewControllers {
                 if let miniappVC = vc as? MiniAppNavViewController, p == miniappVC.miniAppName {
                     self.viewController?.navigationController?.popToViewController(miniappVC, animated: true)
+                    if refresh {
+                        miniappVC.reloadView(ernNavRoute: ernNavRoute)
+                    }
                     return completion("success")
                 }
             }
             return completion("cannot find path from view Controllet stack")
         } else {
             self.viewController?.navigationController?.popViewController(animated: true)
+            if refresh, let lastVC = self.viewController?.navigationController?.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
+                miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+            }
             return completion("success")
         }
     }
@@ -104,7 +111,7 @@ import UIKit
             self.finishedCallBack(finalPayLoad: jsonPayLoad)
         } else {
             if !(self.viewController?.navigateWithRoute?(routeData) ?? false) {
-                let combinedRouteData = self.combineRouteData(routeData: routeData, globalProperties: self.viewController?.globalProperties)
+                let combinedRouteData = self.combineRouteData(dictionary1: routeData, dictionary2: self.viewController?.globalProperties)
                 let vc = MiniAppNavViewController(properties: combinedRouteData, miniAppName: path)
                 if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
                     let navBar = NavigationBar(dictionary: navigationBarDict)
@@ -127,13 +134,6 @@ import UIKit
             }
         }
         return completion("success")
-    }
-
-    private func combineRouteData(routeData: [AnyHashable: Any], globalProperties: [AnyHashable: Any]?) -> [AnyHashable: Any] {
-        guard let globalProps = globalProperties else {
-            return routeData
-        }
-        return routeData.merging(globalProps) {(current, _) in current }
     }
 
     func getNavBarTitle(title: String, viewController: UIViewController) {

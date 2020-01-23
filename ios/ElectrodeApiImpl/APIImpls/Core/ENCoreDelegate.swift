@@ -18,10 +18,12 @@ import UIKit
 
 @objcMembers public class ENCoreDelegate: NSObject {
     var viewController: MiniAppNavViewController?
+    var rnView: UIView?
 
     public func viewDidLoad(viewController: UIViewController) {
         if let miniAppVC = viewController as? MiniAppNavViewController {
-            if let v = self.createView(name: miniAppVC.miniAppName, properties: miniAppVC.properties) {
+            self.createView(name: miniAppVC.miniAppName, properties: miniAppVC.properties)
+            if let v = self.rnView {
                 viewController.view.addSubview(v)
                 if #available(iOS 11.0, *) {
                     v.frame = viewController.view.safeAreaLayoutGuide.layoutFrame
@@ -45,12 +47,31 @@ import UIKit
         }
     }
 
-    private func createView(name: String, properties: [AnyHashable : Any]?) -> UIView? {
+    private func createView(name: String, properties: [AnyHashable : Any]?) {
         let viewController = ElectrodeReactNative.sharedInstance().miniApp(withName: name, properties: properties)
-        if let rnView = viewController.view {
-            rnView.translatesAutoresizingMaskIntoConstraints = false
-            return rnView
+        if let v = viewController.view {
+            v.translatesAutoresizingMaskIntoConstraints = false
+            rnView = v
         }
-        return nil
+    }
+
+    func reloadView(viewController: UIViewController, ernNavRoute: [AnyHashable: Any]?) {
+        if let v = self.rnView, let miniAppVC = viewController as? MiniAppNavViewController {
+            let combinedProperties = self.combineRouteData(dictionary1: miniAppVC.properties, dictionary2: ernNavRoute)
+            guard let combinedProps = combinedProperties else {
+                return
+            }
+            ElectrodeReactNative.sharedInstance().update(v, withProps: combinedProps)
+        }
+    }
+
+    func combineRouteData(dictionary1: [AnyHashable: Any]?, dictionary2: [AnyHashable: Any]?) -> [AnyHashable: Any]? {
+        guard let dict1 = dictionary1 else {
+            return dictionary2
+        }
+        guard let dict2 = dictionary2 else {
+            return dictionary1
+        }
+        return dict2.merging(dict1) {(current, _) in current }
     }
 }

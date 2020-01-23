@@ -57,8 +57,7 @@ class ENNavigationAPIImpl: NSObject {
         _ = self.navigationAPI.requests.registerBackRequestHandler(handler: { (data, block) in
             let d = data as? ErnNavRoute
             let ernData = d?.toDictionary() as? [AnyHashable : Any]
-            let path = ernData?["path"] as? String ?? nil
-            self.delegate?.popToViewControllerWithPath(path: path, completion: { (message) in
+            self.delegate?.popToViewControllerWithPath(ernNavRoute: ernData, completion: { (message) in
                 return block(message, nil)
             })
         })
