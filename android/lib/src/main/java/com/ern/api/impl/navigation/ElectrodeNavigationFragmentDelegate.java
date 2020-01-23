@@ -475,6 +475,9 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 Logger.d(TAG, "Back clicked, firing event to React Native, id: %s", mLeftButton.getId());
                 EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
                 return true;
+            } else if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
+                //Back press disabled.
+                return true;
             }
             return false;
         }
