@@ -57,7 +57,8 @@ import UIKit
 
     func reloadView(viewController: UIViewController, ernNavRoute: [AnyHashable: Any]?) {
         if let v = self.rnView, let miniAppVC = viewController as? MiniAppNavViewController {
-            let combinedProperties = self.combineRouteData(dictionary1: miniAppVC.properties, dictionary2: ernNavRoute)
+            var combinedProperties = self.combineRouteData(dictionary1: miniAppVC.properties, dictionary2: ernNavRoute)
+            combinedProperties?["timestamp"] = Date()
             guard let combinedProps = combinedProperties else {
                 return
             }
