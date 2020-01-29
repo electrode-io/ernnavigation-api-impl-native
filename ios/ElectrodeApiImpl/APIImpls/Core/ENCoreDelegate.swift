@@ -75,4 +75,9 @@ import UIKit
         }
         return dict2.merging(dict1) {(current, _) in current }
     }
+
+    func deinitRNView() {
+        self.rnView?.removeFromSuperview()
+        rnView = nil
+    }
 }
