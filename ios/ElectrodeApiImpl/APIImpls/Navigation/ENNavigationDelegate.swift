@@ -53,6 +53,9 @@ import UIKit
 
     func viewDidDisapper() {
         self.viewController?.navigationController?.navigationBar.isHidden = false
+        if self.viewController?.isMovingFromParentViewController ?? false {
+            self.deinitRNView()
+        }
     }
 
     func popToViewController(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
