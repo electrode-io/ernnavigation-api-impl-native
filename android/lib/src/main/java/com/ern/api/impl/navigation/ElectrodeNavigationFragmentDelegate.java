@@ -175,6 +175,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mNavViewModel != null) {
             mNavViewModel.registerNavRequestHandler();
         }
+        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_FOCUS.toString()).viewId(getMiniAppViewIdentifier()).build());
     }
 
     @SuppressWarnings("unused")
@@ -211,6 +212,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mNavViewModel != null) {
             mNavViewModel.unRegisterNavRequestHandler();
         }
+        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_BLUR.toString()).viewId(getMiniAppViewIdentifier()).build());
     }
 
     @Override
