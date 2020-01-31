@@ -22,8 +22,11 @@ import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
+import java.util.UUID;
+
 public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> implements LifecycleObserver {
     private static final String TAG = ElectrodeBaseFragmentDelegate.class.getSimpleName();
+    protected static final String KEY_UNIQUE_VIEW_IDENTIFIER = "viewId";
 
     protected final Fragment mFragment;
 
@@ -185,7 +188,21 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
     @NonNull
     private Bundle getDefaultProps() {
-        return mFragment.getArguments() == null ? new Bundle() : mFragment.getArguments();
+        Bundle props = mFragment.getArguments() == null ? new Bundle() : mFragment.getArguments();
+        if (!props.containsKey(KEY_UNIQUE_VIEW_IDENTIFIER)) {
+            String id = UUID.randomUUID().toString();
+            props.putString(KEY_UNIQUE_VIEW_IDENTIFIER, id);
+        }
+        return props;
+    }
+
+    @Nullable
+    public String getMiniAppViewIdentifier() {
+        String id = null;
+        if (mFragment.getArguments() != null) {
+            id = mFragment.getArguments().getString(KEY_UNIQUE_VIEW_IDENTIFIER);
+        }
+        return id != null ? id : "NOT_SET";
     }
 
     private void addGlobalProps(@NonNull Bundle props) {

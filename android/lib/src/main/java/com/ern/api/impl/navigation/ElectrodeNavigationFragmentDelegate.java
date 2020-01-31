@@ -22,6 +22,7 @@ import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.core.LaunchConfig;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
+import com.ernnavigationApi.ern.model.NavEventData;
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
@@ -174,6 +175,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mNavViewModel != null) {
             mNavViewModel.registerNavRequestHandler();
         }
+        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_FOCUS.toString()).viewId(getMiniAppViewIdentifier()).build());
     }
 
     @SuppressWarnings("unused")
@@ -210,6 +212,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mNavViewModel != null) {
             mNavViewModel.unRegisterNavRequestHandler();
         }
+        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_BLUR.toString()).viewId(getMiniAppViewIdentifier()).build());
     }
 
     @Override
@@ -324,7 +327,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         @Override
         public boolean onNavBarButtonClicked(@NonNull NavigationBarButton button, @NonNull MenuItem item) {
             if (mSuppliedButtonClickListener == null || !mSuppliedButtonClickListener.onNavBarButtonClicked(button, item)) {
+                //TODO: This line should be removed with next major version(2.x) update of ern-navigation. Keeping here for backward compatibility
                 EnNavigationApi.events().emitOnNavButtonClick(button.getId());
+
+                EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.BUTTON_CLICK.toString()).viewId(getMiniAppViewIdentifier()).jsonPayload("{\"id\": \"" + button.getId() + "\"}").build());
             }
             return true;
         }
@@ -473,7 +479,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         public boolean onHomAsUpClicked() {
             if (mLeftButton.getId() != null) {
                 Logger.d(TAG, "Back clicked, firing event to React Native, id: %s", mLeftButton.getId());
+                //TODO: This line should be removed with next major version update of ern-navigation. Keeping here for backward compatibility
                 EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
+
+                EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.BUTTON_CLICK.toString()).viewId(getMiniAppViewIdentifier()).jsonPayload("{\"id\": \"" + mLeftButton.getId() + "\"}").build());
                 return true;
             } else if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
                 //Back press disabled.
