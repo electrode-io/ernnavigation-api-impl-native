@@ -18,8 +18,9 @@ import UIKit
 
 class ENBarButtonItem: UIBarButtonItem {
     var stringTag: String?
+    var currViewController: UIViewController?
 }
 
-class ENBarLeftButtonItem: ENBarButtonItem {
-    var currViewController: UIViewController?
+enum NavEventType: String {
+    case BUTTON_CLICK, DID_FOCUS, DID_BLUR
 }

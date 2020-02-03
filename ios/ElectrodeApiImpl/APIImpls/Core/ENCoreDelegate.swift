@@ -18,10 +18,12 @@ import UIKit
 
 @objcMembers public class ENCoreDelegate: NSObject {
     var viewController: MiniAppNavViewController?
+    var viewIdentifier: String?
     var rnView: UIView?
 
     public func viewDidLoad(viewController: UIViewController) {
         if let miniAppVC = viewController as? MiniAppNavViewController {
+            self.viewIdentifier = UUID().uuidString
             self.createView(name: miniAppVC.miniAppName, properties: miniAppVC.properties)
             if let v = self.rnView {
                 viewController.view.addSubview(v)

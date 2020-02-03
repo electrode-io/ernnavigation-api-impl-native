@@ -46,13 +46,19 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         self.delegate?.viewWillAppear()
     }
 
-    func reloadView(ernNavRoute: [AnyHashable : Any]?) {
-        self.delegate?.reloadView(viewController: self, ernNavRoute: ernNavRoute)
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_FOCUS.rawValue, viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: nil))
     }
 
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.delegate?.viewDidDisapper()
+        ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_BLUR.rawValue, viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: nil))
+    }
+
+    func reloadView(ernNavRoute: [AnyHashable : Any]?) {
+        self.delegate?.reloadView(viewController: self, ernNavRoute: ernNavRoute)
     }
 
     func handleNavigationRequestWithPath(routeData: [AnyHashable: Any], completion: ERNNavigationCompletionBlock) {

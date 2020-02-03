@@ -156,28 +156,28 @@ import UIKit
         }
         assert(leftNavigationButtons.count <= 1 && rightNavigationButtons.count <= 3, "cannot have more than one left navigation button or three right navigation buttons")
         if leftNavigationButtons.count == 1 {
-            viewController.navigationItem.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0])
+            viewController.navigationItem.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0], vc: viewController)
         }
         var rightButtons = [ENBarButtonItem]()
         for rightButton in rightNavigationButtons {
-            rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton), at: 0)
+            rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton, vc: viewController), at: 0)
         }
         viewController.navigationItem.rightBarButtonItems = rightButtons
     }
 
     func manageLeftButton(leftButton: NavigationBarLeftButton, viewController: UIViewController) {
-        var button = ENBarLeftButtonItem()
+        var button = ENBarButtonItem()
         if let icon = leftButton.icon, let url = URL(string: icon) {
             do {
                 let imageData = try Data(contentsOf: url, options: [])
                 let image = UIImage(data: imageData)
                 let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
-                button = ENBarLeftButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+                button = ENBarButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
             } catch {
                 NSLog("Cannot get image data")
             }
         } else {
-            button = ENBarLeftButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+            button = ENBarButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
         }
         button.isEnabled = !(leftButton.disabled ?? false)
         button.stringTag = leftButton.id
@@ -206,7 +206,7 @@ import UIKit
         return nil
     }
 
-    func getUIBarButtonItem(navigationButton: NavigationBarButton) -> ENBarButtonItem {
+    func getUIBarButtonItem(navigationButton: NavigationBarButton, vc: UIViewController) -> ENBarButtonItem {
         var button = ENBarButtonItem()
         if let icon = navigationButton.icon, let url = URL(string: icon) {
             do {
@@ -222,18 +222,29 @@ import UIKit
         }
         button.isEnabled = !(navigationButton.disabled ?? false)
         button.stringTag = navigationButton.id
+        button.currViewController = vc
         return button
     }
 
+    private func emitERNEvent(sender: ENBarButtonItem, stringTag: String) {
+        var viewId = "NOT_SET"
+        if let vc = sender.currViewController as? MiniAppNavViewController, let viewIdentifier = vc.delegate?.viewIdentifier {
+            viewId = viewIdentifier
+        }
+        //emitEventOnNavButtonClick is deprecated
+        ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
+        ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.BUTTON_CLICK.rawValue, viewId: viewId, jsonPayload: getButtonJsonPayload(buttonId: stringTag)))
+    }
+    
     @objc func clickButtonWithButtonId(_ sender: ENBarButtonItem) {
         if let stringTag = sender.stringTag {
-            ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
+            self.emitERNEvent(sender: sender, stringTag: stringTag)
         }
     }
 
-    @objc func clickLeftButtonWithButtonId(_ sender: ENBarLeftButtonItem) {
+    @objc func clickLeftButtonWithButtonId(_ sender: ENBarButtonItem) {
         if let stringTag = sender.stringTag {
-            ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
+            self.emitERNEvent(sender: sender, stringTag: stringTag)
         } else {
             if let vc = sender.currViewController {
                 let viewControllers = self.viewController?.navigationController?.viewControllers
@@ -244,6 +255,10 @@ import UIKit
                 }
             }
         }
+    }
+
+    private func getButtonJsonPayload(buttonId: String) -> String {
+        return "{\"id\": \"" + buttonId + "\"}"
     }
 }
 
