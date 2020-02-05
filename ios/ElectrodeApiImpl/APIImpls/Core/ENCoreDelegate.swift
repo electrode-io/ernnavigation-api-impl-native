@@ -18,13 +18,15 @@ import UIKit
 
 @objcMembers public class ENCoreDelegate: NSObject {
     var viewController: MiniAppNavViewController?
-    var viewIdentifier: String?
+    var viewIdentifier: String = "NOT_SET"
+    static let KEY_UNIQUE_VIEW_IDENTIFIER = "viewId"
     var rnView: UIView?
 
     public func viewDidLoad(viewController: UIViewController) {
         if let miniAppVC = viewController as? MiniAppNavViewController {
             self.viewIdentifier = UUID().uuidString
-            self.createView(name: miniAppVC.miniAppName, properties: miniAppVC.properties)
+            let viewIdProperty = [ENCoreDelegate.KEY_UNIQUE_VIEW_IDENTIFIER: viewIdentifier] as [AnyHashable : Any]
+            self.createView(name: miniAppVC.miniAppName, properties: combineRouteData(dictionary1: miniAppVC.properties, dictionary2: viewIdProperty))
             if let v = self.rnView {
                 viewController.view.addSubview(v)
                 if #available(iOS 11.0, *) {
