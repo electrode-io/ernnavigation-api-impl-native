@@ -167,13 +167,10 @@ import UIKit
 
     func manageLeftButton(leftButton: NavigationBarLeftButton, viewController: UIViewController) {
         var button = ENBarButtonItem()
-        if let icon = leftButton.icon, let url = URL(string: icon) {
-            do {
-                let imageData = try Data(contentsOf: url, options: [])
-                let image = UIImage(data: imageData)
-                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
-                button = ENBarButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
-            } catch {
+        if let icon = leftButton.icon {
+            if let image = self.getImage(icon: icon) {
+                button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+            } else {
                 NSLog("Cannot get image data")
             }
         } else {
@@ -183,6 +180,23 @@ import UIKit
         button.stringTag = leftButton.id
         button.currViewController = viewController
         viewController.navigationItem.leftBarButtonItem = button
+    }
+
+    private func getImage(icon: String) -> UIImage? {
+        guard let url = URL(string: icon) else {
+            return nil
+        }
+        do {
+            let imageData = try Data(contentsOf: url, options: [])
+            let image = UIImage(data: imageData)
+            return self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
+        } catch {
+            // Attempt to read from image assets
+            guard let image = UIImage(named: icon) else {
+                return nil
+            }
+            return self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
+        }
     }
 
     private func resizeImage(image: UIImage?, targetSize: CGSize) -> UIImage? {
@@ -208,18 +222,17 @@ import UIKit
 
     func getUIBarButtonItem(navigationButton: NavigationBarButton, vc: UIViewController) -> ENBarButtonItem {
         var button = ENBarButtonItem()
-        if let icon = navigationButton.icon, let url = URL(string: icon) {
-            do {
-                let imageData = try Data(contentsOf: url, options: [])
-                let image = UIImage(data: imageData)
-                let resizedImage = self.resizeImage(image: image, targetSize: CGSize(width: ENNavigationDelegate.buttonWidth, height: ENNavigationDelegate.buttonWidth))
-                button = ENBarButtonItem(image: resizedImage, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
-            } catch {
+
+        if let icon = navigationButton.icon {
+            if let image = self.getImage(icon: icon) {
+                button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
+            } else {
                 NSLog("Cannot get image data")
             }
         } else {
             button = ENBarButtonItem(title: navigationButton.title, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
         }
+
         button.isEnabled = !(navigationButton.disabled ?? false)
         button.stringTag = navigationButton.id
         button.currViewController = vc
@@ -235,7 +248,7 @@ import UIKit
         ENNavigationAPIImpl.shared.navigationAPI.events.emitEventOnNavButtonClick(buttonId: stringTag)
         ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.BUTTON_CLICK.rawValue, viewId: viewId, jsonPayload: getButtonJsonPayload(buttonId: stringTag)))
     }
-    
+
     @objc func clickButtonWithButtonId(_ sender: ENBarButtonItem) {
         if let stringTag = sender.stringTag {
             self.emitERNEvent(sender: sender, stringTag: stringTag)
