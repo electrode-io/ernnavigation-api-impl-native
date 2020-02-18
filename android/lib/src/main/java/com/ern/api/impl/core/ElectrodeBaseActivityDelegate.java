@@ -150,6 +150,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             int fragmentContainerId = (launchConfig.mFragmentContainerId != LaunchConfig.NONE) ? launchConfig.mFragmentContainerId : mDefaultLaunchConfig.mFragmentContainerId;
 
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
+            manageTransition(transaction);
 
             if (ADD_TO_BACKSTACK == launchConfig.mAddToBackStack) {
                 Logger.d(TAG, "fragment(%s) added to back stack", tag);
@@ -173,6 +174,16 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             transaction.commit();
             Logger.d(TAG, "startMiniAppFragment completed successfully.");
         }
+    }
+
+    /**
+     * This is to help hosting activities in varying applications to customize the fragment transition animations.
+     * To customize, create your own delegate class that extends {@link ElectrodeBaseActivityDelegate} and override this method.
+     * Make sure to pass the custom delegate instance by overriding {@link ElectrodeBaseActivity#createElectrodeDelegate()} method.
+     *
+     * @param transaction {@link FragmentTransaction} used for the current fragment transaction
+     */
+    protected void manageTransition(@NonNull FragmentTransaction transaction) {
     }
 
     private FragmentManager getFragmentManager(@NonNull LaunchConfig launchConfig) {
