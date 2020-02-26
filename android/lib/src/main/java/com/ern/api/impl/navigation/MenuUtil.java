@@ -57,9 +57,12 @@ final class MenuUtil {
         }
 
         for (final NavigationBarButton button : navigationBar.getButtons()) {
-            if ("right".equalsIgnoreCase(button.getLocation())) {
-                addButtonAsMenuItem(button, menu, navBarButtonClickListener, menuItemDataProvider, context);
+            // button.getLocation() is now deprecated. The new implementation considers all buttons inside navigationBar.getButtons() as right buttons.
+            // This condition is kept here to keep the backward compatibility.
+            if ("left".equalsIgnoreCase(button.getLocation())) {
+                continue;
             }
+            addButtonAsMenuItem(button, menu, navBarButtonClickListener, menuItemDataProvider, context);
         }
     }
 
