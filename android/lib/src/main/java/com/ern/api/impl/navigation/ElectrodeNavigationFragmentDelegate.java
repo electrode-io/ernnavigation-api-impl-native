@@ -166,6 +166,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (args != null && args.getBoolean(ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL)) {
             mNavViewModel = ViewModelProviders.of(mFragment).get(ReactNavigationViewModel.class);
             mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
+            mNavViewModel.registerNavRequestHandler();
         }
     }
 
