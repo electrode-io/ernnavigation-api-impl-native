@@ -40,6 +40,8 @@ import UIKit
                 navigationVC.pushViewControllerWithoutBackButtonTitle(miniappVC, animated: false)
             }
         } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didBlur), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didFocus), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
             super.viewDidLoad(viewController: viewController)
         }
     }
@@ -55,6 +57,18 @@ import UIKit
         self.viewController?.navigationController?.navigationBar.isHidden = false
         if self.viewController?.isMovingFromParentViewController ?? false {
             self.deinitRNView()
+        }
+    }
+
+    @objc func didBlur() {
+        if viewController?.navigationController?.topViewController === viewController {
+            ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_BLUR.rawValue, viewId: viewIdentifier, jsonPayload: nil))
+        }
+    }
+
+    @objc func didFocus() {
+        if viewController?.navigationController?.topViewController === viewController {
+            ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_FOCUS.rawValue, viewId: viewIdentifier, jsonPayload: nil))
         }
     }
 
