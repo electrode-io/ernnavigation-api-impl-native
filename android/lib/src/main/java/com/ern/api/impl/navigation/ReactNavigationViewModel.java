@@ -158,8 +158,6 @@ public final class ReactNavigationViewModel extends ViewModel {
             updateRequestHandle = EnNavigationApi.requests().registerUpdateRequestHandler(updateRequestHandler);
             backRequestHandle = EnNavigationApi.requests().registerBackRequestHandler(backRequestHandler);
             finishRequestHandle = EnNavigationApi.requests().registerFinishRequestHandler(finishRequestHandler);
-        } else {
-            throw new IllegalStateException("Trying to register when there is an active request handler present. Call unregister first before registering a new instance.");
         }
     }
 
