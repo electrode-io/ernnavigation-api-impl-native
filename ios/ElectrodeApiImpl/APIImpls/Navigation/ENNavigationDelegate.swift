@@ -110,6 +110,9 @@ import UIKit
             if let buttons = navBar.buttons {
                 self.getNavBarButtons(buttons: buttons, viewController: vc)
             }
+            if let leftButton = navBar.leftButton {
+                self.manageLeftButton(leftButton: leftButton, viewController: vc)
+            }
             return completion("success")
         }
         return
