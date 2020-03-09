@@ -193,6 +193,7 @@ import UIKit
         } else {
             button = ENBarButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
         }
+        button.accessibilityLabel = leftButton.adaLabel
         button.isEnabled = !(leftButton.disabled ?? false)
         button.stringTag = leftButton.id
         button.currViewController = viewController
@@ -239,7 +240,6 @@ import UIKit
 
     func getUIBarButtonItem(navigationButton: NavigationBarButton, vc: UIViewController) -> ENBarButtonItem {
         var button = ENBarButtonItem()
-
         if let icon = navigationButton.icon {
             if let image = self.getImage(icon: icon) {
                 button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
@@ -249,7 +249,7 @@ import UIKit
         } else {
             button = ENBarButtonItem(title: navigationButton.title, style: .plain, target: self, action: #selector(clickButtonWithButtonId(_:)))
         }
-
+        button.accessibilityLabel = navigationButton.adaLabel
         button.isEnabled = !(navigationButton.disabled ?? false)
         button.stringTag = navigationButton.id
         button.currViewController = vc
