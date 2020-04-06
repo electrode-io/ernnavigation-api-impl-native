@@ -106,6 +106,9 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
     @Override
     public boolean onBackPressed() {
+        if (mFragmentActivity.getOnBackPressedDispatcher().hasEnabledCallbacks()) {
+            return false;
+        }
 
         int backStackEntryCount = mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount();
         if (backStackEntryCount == 1) {

@@ -151,7 +151,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         super.onCreate(savedInstanceState);
         mFragment.setHasOptionsMenu(true);
         mBackPressedCallback = new BackPressedCallback(false);
-        mFragment.requireActivity().getOnBackPressedDispatcher().addCallback(mBackPressedCallback);
+        mFragment.requireActivity().getOnBackPressedDispatcher().addCallback(mFragment, mBackPressedCallback);
     }
 
     @CallSuper
