@@ -114,10 +114,8 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         if (backStackEntryCount == 1) {
             Logger.d(TAG, "Last item in the back stack, will finish the activity.");
             mFragmentActivity.finish();
-            Logger.d(TAG, "Back press handled");
             return true;
         } else {
-            Logger.d(TAG, "Back press not handled");
             return false;
         }
     }
