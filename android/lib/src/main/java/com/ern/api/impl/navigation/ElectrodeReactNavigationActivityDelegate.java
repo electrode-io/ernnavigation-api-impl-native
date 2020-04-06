@@ -23,7 +23,7 @@ import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate;
 import com.ernnavigationApi.ern.model.NavigationBar;
 
 /**
- * @deprecated  This delegate is no longer in use.  Change to use {@link ElectrodeReactFragmentActivityDelegate}
+ * @deprecated  This delegate is no longer in use.  Change to use {@link com.ern.api.impl.core.ElectrodeBaseActivityDelegate}
  */
 @Deprecated
 public class ElectrodeReactNavigationActivityDelegate extends ElectrodeReactFragmentActivityDelegate {
