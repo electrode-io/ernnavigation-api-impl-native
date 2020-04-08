@@ -18,7 +18,7 @@ import UIKit
 
 @objcMembers public class ENCoreDelegate: NSObject {
     var viewController: MiniAppNavViewController?
-    var viewIdentifier: String = "NOT_SET"
+    public var viewIdentifier: String = "NOT_SET"
     static let KEY_UNIQUE_VIEW_IDENTIFIER = "viewId"
     var rnView: UIView?
 
