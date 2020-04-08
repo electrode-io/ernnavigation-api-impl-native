@@ -21,7 +21,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let properties: [AnyHashable: Any]?
     public var finishedCallback: MiniAppFinishedCallback?
     public var finish: Payload?
-    var delegate: ENNavigationDelegate?
+    public var delegate: ENNavigationDelegate?
     public var navigateWithRoute: NavigateWithRoute?
     public var globalProperties: [AnyHashable: Any]?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
