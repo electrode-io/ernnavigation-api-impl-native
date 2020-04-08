@@ -74,14 +74,22 @@ import UIKit
 
     func popToViewController(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
         let refresh = ernNavRoute?["refresh"] as? Bool ?? false
+        var deinitViews = [MiniAppNavViewController]()
         if let p = ernNavRoute?["path"] as? String, let viewControllers = self.viewController?.navigationController?.viewControllers {
-            for vc in viewControllers {
-                if let miniappVC = vc as? MiniAppNavViewController, p == miniappVC.miniAppName {
-                    self.viewController?.navigationController?.popToViewController(miniappVC, animated: true)
-                    if refresh {
-                        miniappVC.reloadView(ernNavRoute: ernNavRoute)
+            for vc in viewControllers.reversed() {
+                if let miniappVC = vc as? MiniAppNavViewController {
+                    if p == miniappVC.miniAppName {
+                        self.viewController?.navigationController?.popToViewController(miniappVC, animated: true)
+                        if refresh {
+                            miniappVC.reloadView(ernNavRoute: ernNavRoute)
+                        }
+                        for vc in deinitViews {
+                            vc.delegate?.deinitRNView()
+                        }
+                        return completion("success")
+                    } else {
+                        deinitViews.append(miniappVC)
                     }
-                    return completion("success")
                 }
             }
             return completion("cannot find path from view Controllet stack")
