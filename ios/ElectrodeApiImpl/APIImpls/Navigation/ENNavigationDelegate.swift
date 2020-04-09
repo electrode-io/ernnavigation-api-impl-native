@@ -104,6 +104,10 @@ import UIKit
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
         let payloadDict = finalPayload?.convertStringToDict()
+        guard let navController = self.viewController?.navigationController else { return }
+        for vc in navController.viewControllers {
+            (vc as? MiniAppNavViewController)?.delegate?.deinitRNView()
+        }
         if ((self.viewController?.finish) != nil) {
             self.viewController?.finish?(payloadDict)
         } else {
