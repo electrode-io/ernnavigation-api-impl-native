@@ -23,6 +23,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     public var finish: Payload?
     public var delegate: ENNavigationDelegate?
     public var navigateWithRoute: NavigateWithRoute?
+    public var pushToExistingViewController: Bool = true
     public var globalProperties: [AnyHashable: Any]?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
@@ -38,7 +39,6 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
         super.viewDidLoad()
         self.delegate = ENNavigationDelegate()
         self.delegate?.viewDidLoad(viewController: self)
-        self.delegate?.delegate = self
     }
 
     override open func viewWillAppear(_ animated: Bool) {
