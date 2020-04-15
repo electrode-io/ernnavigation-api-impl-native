@@ -377,8 +377,12 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             if (leftButton != null) {
-                if (mOnHomeAsUpClickedCallback == null) {
+                if (leftButton.getId() != null) {
+                    Logger.v(TAG, "Enabling backPressedCallback for component:%s. LeftButton has id. Back press event will now be sent to react native for handling", getReactComponentName());
                     mOnHomeAsUpClickedCallback = new HomeAsUpClickedCallback(leftButton);
+                    mBackPressedCallback.setEnabled(true);
+                } else {
+                    disableBackPressCallback();
                 }
                 if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
                     Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
@@ -387,8 +391,9 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 } else if (setHomeAsUpIndicatorIcon(supportActionBar, leftButton)) {
                     return;
                 }
+            } else {
+                disableBackPressCallback();
             }
-
             //Default action
             if (mFragment.getArguments() != null && mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
                 Logger.d(TAG, "Defaulting up indicator for component: %s", getReactComponentName());
@@ -398,6 +403,11 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         } else {
             Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
         }
+    }
+
+    private void disableBackPressCallback() {
+        mOnHomeAsUpClickedCallback = null;
+        mBackPressedCallback.setEnabled(false);
     }
 
     private boolean setHomeAsUpIndicatorIcon(@NonNull ActionBar supportActionBar, @NonNull NavigationBarLeftButton leftButton) {
@@ -469,11 +479,6 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         HomeAsUpClickedCallback(@NonNull NavigationBarLeftButton button) {
             mLeftButton = button;
-            if (mLeftButton.getId() != null) {
-                Logger.v(TAG, "Enabling backPressedCallback, LeftButton has id. Back press event will now be sent to react native for handling");
-                //Looks like we received a left button with an id, lets enable backPressedCallBack to handover the back click to react native.
-                mBackPressedCallback.setEnabled(true);
-            }
         }
 
         @Override
