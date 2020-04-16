@@ -26,7 +26,10 @@ import UIKit
         if let miniAppVC = viewController as? MiniAppNavViewController {
             self.viewIdentifier = UUID().uuidString
             let viewIdProperty = [ENCoreDelegate.KEY_UNIQUE_VIEW_IDENTIFIER: viewIdentifier] as [AnyHashable : Any]
-            self.createView(name: miniAppVC.miniAppName, properties: combineRouteData(dictionary1: miniAppVC.properties, dictionary2: viewIdProperty))
+            let extraProperties = miniAppVC.pushToExistingViewController ?
+                combineRouteData(dictionary1: viewIdProperty, dictionary2: miniAppVC.globalProperties) :
+                viewIdProperty
+            self.createView(name: miniAppVC.miniAppName, properties: combineRouteData(dictionary1: miniAppVC.properties, dictionary2: extraProperties))
             if let v = self.rnView {
                 viewController.view.addSubview(v)
                 if #available(iOS 11.0, *) {

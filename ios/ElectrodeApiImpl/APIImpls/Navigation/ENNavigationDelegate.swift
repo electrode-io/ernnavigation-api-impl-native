@@ -23,10 +23,11 @@ import UIKit
     weak var delegate: ENNavigationProtocol?
 
     override public func viewDidLoad(viewController: UIViewController) {
+        self.delegate = viewController as? ENNavigationProtocol
         if let navigationVC = viewController as? UINavigationController {
             if let vc = navigationVC as? ENMiniAppNavDataProvider {
                 let miniAppName = vc.rootComponentName
-                let properties = vc.properties
+                let properties = combineRouteData(dictionary1: vc.properties, dictionary2: vc.globalProperties ?? nil)
                 let miniappVC = MiniAppNavViewController(properties: properties, miniAppName: miniAppName)
                 miniappVC.view.frame = UIScreen.main.bounds
                 if let finish = vc.finish {
@@ -145,6 +146,7 @@ import UIKit
             if !(self.viewController?.navigateWithRoute?(routeData) ?? false) {
                 let combinedRouteData = self.combineRouteData(dictionary1: routeData, dictionary2: self.viewController?.globalProperties)
                 let vc = MiniAppNavViewController(properties: combinedRouteData, miniAppName: path)
+                vc.pushToExistingViewController = false
                 if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
                     let navBar = NavigationBar(dictionary: navigationBarDict)
                     vc.title = navBar.title
