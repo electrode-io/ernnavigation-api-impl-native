@@ -106,6 +106,10 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
     @Override
     public boolean onBackPressed() {
+        if (mDefaultLaunchConfig.isRootBackPressHandledByRN() && mFragmentActivity.getOnBackPressedDispatcher().hasEnabledCallbacks()) {
+            return false;
+        }
+
         int backStackEntryCount = mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount();
         if (backStackEntryCount == 1) {
             Logger.d(TAG, "Last item in the back stack, will finish the activity.");

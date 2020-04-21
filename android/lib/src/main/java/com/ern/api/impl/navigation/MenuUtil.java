@@ -117,7 +117,7 @@ final class MenuUtil {
     }
 
     public static boolean canLoadIconFromURI(String icon) {
-        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon) && Patterns.WEB_URL.matcher(icon).matches();
+        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon);
     }
 
     public static Drawable getBitmapFromURL(Context context, String iconLocation) throws IOException {

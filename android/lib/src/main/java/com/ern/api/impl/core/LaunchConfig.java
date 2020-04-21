@@ -75,6 +75,11 @@ public class LaunchConfig {
      */
     boolean startRootInOnCreate = true;
 
+    /***
+     * Set this to to true if the root page up click is handled by React native.
+     */
+    boolean rootBackPressHandledByRN = false;
+
     public LaunchConfig() {
     }
 
@@ -183,5 +188,23 @@ public class LaunchConfig {
 
     public boolean isStartRootInOnCreate() {
         return startRootInOnCreate;
+    }
+
+    /**
+     * Decides if the back press needed to be handed over to RN for the root page.
+     *
+     * @return true | false
+     */
+    public void setRootBackPressHandledByRN(boolean rootBackPressHandledByRN) {
+        this.rootBackPressHandledByRN = rootBackPressHandledByRN;
+    }
+
+    /**
+     * Indicates if the back press needed to be handed over to RN for the root page.
+     *
+     * @return true | false
+     */
+    public boolean isRootBackPressHandledByRN() {
+        return rootBackPressHandledByRN;
     }
 }
