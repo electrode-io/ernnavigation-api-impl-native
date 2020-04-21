@@ -419,11 +419,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             Logger.d(TAG, "Customizing up indicator for component: %s", getReactComponentName());
             if (mMenuItemDataProvider != null && mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName) != MenuItemDataProvider.NONE) {
                 Logger.d(TAG, "Setting up-indicator provided by native for component: %s", getReactComponentName());
+                supportActionBar.setDisplayHomeAsUpEnabled(true);
                 supportActionBar.setHomeAsUpIndicator(mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName));
                 return true;
             } else if (MenuUtil.canLoadIconFromURI(iconName)) {
                 try {
                     Drawable iconDrawable = MenuUtil.getBitmapFromURL(mFragment.getActivity(), iconName);
+                    supportActionBar.setDisplayHomeAsUpEnabled(true);
                     supportActionBar.setHomeAsUpIndicator(iconDrawable);
                     return true;
                 } catch (IOException e) {
@@ -432,6 +434,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             } else {
                 int icon = mFragment.getActivity().getResources().getIdentifier(iconName, "drawable", mFragment.getActivity().getPackageName());
                 if (icon != 0) {
+                    supportActionBar.setDisplayHomeAsUpEnabled(true);
                     supportActionBar.setHomeAsUpIndicator(icon);
                     return true;
                 } else {
