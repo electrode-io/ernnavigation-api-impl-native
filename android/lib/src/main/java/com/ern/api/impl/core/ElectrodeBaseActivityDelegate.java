@@ -51,7 +51,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null && mDefaultLaunchConfig.startRootInOnCreate) {
+        if (savedInstanceState == null && mDefaultLaunchConfig.mStartRootInOnCreate) {
             launchRootComponent();
         }
     }
