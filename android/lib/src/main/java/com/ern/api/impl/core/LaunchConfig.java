@@ -178,7 +178,7 @@ public class LaunchConfig {
      * @param startRootInOnCreate true | false Default value: true
      */
     public void setStartRootInOnCreate(boolean startRootInOnCreate) {
-        this.mStartRootInOnCreate = startRootInOnCreate;
+        mStartRootInOnCreate = startRootInOnCreate;
     }
 
     /**
@@ -196,7 +196,7 @@ public class LaunchConfig {
      * @return true | false
      */
     public void setRootBackPressHandledByRN(boolean rootBackPressHandledByRN) {
-        this.mRootBackPressHandledByRN = rootBackPressHandledByRN;
+        mRootBackPressHandledByRN = rootBackPressHandledByRN;
     }
 
     /**
