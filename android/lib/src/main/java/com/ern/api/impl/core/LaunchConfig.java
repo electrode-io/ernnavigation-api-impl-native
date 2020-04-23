@@ -73,12 +73,12 @@ public class LaunchConfig {
     /**
      * Decides of the root component needs to be launched when the activity delegates onCreate is called.
      */
-    boolean startRootInOnCreate = true;
+    boolean mStartRootInOnCreate = true;
 
-    /***
+    /**
      * Set this to to true if the root page up click is handled by React native.
      */
-    boolean rootBackPressHandledByRN = false;
+    boolean mRootBackPressHandledByRN;
 
     public LaunchConfig() {
     }
@@ -178,7 +178,7 @@ public class LaunchConfig {
      * @param startRootInOnCreate true | false Default value: true
      */
     public void setStartRootInOnCreate(boolean startRootInOnCreate) {
-        this.startRootInOnCreate = startRootInOnCreate;
+        mStartRootInOnCreate = startRootInOnCreate;
     }
 
     /**
@@ -187,7 +187,7 @@ public class LaunchConfig {
      */
 
     public boolean isStartRootInOnCreate() {
-        return startRootInOnCreate;
+        return mStartRootInOnCreate;
     }
 
     /**
@@ -196,7 +196,7 @@ public class LaunchConfig {
      * @return true | false
      */
     public void setRootBackPressHandledByRN(boolean rootBackPressHandledByRN) {
-        this.rootBackPressHandledByRN = rootBackPressHandledByRN;
+        mRootBackPressHandledByRN = rootBackPressHandledByRN;
     }
 
     /**
@@ -205,6 +205,6 @@ public class LaunchConfig {
      * @return true | false
      */
     public boolean isRootBackPressHandledByRN() {
-        return rootBackPressHandledByRN;
+        return mRootBackPressHandledByRN;
     }
 }

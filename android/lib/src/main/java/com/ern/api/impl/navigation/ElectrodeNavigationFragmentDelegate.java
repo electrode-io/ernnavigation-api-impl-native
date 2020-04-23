@@ -51,13 +51,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @Nullable
     private Menu mMenu;
 
-    private OnBackPressedCallback mBackPressedCallback;
-
-    /**
-     * Click listener that gets instantiated when React Native sends a left button configuration inside the {@link NavigationBar} object  as part of the navigate() or update() api call.
-     */
-    @Nullable
-    private OnHomeAsUpClickedCallback mOnHomeAsUpClickedCallback;
+    private BackPressedCallback mBackPressedCallback;
 
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
@@ -192,7 +186,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (item.getItemId() == android.R.id.home) {
             Fragment fragment = getTopOfTheStackFragment();
             if (mFragment == fragment) {
-                if ((mOnHomeAsUpClickedCallback != null && mOnHomeAsUpClickedCallback.onHomAsUpClicked())) {
+                if (mBackPressedCallback.isEnabled()) {
+                    mBackPressedCallback.handleOnBackPressed();
                     return true;
                 } else {
                     mFragment.requireActivity().onBackPressed();
@@ -376,14 +371,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private void updateHomeAsUpIndicator(@Nullable NavigationBarLeftButton leftButton) {
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
+            mBackPressedCallback.setEnabled(leftButton);
             if (leftButton != null) {
-                if (leftButton.getId() != null) {
-                    Logger.v(TAG, "Enabling backPressedCallback for component:%s. LeftButton has id. Back press event will now be sent to react native for handling", getReactComponentName());
-                    mOnHomeAsUpClickedCallback = new HomeAsUpClickedCallback(leftButton);
-                    mBackPressedCallback.setEnabled(true);
-                } else {
-                    disableBackPressCallback();
-                }
                 if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
                     Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
                     supportActionBar.setDisplayHomeAsUpEnabled(false);
@@ -391,9 +380,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 } else if (setHomeAsUpIndicatorIcon(supportActionBar, leftButton)) {
                     return;
                 }
-            } else {
-                disableBackPressCallback();
             }
+
             //Default action
             if (mFragment.getArguments() != null && mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
                 Logger.d(TAG, "Defaulting up indicator for component: %s", getReactComponentName());
@@ -403,11 +391,6 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         } else {
             Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
         }
-    }
-
-    private void disableBackPressCallback() {
-        mOnHomeAsUpClickedCallback = null;
-        mBackPressedCallback.setEnabled(false);
     }
 
     private boolean setHomeAsUpIndicatorIcon(@NonNull ActionBar supportActionBar, @NonNull NavigationBarLeftButton leftButton) {
@@ -473,34 +456,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             }
     }
 
-    private interface OnHomeAsUpClickedCallback {
-        boolean onHomAsUpClicked();
-    }
-
-    private class HomeAsUpClickedCallback implements OnHomeAsUpClickedCallback {
-        NavigationBarLeftButton mLeftButton;
-
-        HomeAsUpClickedCallback(@NonNull NavigationBarLeftButton button) {
-            mLeftButton = button;
-        }
-
-        @Override
-        public boolean onHomAsUpClicked() {
-            if (mLeftButton.getId() != null) {
-                Logger.v(TAG, "HomeAsUpClickedCallback: firing event to React Native, button id: %s", mLeftButton.getId());
-                //TODO: This line should be removed with next major version update of ern-navigation. Keeping here for backward compatibility
-                EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
-                EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.BUTTON_CLICK.toString()).viewId(getMiniAppViewIdentifier()).jsonPayload("{\"id\": \"" + mLeftButton.getId() + "\"}").build());
-                return true;
-            } else if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
-                //Back press disabled.
-                return true;
-            }
-            return false;
-        }
-    }
-
     private class BackPressedCallback extends OnBackPressedCallback {
+        @Nullable
+        private NavigationBarLeftButton mLeftButton;
+
         /**
          * Create a {@link OnBackPressedCallback}.
          *
@@ -511,15 +470,31 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             super(enabled);
         }
 
+        private void setEnabled(@Nullable NavigationBarLeftButton leftButton) {
+            mLeftButton = leftButton;
+            if (leftButton != null && (leftButton.getId() != null || (leftButton.getDisabled() != null && leftButton.getDisabled()))) {
+                setEnabled(true);
+            } else {
+                setEnabled(false);
+            }
+        }
+
         @Override
         public void handleOnBackPressed() {
-            if (mOnHomeAsUpClickedCallback == null) {
-                throw new IllegalStateException("Should never reach here. OnBackPressedCallback should only be enabled if the mOnHomeAsUpClickedCallback is set by React Native component via NavigationBarLeftButton");
+            if (mLeftButton == null) {
+                throw new IllegalStateException("handleOnBackPressed: Should never reach here. NavigationBarLeftButton is null.");
             }
-            if (mOnHomeAsUpClickedCallback.onHomAsUpClicked()) {
-                Logger.v(TAG, "BackPressedCallback, handled by %s", getReactComponentName());
+
+            if (mLeftButton.getId() != null) {
+                Logger.v(TAG, "handleOnBackPressed: firing event to React Native, button id: %s", mLeftButton.getId());
+                //TODO: This line should be removed with next major version update of ern-navigation. Keeping here for backward compatibility
+                EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
+
+                EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.BUTTON_CLICK.toString()).viewId(getMiniAppViewIdentifier()).jsonPayload("{\"id\": \"" + mLeftButton.getId() + "\"}").build());
+            } else if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
+                Logger.v(TAG, "handleOnBackPressed: Back press disabled, component:%s", getReactComponentName());
             } else {
-                Logger.w(TAG, "BackPressedCallback, not handled by %s.", getReactComponentName());
+                Logger.w(TAG, "handleOnBackPressed: not handled by %s. [SHOULD NEVER REACH HERE]", getReactComponentName());
             }
         }
     }
