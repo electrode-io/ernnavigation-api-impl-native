@@ -3,7 +3,7 @@
   "version": "1.3.33",
   "license": "Apache-2.0",
   "dependencies": {
-    "ernnavigation-api": "1.2.1"
+    "ernnavigation-api": "1.2.5"
   },
   "scripts": {
     "prepublishOnly": "node scripts/update-android-import.js './android/lib/src/main/java/com/ern/api/impl/navigation/views/MiniAppView.java' 'import com.walmartlabs.ern.navigation.R' 'import com.walmartlabs.ern.container.R'",
