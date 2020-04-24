@@ -25,6 +25,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     public var navigateWithRoute: NavigateWithRoute?
     public var pushToExistingViewController: Bool = true
     public var globalProperties: [AnyHashable: Any]?
+    public var hide: Bool?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties
@@ -75,6 +76,21 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
         self.delegate?.updateNavigationBar(navBar: navBar, completion: completion)
+    }
+
+    func hideNavigationBarIfNeeded() {
+        if let navigationVC = self.navigationController {
+            if hide != nil && hide! {
+                if !navigationVC.isNavigationBarHidden {
+                    ENNavigationDelegate.hiddenByRn = true
+                    navigationVC.setNavigationBarHidden(true, animated: false)
+                }
+                return
+            } else if ENNavigationDelegate.hiddenByRn && navigationVC.isNavigationBarHidden {
+                navigationVC.setNavigationBarHidden(false, animated: false)
+            }
+            ENNavigationDelegate.hiddenByRn = false
+        }
     }
 }
 
