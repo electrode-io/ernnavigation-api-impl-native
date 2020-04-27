@@ -383,10 +383,15 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             }
 
             //Default action
-            if (mFragment.getArguments() != null && mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
-                Logger.d(TAG, "Defaulting up indicator for component: %s", getReactComponentName());
-                supportActionBar.setHomeAsUpIndicator(0);
-                supportActionBar.setDisplayHomeAsUpEnabled(true);
+            if (mFragment.getArguments() != null) {
+                if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
+                    Logger.d(TAG, "Enabling up indicator for component: %s", getReactComponentName());
+                    supportActionBar.setHomeAsUpIndicator(0);
+                    supportActionBar.setDisplayHomeAsUpEnabled(true);
+                } else if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_HIDE_UP_INDICATOR)) {
+                    Logger.d(TAG, "Hiding up indicator for component: %s", getReactComponentName());
+                    supportActionBar.setDisplayHomeAsUpEnabled(false);
+                }
             }
         } else {
             Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");

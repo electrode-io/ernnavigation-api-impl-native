@@ -59,6 +59,11 @@ public class LaunchConfig {
     boolean mForceUpEnabled;
 
     /**
+     * Set this to true if you want to hide the up indicator for a component
+     */
+    boolean mHideUpIndicatorIcon;
+
+    /**
      * Shows your next page view component as an overLay on top of the existing screen
      * This flag is ignored if the component is the root component.
      */
@@ -155,6 +160,23 @@ public class LaunchConfig {
      */
     public void setForceUpEnabled(boolean forceUpEnabled) {
         mForceUpEnabled = forceUpEnabled;
+    }
+
+    /**
+     * Set this to true will hide the up indicator for a given page.
+     * Setting this to false will do nothing but falling back to the default ActionBar behavior.
+     * i.e, if the app bar has an icon then it will show up and vice versa.
+     */
+    public void setHideUpIndicatorIcon(boolean mHideUpIndicatorIcon) {
+        this.mHideUpIndicatorIcon = mHideUpIndicatorIcon;
+    }
+
+    /**
+     * Should hide up indicator for a component
+     * * @return true | false
+     */
+    public boolean isHideUpIndicatorIcon() {
+        return mHideUpIndicatorIcon;
     }
 
     /**

@@ -136,6 +136,9 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         Bundle props = launchConfig.mInitialProps != null ? launchConfig.mInitialProps : new Bundle();
         props.putString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME, componentName);
         props.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, shouldShowUpEnabled(launchConfig.mForceUpEnabled));
+        if (!launchConfig.mForceUpEnabled) {
+            props.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_HIDE_UP_INDICATOR, launchConfig.mHideUpIndicatorIcon);
+        }
         fragment.setArguments(props);
 
         Logger.d(TAG, "starting fragment: fragmentClass->%s, props->%s", fragment.getClass().getSimpleName(), props);

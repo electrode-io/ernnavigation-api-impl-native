@@ -106,6 +106,7 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         defaultLaunchConfig.setFragmentContainerId(getFragmentContainerId());
         defaultLaunchConfig.setFragmentManager(getSupportFragmentManager());
         defaultLaunchConfig.updateInitialProps(getProps());
+        defaultLaunchConfig.setHideUpIndicatorIcon(true);
         return defaultLaunchConfig;
     }
 
