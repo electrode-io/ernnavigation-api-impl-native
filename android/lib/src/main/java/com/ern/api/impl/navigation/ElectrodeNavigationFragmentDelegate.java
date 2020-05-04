@@ -35,6 +35,7 @@ import static com.ern.api.impl.navigation.ReactNavigationViewModel.KEY_NAV_TYPE;
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
     private static final String TAG = ElectrodeNavigationFragmentDelegate.class.getSimpleName();
 
+    private ActionBarStatusViewModel mActionBarStatusViewModel;
     private ReactNavigationViewModel mNavViewModel;
     @Nullable
     protected FragmentNavigator mFragmentNavigator;
@@ -161,6 +162,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
             mNavViewModel.registerNavRequestHandler();
         }
+
+        mActionBarStatusViewModel = ViewModelProviders.of(mFragment.requireActivity()).get(ActionBarStatusViewModel.class);
     }
 
     @CallSuper
@@ -365,7 +368,22 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             Logger.d(TAG, "Action bar is null, skipping nav bar update");
             return;
         }
+
+        if (navigationBar.getHide() != null && navigationBar.getHide()) {
+            if (actionBar.isShowing()) {
+                mActionBarStatusViewModel.hiddenByRn = true;
+                actionBar.hide();
+            }
+            return;
+        } else if (mActionBarStatusViewModel.hiddenByRn && !actionBar.isShowing()) {
+            // Show only if the action bar was hidden by RN component when it was visible.
+            // This makes sure that this logic  will not turn back on the action bar that was hidden by Native.
+            actionBar.show();
+        }
+        mActionBarStatusViewModel.hiddenByRn = false;
+
         actionBar.setTitle(navigationBar.getTitle());
+
         updateHomeAsUpIndicator(navigationBar.getLeftButton(), actionBar);
 
         if (mMenu != null && mFragment.getActivity() != null) {
