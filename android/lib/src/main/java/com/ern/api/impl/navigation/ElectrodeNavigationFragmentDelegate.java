@@ -2,6 +2,7 @@ package com.ern.api.impl.navigation;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -384,7 +385,11 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         actionBar.setTitle(navigationBar.getTitle());
 
-        updateHomeAsUpIndicator(navigationBar.getLeftButton(), actionBar);
+        NavigationBarLeftButton leftButton = navigationBar.getLeftButton();
+        updateHomeAsUpIndicator(leftButton, actionBar);
+        if (leftButton != null && !TextUtils.isEmpty(leftButton.getAdaLabel())) {
+            actionBar.setHomeActionContentDescription(leftButton.getAdaLabel());
+        }
 
         if (mMenu != null && mFragment.getActivity() != null) {
             MenuUtil.updateMenuItems(mMenu, navigationBar, mNavBarButtonClickListener, mMenuItemDataProvider, mFragment.getActivity());

@@ -21,8 +21,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.StrictMode;
-import android.util.Patterns;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.URLUtil;
@@ -31,6 +32,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuItemCompat;
 
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
@@ -111,6 +113,14 @@ final class MenuUtil {
 
         if (menuItemProperties == null || !menuItemProperties.shouldHandleClickOnNative()) {
             registerItemClickListener(menuItem, button, navBarButtonClickListener);
+        }
+
+        if (!TextUtils.isEmpty(button.getAdaLabel())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                menuItem.setContentDescription(button.getAdaLabel());
+            } else {
+                MenuItemCompat.setContentDescription(menuItem, button.getAdaLabel());
+            }
         }
 
         return menuItem;
