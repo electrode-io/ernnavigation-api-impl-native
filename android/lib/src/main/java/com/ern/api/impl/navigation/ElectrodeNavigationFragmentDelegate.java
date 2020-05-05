@@ -1,6 +1,5 @@
 package com.ern.api.impl.navigation;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -36,6 +35,7 @@ import static com.ern.api.impl.navigation.ReactNavigationViewModel.KEY_NAV_TYPE;
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
     private static final String TAG = ElectrodeNavigationFragmentDelegate.class.getSimpleName();
 
+    private ActionBarStatusViewModel mActionBarStatusViewModel;
     private ReactNavigationViewModel mNavViewModel;
     @Nullable
     protected FragmentNavigator mFragmentNavigator;
@@ -162,6 +162,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
             mNavViewModel.registerNavRequestHandler();
         }
+
+        mActionBarStatusViewModel = ViewModelProviders.of(mFragment.requireActivity()).get(ActionBarStatusViewModel.class);
     }
 
     @CallSuper
@@ -361,44 +363,60 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     private void updateNavBar(@NonNull NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
-        updateTitle(navigationBar);
-        updateHomeAsUpIndicator(navigationBar.getLeftButton());
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            Logger.d(TAG, "Action bar is null, skipping nav bar update");
+            return;
+        }
+
+        if (navigationBar.getHide() != null && navigationBar.getHide()) {
+            if (actionBar.isShowing()) {
+                mActionBarStatusViewModel.hiddenByRn = true;
+                actionBar.hide();
+            }
+            return;
+        } else if (mActionBarStatusViewModel.hiddenByRn && !actionBar.isShowing()) {
+            // Show only if the action bar was hidden by RN component when it was visible.
+            // This makes sure that this logic  will not turn back on the action bar that was hidden by Native.
+            actionBar.show();
+        }
+        mActionBarStatusViewModel.hiddenByRn = false;
+
+        actionBar.setTitle(navigationBar.getTitle());
+
+        updateHomeAsUpIndicator(navigationBar.getLeftButton(), actionBar);
+
         if (mMenu != null && mFragment.getActivity() != null) {
             MenuUtil.updateMenuItems(mMenu, navigationBar, mNavBarButtonClickListener, mMenuItemDataProvider, mFragment.getActivity());
         }
     }
 
-    private void updateHomeAsUpIndicator(@Nullable NavigationBarLeftButton leftButton) {
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            mBackPressedCallback.setEnabled(leftButton);
-            if (leftButton != null) {
-                if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
-                    Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
-                    supportActionBar.setDisplayHomeAsUpEnabled(false);
-                    return;
-                } else if (setHomeAsUpIndicatorIcon(supportActionBar, leftButton)) {
-                    return;
-                }
+    private void updateHomeAsUpIndicator(@Nullable NavigationBarLeftButton leftButton, @NonNull ActionBar actionBar) {
+        mBackPressedCallback.setEnabled(leftButton);
+        if (leftButton != null) {
+            if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
+                Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                return;
+            } else if (setHomeAsUpIndicatorIcon(actionBar, leftButton)) {
+                return;
             }
+        }
 
-            //Default action
-            if (mFragment.getArguments() != null) {
-                if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
-                    Logger.d(TAG, "Enabling up indicator for component: %s", getReactComponentName());
-                    supportActionBar.setHomeAsUpIndicator(0);
-                    supportActionBar.setDisplayHomeAsUpEnabled(true);
-                } else if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_HIDE_UP_INDICATOR)) {
-                    Logger.d(TAG, "Hiding up indicator for component: %s", getReactComponentName());
-                    supportActionBar.setDisplayHomeAsUpEnabled(false);
-                }
+        //Default action
+        if (mFragment.getArguments() != null) {
+            if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
+                Logger.d(TAG, "Enabling up indicator for component: %s", getReactComponentName());
+                actionBar.setHomeAsUpIndicator(0);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            } else if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_HIDE_UP_INDICATOR)) {
+                Logger.d(TAG, "Hiding up indicator for component: %s", getReactComponentName());
+                actionBar.setDisplayHomeAsUpEnabled(false);
             }
-        } else {
-            Logger.i(TAG, "Action bar is null, skipping updateHomeAsUpIndicator");
         }
     }
 
-    private boolean setHomeAsUpIndicatorIcon(@NonNull ActionBar supportActionBar, @NonNull NavigationBarLeftButton leftButton) {
+    private boolean setHomeAsUpIndicatorIcon(@NonNull ActionBar actionBar, @NonNull NavigationBarLeftButton leftButton) {
         if (mFragment.getActivity() != null) {
             final String iconName = leftButton.getIcon();
             if (iconName == null) {
@@ -407,14 +425,14 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             Logger.d(TAG, "Customizing up indicator for component: %s", getReactComponentName());
             if (mMenuItemDataProvider != null && mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName) != MenuItemDataProvider.NONE) {
                 Logger.d(TAG, "Setting up-indicator provided by native for component: %s", getReactComponentName());
-                supportActionBar.setDisplayHomeAsUpEnabled(true);
-                supportActionBar.setHomeAsUpIndicator(mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName));
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(mMenuItemDataProvider.homeAsUpIndicatorOverride(iconName));
                 return true;
             } else if (MenuUtil.canLoadIconFromURI(iconName)) {
                 try {
                     Drawable iconDrawable = MenuUtil.getBitmapFromURL(mFragment.getActivity(), iconName);
-                    supportActionBar.setDisplayHomeAsUpEnabled(true);
-                    supportActionBar.setHomeAsUpIndicator(iconDrawable);
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    actionBar.setHomeAsUpIndicator(iconDrawable);
                     return true;
                 } catch (IOException e) {
                     Logger.w(TAG, "Load failed for left icon from URL: " + iconName);
@@ -422,8 +440,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             } else {
                 int icon = mFragment.getActivity().getResources().getIdentifier(iconName, "drawable", mFragment.getActivity().getPackageName());
                 if (icon != 0) {
-                    supportActionBar.setDisplayHomeAsUpEnabled(true);
-                    supportActionBar.setHomeAsUpIndicator(icon);
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    actionBar.setHomeAsUpIndicator(icon);
                     return true;
                 } else {
                     Logger.w(TAG, "Left Icon not found for button:%s", leftButton.getId());
@@ -440,25 +458,6 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             return ((AppCompatActivity) mFragment.getActivity()).getSupportActionBar();
         }
         return null;
-    }
-
-    private void updateTitle(@NonNull NavigationBar navigationBar) {
-        Activity activity = mFragment.getActivity();
-        if (activity != null)
-            if (activity instanceof AppCompatActivity) {
-                ActionBar actionBar;
-                actionBar = ((AppCompatActivity) activity).getSupportActionBar();
-                if (actionBar != null) {
-                    actionBar.setTitle("");
-                    actionBar.setTitle(navigationBar.getTitle());
-                }
-            } else {
-                android.app.ActionBar actionBar = activity.getActionBar();
-                if (actionBar != null) {
-                    actionBar.setTitle("");
-                    actionBar.setTitle(navigationBar.getTitle());
-                }
-            }
     }
 
     private class BackPressedCallback extends OnBackPressedCallback {
