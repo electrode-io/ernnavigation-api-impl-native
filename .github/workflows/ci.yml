@@ -1,0 +1,24 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: npm i -g electrode-native && ern
+      - run: yarn
+      - working-directory: android/
+        run: ./gradlew createAndPublishErnDevContainer
+      - working-directory: android/
+        run: ./gradlew assembleDebug test lint
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - run: npm i -g electrode-native && ern
+      - run: yarn
+      - run: yarn createiOSContainer
+      - working-directory: ios/moviesreloadedMiniApp/
+        run: xcodebuild -project "ErnRunner.xcodeproj" -scheme "ErnRunner" -destination "platform=iOS Simulator,name=iPhone 11,OS=13.4.1"
