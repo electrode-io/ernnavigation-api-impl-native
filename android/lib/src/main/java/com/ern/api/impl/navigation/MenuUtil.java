@@ -79,7 +79,7 @@ final class MenuUtil {
             }
         }
 
-        MenuItem menuItem = menu.add(Menu.NONE, itemId, Menu.NONE, button.getTitle() != null ? button.getTitle() : button.getId());
+        MenuItem menuItem = menu.add(Menu.NONE, itemId, Menu.NONE, button.getTitle());
 
         if (icon != Menu.NONE) {
             Logger.d(TAG, "setting native provided menu icon, ignoring icon passed inside NavigationBarButton");
