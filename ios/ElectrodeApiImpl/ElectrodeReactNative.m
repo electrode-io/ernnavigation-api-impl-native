@@ -90,6 +90,12 @@ NSString * const kElectrodeContainerFrameworkIdentifier = @"com.walmartlabs.ern.
     
     return miniAppViewController;}
 
+- (void)updateView:(UIView *)view withProps:(NSDictionary *)newProps {
+    if([view isKindOfClass:[RCTRootView class]]) {
+        [((RCTRootView *) view) setAppProperties:newProps];
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Convenience Methods
 
