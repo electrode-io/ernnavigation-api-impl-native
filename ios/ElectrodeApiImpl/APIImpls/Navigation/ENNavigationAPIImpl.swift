@@ -58,7 +58,12 @@ class ENNavigationAPIImpl: NSObject {
             let d = data as? ErnNavRoute
             let ernData = d?.toDictionary() as? [AnyHashable : Any]
             self.delegate?.popToViewControllerWithPath(ernNavRoute: ernData, completion: { (message) in
-                return block(message, nil)
+                if message == "success" {
+                    return block(message, nil)
+                } else {
+                    let failureMessage = ElectrodeBridgeFailureMessage.createFailureMessage(withCode: "error", message: message)
+                    return block(nil, failureMessage)
+                }
             })
         })
     }
