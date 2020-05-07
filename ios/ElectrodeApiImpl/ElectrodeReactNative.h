@@ -101,5 +101,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (UIViewController *)miniAppWithName:(NSString *)name
                            properties:(NSDictionary *_Nullable)properties;
+
+/**
+ Call this to update an RCTRootView with new props. Calling this with new props will cause the view to be rerendered.
+ Request will be ignored if the returned view is not an RCTRootView instance.
+ */
+- (void)updateView:(UIView *)view withProps:(NSDictionary *)newProps;
+
 @end
 NS_ASSUME_NONNULL_END
