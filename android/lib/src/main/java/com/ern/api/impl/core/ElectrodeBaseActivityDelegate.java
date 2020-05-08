@@ -175,6 +175,9 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
             } else {
                 throw new RuntimeException("Missing fragmentContainerId to add the " + fragment.getClass().getSimpleName() + ". Should never reach here.");
             }
+            if (launchConfig.mReplace && fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStackImmediate();
+            }
             transaction.commit();
             Logger.d(TAG, "startMiniAppFragment completed successfully.");
         }
