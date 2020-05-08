@@ -19,6 +19,7 @@ import UIKit
 @objcMembers public class ENNavigationDelegate: ENCoreDelegate {
 
     static let buttonWidth: CGFloat = 22
+    static var hiddenByRn: Bool = false
     var navigationAPI: EnNavigationAPI?
     weak var delegate: ENNavigationProtocol?
 
@@ -48,14 +49,13 @@ import UIKit
     }
 
     func viewWillAppear() {
-        self.viewController?.navigationController?.isNavigationBarHidden = false
         if let vc = self.viewController {
+            vc.hideNavigationBarIfNeeded()
             ENNavigationAPIImpl.shared.delegate = vc
         }
     }
 
     func viewDidDisapper() {
-        self.viewController?.navigationController?.navigationBar.isHidden = false
         if self.viewController?.isMovingFromParentViewController ?? false {
             self.deinitRNView()
         }
@@ -126,6 +126,10 @@ import UIKit
             if let leftButton = navBar.leftButton {
                 self.manageLeftButton(leftButton: leftButton, viewController: vc)
             }
+            if let hide = navBar.hide {
+                vc.hide = hide
+            }
+            vc.hideNavigationBarIfNeeded()
             return completion("success")
         }
         return
