@@ -143,6 +143,7 @@ import UIKit
 
     func handleNavigationRequestWithPath(routeData: [AnyHashable : Any], completion: ERNNavigationCompletionBlock) {
         let path = routeData["path"] as? String ?? ""
+        let replace = routeData["replace"] as? Bool ?? false
         if path == "finishFlow" {
             let jsonPayLoad = routeData["jsonPayload"] as? String
             self.finishedCallBack(finalPayLoad: jsonPayLoad)
@@ -168,7 +169,16 @@ import UIKit
                 }
                 vc.navigateWithRoute = self.viewController?.navigateWithRoute
                 vc.globalProperties = self.viewController?.globalProperties
-                self.viewController?.navigationController?.pushViewControllerWithoutBackButtonTitle(vc, animated: true)
+                if let viewControllers = self.viewController?.navigationController?.viewControllers {
+                    if replace && viewControllers.count > 1 {
+                        var vcs = viewControllers
+                        _ = vcs.popLast()
+                        vcs.append(vc)
+                        self.viewController?.navigationController?.setViewControllers(vcs, animated: true)
+                    } else {
+                        self.viewController?.navigationController?.pushViewControllerWithoutBackButtonTitle(vc, animated: true)
+                    }
+                }
             }
         }
         return completion("success")
