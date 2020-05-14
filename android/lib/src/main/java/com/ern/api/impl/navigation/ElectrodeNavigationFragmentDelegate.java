@@ -284,10 +284,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
      */
     protected LaunchConfig createNextLaunchConfig(@NonNull Route route) {
         LaunchConfig config = new LaunchConfig();
-        boolean showAsOverlay = route.getArguments().getBoolean("overlay");
         config.updateInitialProps(route.getArguments());
         config.setFragmentManager(mFragmentConfig != null && mFragmentConfig.mUseChildFragmentManager ? mFragment.getChildFragmentManager() : null);
-        config.setShowAsOverlay(showAsOverlay);
+        config.setShowAsOverlay(route.getArguments().getBoolean("overlay", false));
+        config.setReplace(route.getArguments().getBoolean("replace", false));
         return config;
     }
 

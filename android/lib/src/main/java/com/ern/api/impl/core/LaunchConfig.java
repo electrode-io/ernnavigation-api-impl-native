@@ -85,6 +85,12 @@ public class LaunchConfig {
      */
     boolean mRootBackPressHandledByRN;
 
+    /**
+     * Indicates if a new fragment/page should replace the current visible fragment.
+     * This is valid only when the backStackEntryCount is > 0.
+     */
+    boolean mReplace;
+
     public LaunchConfig() {
     }
 
@@ -228,5 +234,22 @@ public class LaunchConfig {
      */
     public boolean isRootBackPressHandledByRN() {
         return mRootBackPressHandledByRN;
+    }
+
+    /**
+     * Set to true when you want the next fragment in the navigation stack to replace the current one
+     *
+     * @param replace true | false
+     */
+    public void setReplace(boolean replace) {
+        mReplace = replace;
+    }
+
+    /**
+     * Indicates if a new fragment/page should replace the current visible fragment.
+     * This is valid only when the backStackEntryCount is > 0.
+     */
+    public boolean shouldReplace() {
+        return mReplace;
     }
 }
