@@ -64,12 +64,10 @@ import UIKit
 
     func reloadView(viewController: UIViewController, ernNavRoute: [AnyHashable: Any]?) {
         if let v = self.rnView, let miniAppVC = viewController as? MiniAppNavViewController {
-            var combinedProperties = self.combineRouteData(dictionary1: miniAppVC.properties, dictionary2: ernNavRoute)
-            combinedProperties?["timestamp"] = Date()
-            guard let combinedProps = combinedProperties else {
-                return
-            }
-            ElectrodeReactNative.sharedInstance().update(v, withProps: combinedProps)
+            var combinedProperties = self.combineRouteData(dictionary1: miniAppVC.properties, dictionary2: ernNavRoute) ?? [:]
+            combinedProperties["timestamp"] = Date()
+            combinedProperties["viewId"] = self.viewIdentifier
+            ElectrodeReactNative.sharedInstance().update(v, withProps: combinedProperties)
         }
     }
 
