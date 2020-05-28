@@ -135,7 +135,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
 
         Bundle props = launchConfig.mInitialProps != null ? launchConfig.mInitialProps : new Bundle();
         props.putString(ActivityDelegateConstants.KEY_MINI_APP_COMPONENT_NAME, componentName);
-        props.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, shouldShowUpEnabled(launchConfig.mForceUpEnabled));
+        props.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED, shouldShowUpEnabled(launchConfig.mForceUpEnabled, launchConfig.mReplace));
         if (!launchConfig.mForceUpEnabled) {
             props.putBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_HIDE_UP_INDICATOR, launchConfig.mHideUpIndicatorIcon);
         }
@@ -205,9 +205,10 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         return mFragmentActivity.getSupportFragmentManager();
     }
 
-    private boolean shouldShowUpEnabled(boolean forceUpEnabled) {
+    private boolean shouldShowUpEnabled(boolean forceUpEnabled, boolean isReplace) {
         int backStackCount = mFragmentActivity.getSupportFragmentManager().getBackStackEntryCount();
-        return forceUpEnabled || backStackCount > 0;
+        final int MIN_COUNT = isReplace ? 1 : 0;
+        return forceUpEnabled || backStackCount > MIN_COUNT;
     }
 
     @SuppressWarnings("unused")
