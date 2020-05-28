@@ -170,7 +170,7 @@ import UIKit
                 vc.navigateWithRoute = self.viewController?.navigateWithRoute
                 vc.globalProperties = self.viewController?.globalProperties
                 if let viewControllers = self.viewController?.navigationController?.viewControllers {
-                    if replace && viewControllers.count > 1 {
+                    if replace && viewControllers.count > 0 {
                         var vcs = viewControllers
                         _ = vcs.popLast()
                         vcs.append(vc)
