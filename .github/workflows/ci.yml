@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-      - run: npm i -g electrode-native && ern
+      - run: npm i -g electrode-native
       - run: yarn
       - working-directory: android/
         run: ./gradlew createAndPublishErnDevContainer
@@ -17,8 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-      - run: npm i -g electrode-native && ern
+      - run: npm i -g electrode-native
       - run: yarn
       - run: yarn createiOSContainer
       - working-directory: ios/moviesreloadedMiniApp/
-        run: xcodebuild -project "ErnRunner.xcodeproj" -scheme "ErnRunner" -destination "platform=iOS Simulator,name=iPhone 11,OS=13.4.1"
+        run: xcodebuild -project "ErnRunner.xcodeproj" -scheme "ErnRunner" -destination "platform=iOS Simulator,name=iPhone 11"
