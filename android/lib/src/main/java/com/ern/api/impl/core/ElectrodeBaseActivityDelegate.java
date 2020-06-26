@@ -21,13 +21,14 @@ import java.util.List;
 
 import static com.ern.api.impl.core.ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL;
 import static com.ern.api.impl.core.ElectrodeReactFragmentDelegate.MiniAppRequestListener.ADD_TO_BACKSTACK;
+import static com.ern.api.impl.core.LaunchConfig.NONE;
 
-public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegate implements LifecycleObserver {
+public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends ElectrodeReactActivityDelegate implements LifecycleObserver {
     private static final String TAG = ElectrodeBaseActivityDelegate.class.getSimpleName();
 
     @SuppressWarnings("WeakerAccess")
     protected FragmentActivity mFragmentActivity;
-    private final LaunchConfig mDefaultLaunchConfig;
+    protected final T mDefaultLaunchConfig;
     private final String mRootComponentName;
 
     /**
@@ -36,7 +37,7 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
      * @param defaultLaunchConfig : {@link LaunchConfig} that acts as the the initial configuration to load the rootComponent as well as the default launch config for subsequent navigation flows.
      *                            This configuration will also be used as a default configuration when the root component tries to navigate to a new pages if a proper launch config is passed inside {@link #startMiniAppFragment(String, LaunchConfig)}.
      */
-    public ElectrodeBaseActivityDelegate(@NonNull FragmentActivity activity, @Nullable String rootComponentName, @NonNull LaunchConfig defaultLaunchConfig) {
+    public ElectrodeBaseActivityDelegate(@NonNull FragmentActivity activity, @Nullable String rootComponentName, @NonNull T defaultLaunchConfig) {
         super(activity, null);
 
         mFragmentActivity = activity;
@@ -145,13 +146,17 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
         switchToFragment(fragment, launchConfig, componentName);
     }
 
+    protected boolean fragmentScopedNavModel() {
+        return true;
+    }
+
     private void switchToFragment(@NonNull Fragment fragment, @NonNull LaunchConfig launchConfig, @Nullable String tag) {
         if (fragment instanceof DialogFragment) {
             Logger.d(TAG, "Showing dialog fragment");
             ((DialogFragment) fragment).show(getFragmentManager(launchConfig), tag);
         } else {
             final FragmentManager fragmentManager = getFragmentManager(launchConfig);
-            int fragmentContainerId = (launchConfig.mFragmentContainerId != LaunchConfig.NONE) ? launchConfig.mFragmentContainerId : mDefaultLaunchConfig.mFragmentContainerId;
+            int fragmentContainerId = (launchConfig.mFragmentContainerId != NONE) ? launchConfig.mFragmentContainerId : mDefaultLaunchConfig.mFragmentContainerId;
 
             final FragmentTransaction transaction = fragmentManager.beginTransaction();
             manageTransition(transaction);
@@ -161,14 +166,14 @@ public class ElectrodeBaseActivityDelegate extends ElectrodeReactActivityDelegat
                 transaction.addToBackStack(tag);
             }
 
-            if (fragmentContainerId != LaunchConfig.NONE) {
+            if (fragmentContainerId != NONE) {
                 if (launchConfig.mShowAsOverlay) {
                     Logger.d(TAG, "performing ADD fragment inside fragment container");
                     transaction.add(fragmentContainerId, fragment, tag);
                 } else {
                     Logger.d(TAG, "performing REPLACE fragment inside fragment container");
                     if (fragment.getArguments() != null) {
-                        fragment.getArguments().putBoolean(KEY_REGISTER_NAV_VIEW_MODEL, true);
+                        fragment.getArguments().putBoolean(KEY_REGISTER_NAV_VIEW_MODEL, fragmentScopedNavModel());
                     }
                     transaction.replace(fragmentContainerId, fragment, tag);
                 }
