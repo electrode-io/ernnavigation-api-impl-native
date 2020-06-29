@@ -57,64 +57,68 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
         public void onChanged(@Nullable Route route) {
-            if (route != null && !route.isCompleted()) {
-                Logger.d(TAG, "Delegate: %s received a new navigation route: %s", ElectrodeNavigationFragmentDelegate.this, route.getArguments());
-
-                if (!route.getArguments().containsKey(KEY_NAV_TYPE)) {
-                    throw new IllegalStateException("Missing NAV_TYPE in route arguments");
-                }
-                Fragment topOfTheStackFragment = getTopOfTheStackFragment();
-
-                //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side does not support Parcelable deserialization yet.
-                ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(KEY_NAV_TYPE));
-                if (topOfTheStackFragment == mFragment) {
-                    switch (navType) {
-                        case NAVIGATE:
-                            navigate(route);
-                            break;
-                        case UPDATE:
-                            update(route);
-                            break;
-                        case BACK:
-                            back(route);
-                            break;
-                        case FINISH:
-                            finish(route);
-                            break;
-                    }
-                } else if (topOfTheStackFragment instanceof ComponentAsOverlay) {
-                    // When the top of the stack fragment is an overlay, the non-overlay fragment below it acts as the parent who is handling it's overlay children and it's navigation flows.
-                    // This is because, overlay fragments are added to the stack by calling FragmentTransactionManager's add() method and not replace().
-                    // When added, the new fragment's onResume() state is reached by keeping the parent fragment also in a resumed state. Hence the parent need to delegate the navigation calls to the child overlays.
-                    Logger.i(TAG, "Delegating %s request to an overlay component.", navType);
-                    ComponentAsOverlay overlayFragment = (ComponentAsOverlay) topOfTheStackFragment;
-                    switch (navType) {
-                        case NAVIGATE:
-                            overlayFragment.navigate(route);
-                            break;
-                        case UPDATE:
-                            overlayFragment.update(route);
-                            break;
-                        case BACK:
-                            overlayFragment.back(route);
-                            break;
-                        case FINISH:
-                            overlayFragment.finish(route);
-                            break;
-                    }
-                } else {
-                    throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment should implement ComponentAsOverlay. topOfTheStackFragment:" + topOfTheStackFragment);
-                }
-
-                if (!route.isCompleted()) {
-                    throw new RuntimeException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a navigation request");
-                }
-                Logger.d(TAG, "Nav request handling completed by: %s", topOfTheStackFragment);
-            } else {
-                Logger.d(TAG, "Delegate: %s has ignored an already handled route: %s, ", ElectrodeNavigationFragmentDelegate.this, route != null ? route.getArguments() : null);
-            }
+            handleRoute(route, null);
         }
     };
+
+    protected void handleRoute(@Nullable Route route, @Nullable Fragment currentVisibleFragment) {
+        if (route != null && !route.isCompleted()) {
+            Logger.d(TAG, "Delegate: %s received a new navigation route: %s", ElectrodeNavigationFragmentDelegate.this, route.getArguments());
+
+            if (!route.getArguments().containsKey(KEY_NAV_TYPE)) {
+                throw new IllegalStateException("Missing NAV_TYPE in route arguments");
+            }
+            Fragment topOfTheStackFragment = currentVisibleFragment != null ? currentVisibleFragment : getTopOfTheStackFragment();
+
+            //NOTE: We can't put KEY_NAV_TYPE as a parcelable since ReactNative side does not support Parcelable deserialization yet.
+            ReactNavigationViewModel.Type navType = ReactNavigationViewModel.Type.valueOf(route.getArguments().getString(KEY_NAV_TYPE));
+            if (topOfTheStackFragment == mFragment) {
+                switch (navType) {
+                    case NAVIGATE:
+                        navigate(route);
+                        break;
+                    case UPDATE:
+                        update(route);
+                        break;
+                    case BACK:
+                        back(route);
+                        break;
+                    case FINISH:
+                        finish(route);
+                        break;
+                }
+            } else if (topOfTheStackFragment instanceof ComponentAsOverlay) {
+                // When the top of the stack fragment is an overlay, the non-overlay fragment below it acts as the parent who is handling it's overlay children and it's navigation flows.
+                // This is because, overlay fragments are added to the stack by calling FragmentTransactionManager's add() method and not replace().
+                // When added, the new fragment's onResume() state is reached by keeping the parent fragment also in a resumed state. Hence the parent need to delegate the navigation calls to the child overlays.
+                Logger.i(TAG, "Delegating %s request to an overlay component.", navType);
+                ComponentAsOverlay overlayFragment = (ComponentAsOverlay) topOfTheStackFragment;
+                switch (navType) {
+                    case NAVIGATE:
+                        overlayFragment.navigate(route);
+                        break;
+                    case UPDATE:
+                        overlayFragment.update(route);
+                        break;
+                    case BACK:
+                        overlayFragment.back(route);
+                        break;
+                    case FINISH:
+                        overlayFragment.finish(route);
+                        break;
+                }
+            } else {
+                throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment should implement ComponentAsOverlay. topOfTheStackFragment:" + topOfTheStackFragment);
+            }
+
+            if (!route.isCompleted()) {
+                throw new RuntimeException("Should never reach here. A result should be set for the route at this point. Make sure a setResult is called on the route object after the appropriate action is taken on a navigation request");
+            }
+            Logger.d(TAG, "Nav request handling completed by: %s", topOfTheStackFragment);
+        } else {
+            Logger.d(TAG, "Delegate: %s has ignored an already handled route: %s, ", ElectrodeNavigationFragmentDelegate.this, route != null ? route.getArguments() : null);
+        }
+    }
 
     /**
      * @param fragment {@link Fragment} current Fragment

@@ -15,9 +15,9 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.ern.api.impl.core.ElectrodeBaseActivityDelegate;
 import com.ern.api.impl.core.LaunchConfig;
 import com.facebook.react.ReactRootView;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import org.json.JSONObject;
 
@@ -25,7 +25,9 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     public static final int DEFAULT_TITLE = -1;
     public static final int NONE = 0;
 
-    protected ElectrodeBaseActivityDelegate mElectrodeReactNavDelegate;
+    private static final String TAG = ElectrodeBaseActivity.class.getSimpleName();
+
+    protected ElectrodeNavigationActivityDelegate mElectrodeReactNavDelegate;
 
     /**
      * Override and provide the main layout resource.
@@ -42,7 +44,7 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
      */
     @NonNull
     protected abstract String getRootComponentName();
-    
+
     /**
      * Id for the fragment container.
      *
@@ -70,7 +72,7 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     protected int title() {
         return DEFAULT_TITLE;
     }
-    
+
     /**
      * Initial/Default fragment used by the activity to host a react native view.
      *
@@ -96,12 +98,39 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
      * @return ElectrodeReactFragmentActivityDelegate
      */
     @NonNull
-    protected ElectrodeBaseActivityDelegate createElectrodeDelegate() {
-        return new ElectrodeBaseActivityDelegate(this, getRootComponentName(), createDefaultLaunchConfig());
+    protected ElectrodeNavigationActivityDelegate createElectrodeDelegate() {
+        return new ElectrodeNavigationActivityDelegate(this, getRootComponentName(), createNavigationLaunchConfig());
     }
 
+    /**
+     * Default configuration provided for navigation.
+     *
+     * @return NavigationLaunchConfig
+     */
+    protected NavigationLaunchConfig createNavigationLaunchConfig() {
+        LaunchConfig navConfig = createDefaultLaunchConfig();
+        if (navConfig instanceof NavigationLaunchConfig) {
+            return (NavigationLaunchConfig) navConfig;
+        } else {
+            if (navConfig != null) {
+                Logger.w(TAG, "createDefaultLaunchConfig() is Deprecated, your default launch config is IGNORED, please move to createNavigationLaunchConfig");
+            }
+            return createNavLaunchConfigInternal();
+        }
+    }
+
+    /**
+     * Keeping this method for backward compatibility
+     *
+     * @deprecated use {@link #createNavigationLaunchConfig()}
+     */
+    @Deprecated
     protected LaunchConfig createDefaultLaunchConfig() {
-        LaunchConfig defaultLaunchConfig = new LaunchConfig();
+        return createNavLaunchConfigInternal();
+    }
+
+    private NavigationLaunchConfig createNavLaunchConfigInternal() {
+        NavigationLaunchConfig defaultLaunchConfig = new NavigationLaunchConfig();
         defaultLaunchConfig.setFragmentClass(miniAppFragmentClass());
         defaultLaunchConfig.setFragmentContainerId(getFragmentContainerId());
         defaultLaunchConfig.setFragmentManager(getSupportFragmentManager());
