@@ -379,13 +379,14 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 mActionBarStatusViewModel.hiddenByRn = true;
                 actionBar.hide();
             }
-            return;
         } else if (mActionBarStatusViewModel.hiddenByRn && !actionBar.isShowing()) {
             // Show only if the action bar was hidden by RN component when it was visible.
             // This makes sure that this logic  will not turn back on the action bar that was hidden by Native.
             actionBar.show();
+            mActionBarStatusViewModel.hiddenByRn = false;
+        } else {
+            mActionBarStatusViewModel.hiddenByRn = false;
         }
-        mActionBarStatusViewModel.hiddenByRn = false;
 
         actionBar.setTitle(navigationBar.getTitle());
 
