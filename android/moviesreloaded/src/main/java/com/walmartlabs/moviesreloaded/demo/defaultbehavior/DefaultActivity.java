@@ -38,7 +38,7 @@ public class DefaultActivity extends ElectrodeBaseActivity {
     protected NavigationLaunchConfig createNavigationLaunchConfig() {
         NavigationLaunchConfig config = super.createNavigationLaunchConfig();
         config.setForceUpEnabled(true);
-        config.useActivityScopeForNavigation(true, (NavigationLaunchConfig.RouteHandlerProvider<MiniAppNavigationFragment>) () -> {
+        config.useActivityScopeForNavigation(false, (NavigationLaunchConfig.RouteHandlerProvider<MiniAppNavigationFragment>) () -> {
             Logger.v(TAG, "Entering getRouteHandler() implementation");
             Fragment f = getSupportFragmentManager().findFragmentById(getFragmentContainerId());
             if (f instanceof MiniAppNavigationFragment) {
