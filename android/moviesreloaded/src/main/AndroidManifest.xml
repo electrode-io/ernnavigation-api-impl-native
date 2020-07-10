@@ -26,6 +26,7 @@
         <activity android:name=".demo.navmenuhandler.NavMenuActivity" />
         <activity android:name=".demo.bottomsheet.modal.ModalBottomSheetActivity" android:theme="@style/TransparentTheme"/>
         <activity android:name=".demo.bottomsheet.persistent.PersistentBottomSheetActivity" android:theme="@style/TransparentTheme"/>
+        <activity android:name=".demo.customfragment.CustomFragmentActivity"/>
     </application>
 
 </manifest>
