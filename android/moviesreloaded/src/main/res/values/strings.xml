@@ -6,4 +6,5 @@
     <string name="experience_bottomsheet">Modal Bottom Sheet</string>
     <string name="experience_bottomsheet_persistent">Persistent Bottom Sheet</string>
     <string name="launcher_title">Electrode Native Navigation</string>
+    <string name="experience_custom_fragment">Custom Fragment</string>
 </resources>

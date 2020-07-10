@@ -18,6 +18,16 @@
         android:textAllCaps="false" />
 
     <Button
+        android:id="@+id/id_custom_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableTint="#005C1818"
+        android:gravity="center_horizontal"
+        android:onClick="handleButtonClick"
+        android:text="@string/experience_custom_fragment"
+        android:textAllCaps="false" />
+
+    <Button
         android:id="@+id/id_button_custom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.walmartlabs.moviesreloaded.demo.bottomsheet.modal.ModalBottomSheetActivity;
 import com.walmartlabs.moviesreloaded.demo.bottomsheet.persistent.PersistentBottomSheetActivity;
+import com.walmartlabs.moviesreloaded.demo.customfragment.CustomFragmentActivity;
 import com.walmartlabs.moviesreloaded.demo.customview.CustomActivity;
 import com.walmartlabs.moviesreloaded.demo.defaultbehavior.DefaultActivity;
 import com.walmartlabs.moviesreloaded.demo.navmenuhandler.NavMenuActivity;
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.id_button_custom:
                 clazz = CustomActivity.class;
+                break;
+            case R.id.id_custom_fragment:
+                clazz = CustomFragmentActivity.class;
                 break;
             case R.id.id_button_navbar:
                 clazz = NavMenuActivity.class;
