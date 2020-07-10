@@ -44,9 +44,6 @@ public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNa
 
     @Override
     public void updateNextPageLaunchConfig(@NonNull String nextPageName, @NonNull LaunchConfig defaultLaunchConfig) {
-        if (defaultLaunchConfig.isShowAsOverlay()) {
-            defaultLaunchConfig.setFragmentClass(OverlayFragment.class);
-        }
     }
 
     @Override

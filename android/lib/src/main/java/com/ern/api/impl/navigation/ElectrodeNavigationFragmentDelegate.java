@@ -54,6 +54,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     private BackPressedCallback mBackPressedCallback;
 
+    protected boolean ignoreRnNavBarUpdate;
+
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
         public void onChanged(@Nullable Route route) {
@@ -87,28 +89,15 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                         finish(route);
                         break;
                 }
-            } else if (topOfTheStackFragment instanceof ComponentAsOverlay) {
+            } else if (topOfTheStackFragment instanceof NavigationRouteHandler) {
                 // When the top of the stack fragment is an overlay, the non-overlay fragment below it acts as the parent who is handling it's overlay children and it's navigation flows.
                 // This is because, overlay fragments are added to the stack by calling FragmentTransactionManager's add() method and not replace().
                 // When added, the new fragment's onResume() state is reached by keeping the parent fragment also in a resumed state. Hence the parent need to delegate the navigation calls to the child overlays.
-                Logger.i(TAG, "Delegating %s request to an overlay component.", navType);
-                ComponentAsOverlay overlayFragment = (ComponentAsOverlay) topOfTheStackFragment;
-                switch (navType) {
-                    case NAVIGATE:
-                        overlayFragment.navigate(route);
-                        break;
-                    case UPDATE:
-                        overlayFragment.update(route);
-                        break;
-                    case BACK:
-                        overlayFragment.back(route);
-                        break;
-                    case FINISH:
-                        overlayFragment.finish(route);
-                        break;
-                }
+                Logger.i(TAG, "Delegating %s request to a NavigationRouteHandler component.", navType);
+                NavigationRouteHandler routeHandler = (NavigationRouteHandler) topOfTheStackFragment;
+                routeHandler.handleRoute(route);
             } else {
-                throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment should implement ComponentAsOverlay. topOfTheStackFragment:" + topOfTheStackFragment);
+                throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment that implements NavigationRouteHandler. topOfTheStackFragment:" + topOfTheStackFragment);
             }
 
             if (!route.isCompleted()) {
@@ -195,12 +184,11 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             if (mFragment == fragment) {
                 if (mBackPressedCallback.isEnabled()) {
                     mBackPressedCallback.handleOnBackPressed();
-                    return true;
                 } else {
                     mFragment.requireActivity().onBackPressed();
-                    return true;
                 }
-            } else if (fragment instanceof ComponentAsOverlay) {
+                return true;
+            } else if (fragment instanceof NavigationRouteHandler) {
                 return fragment.onOptionsItemSelected(item);
             } else {
                 throw new IllegalStateException("Should never reach here, Looks like the top of the stack fragment is not this(" + this + ") or implements ComponentAsOverlay. topOfTheStackFragment: " + fragment);
