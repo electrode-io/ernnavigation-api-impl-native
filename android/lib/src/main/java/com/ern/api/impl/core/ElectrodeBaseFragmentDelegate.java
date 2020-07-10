@@ -38,9 +38,6 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @Nullable
     private ReactRootView mMiniAppView;
 
-    @Nullable
-    private View mRootView;
-
     private String mMiniAppComponentName = "NAME_NOT_SET_YET";
 
     @SuppressWarnings("unused")
@@ -107,25 +104,22 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
         View rootView;
         if (mFragmentConfig != null && mFragmentConfig.mFragmentLayoutId != ElectrodeFragmentConfig.NONE) {
-            if (mRootView == null) {
-                mRootView = inflater.inflate(mFragmentConfig.mFragmentLayoutId, container, false);
+            View inflatedView = inflater.inflate(mFragmentConfig.mFragmentLayoutId, container, false);
 
-                setupToolbarIfPresent();
+            setupToolbarIfPresent();
 
-                if (mFragmentConfig.mReactViewContainerId != ElectrodeFragmentConfig.NONE && mMiniAppView != null) {
-                    @SuppressWarnings("ConstantConditions")
-                    View view = mRootView.findViewById(mFragmentConfig.mReactViewContainerId);
-                    if (view instanceof ViewGroup) {
-                        ((ViewGroup) view).addView(mMiniAppView);
-                    } else {
-                        throw new IllegalStateException("reactViewContainerId() should represent a ViewGroup to be able to add a react root view inside it.");
-                    }
+            if (mFragmentConfig.mReactViewContainerId != ElectrodeFragmentConfig.NONE && mMiniAppView != null) {
+                View view = inflatedView.findViewById(mFragmentConfig.mReactViewContainerId);
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).addView(mMiniAppView);
                 } else {
-                    Logger.i(TAG, "Missing reactViewContainerId() or mMiniAppView is null. Will not add MiniApp view explicitly. Do you have a MiniAppView component defined in your layout xml resource file?.");
+                    throw new IllegalStateException("reactViewContainerId() should represent a ViewGroup to be able to add a react root view inside it.");
                 }
+            } else {
+                Logger.i(TAG, "Missing reactViewContainerId() or mMiniAppView is null. Will not add MiniApp view explicitly. Do you have a MiniAppView component defined in your layout xml resource file?.");
             }
             Logger.d(TAG, "Returning custom view.");
-            rootView = mRootView;
+            rootView = inflatedView;
         } else {
             if (mMiniAppView == null) {
                 throw new IllegalStateException("MiniAppView is null. Should never reach here. onCreateView() should return a non-null view.");
@@ -139,11 +133,11 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
     private void setupToolbarIfPresent() {
         if (mFragmentConfig != null && mFragmentConfig.mToolbarId != ElectrodeFragmentConfig.NONE) {
-            if (mRootView == null) {
+            if (mFragment.getView() == null) {
                 throw new IllegalStateException("Should never reach here. mRootView should have been populated before calling this method");
             }
-            Toolbar toolbar = mRootView.findViewById(mFragmentConfig.mToolbarId);
-            if (mFragment.getActivity() instanceof AppCompatActivity) {
+            Toolbar toolbar = mFragment.getView().findViewById(mFragmentConfig.mToolbarId);
+            if (toolbar != null && mFragment.getActivity() instanceof AppCompatActivity) {
                 AppCompatActivity appCompatActivity = (AppCompatActivity) mFragment.getActivity();
                 if (appCompatActivity.getSupportActionBar() == null) {
                     appCompatActivity.setSupportActionBar(toolbar);
@@ -243,6 +237,16 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @SuppressWarnings("unused")
     public void onDestroyView() {
         Logger.v(TAG, "onDestroyView(): " + getReactComponentName());
+        // If the ReactNative view was inflated inside a container make sure to remove the ReactRootView from the parent
+        // since we are reusing the same MiniApp view instance when the view is recreated.
+        View rootView = mFragment.getView();
+        if (rootView != null && mMiniAppView != null && rootView != mMiniAppView && mFragmentConfig != null) {
+            View parentView = rootView.findViewById(mFragmentConfig.mReactViewContainerId);
+            if (parentView != null && mMiniAppView.getParent() == parentView) {
+                ((ViewGroup) parentView).removeView(mMiniAppView);
+                Logger.v(TAG, "Removed MiniApp(%s) view from parent view",  getReactComponentName());
+            }
+        }
     }
 
     @SuppressWarnings("unused")
@@ -284,7 +288,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
          * @return View returns a {@link ReactRootView} for the given component.
          */
         View createReactNativeView(@NonNull String appName, @Nullable Bundle props);
-        
+
         /**
          * Un-mounts a given React Native view component. Typically done when your fragment is destroyed.
          *
