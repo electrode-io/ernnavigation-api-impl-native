@@ -28,7 +28,7 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
             @Nullable
             @Override
             public MenuItemProperties menuItemPropertiesFor(@NonNull NavigationBarButton rightButton) {
-                if ("MoviesReloaded.refresh".equals(rightButton.getId())) {
+                if ("refresh".equals(rightButton.getId())) {
                     return new DefaultMenuItemProperties.Builder()
                             .icon(R.drawable.ic_refresh_24px)
                             .itemId(R.id.refresh)
@@ -50,7 +50,7 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
     // Return true if you handle click for an item click. Returning false will ensure that the click is delegated back to react native component for handling.
     @Override
     public boolean onNavBarButtonClicked(@NonNull NavigationBarButton button, @NonNull MenuItem item) {
-        if ("MoviesReloaded.about".equals(button.getId())) {
+        if ("about".equals(button.getId())) {
             Toast.makeText(getActivity(), "Clicked about button", Toast.LENGTH_SHORT).show();
             //Returning false here will send an OnButtonClicked event to the react native component as well.
             //Return true when you don't want RN to control this button click.
