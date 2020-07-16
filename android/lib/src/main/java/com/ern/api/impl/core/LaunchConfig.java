@@ -76,7 +76,7 @@ public class LaunchConfig {
     int mAddToBackStack = ADD_TO_BACK_STACK;
 
     /**
-     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     * Decides if the root component needs to be launched when the activity delegates onCreate is called.
      */
     boolean mStartRootInOnCreate = true;
 
@@ -200,7 +200,7 @@ public class LaunchConfig {
     }
 
     /**
-     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     * Decides if the root component needs to be launched when the activity delegates onCreate is called.
      * This is typically set when application/activity needs to take control of when the root component fragment needs to be started.
      *
      * @param startRootInOnCreate true | false Default value: true
@@ -210,7 +210,7 @@ public class LaunchConfig {
     }
 
     /**
-     * Decides of the root component needs to be launched when the activity delegates onCreate is called.
+     * Decides if the root component needs to be launched when the activity delegates onCreate is called.
      * This is typically set when application/activity needs to take control of when the root component fragment needs to be started.
      */
 
