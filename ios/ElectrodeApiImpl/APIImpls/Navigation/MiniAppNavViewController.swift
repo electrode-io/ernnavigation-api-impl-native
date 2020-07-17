@@ -80,16 +80,18 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
 
     func hideNavigationBarIfNeeded() {
         if let navigationVC = self.navigationController {
-            if hide != nil && hide! {
-                if !navigationVC.isNavigationBarHidden {
-                    ENNavigationDelegate.hiddenByRn = true
-                    navigationVC.setNavigationBarHidden(true, animated: false)
+            if hide != nil {
+                if hide! {
+                    if !navigationVC.isNavigationBarHidden {
+                        ENNavigationDelegate.hiddenByRn = true
+                        navigationVC.setNavigationBarHidden(true, animated: false)
+                    }
+                    return
+                } else if ENNavigationDelegate.hiddenByRn && navigationVC.isNavigationBarHidden {
+                    navigationVC.setNavigationBarHidden(false, animated: false)
                 }
-                return
-            } else if ENNavigationDelegate.hiddenByRn && navigationVC.isNavigationBarHidden {
-                navigationVC.setNavigationBarHidden(false, animated: false)
+                ENNavigationDelegate.hiddenByRn = false
             }
-            ENNavigationDelegate.hiddenByRn = false
         }
     }
 }
