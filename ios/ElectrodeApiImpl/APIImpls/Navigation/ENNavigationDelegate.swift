@@ -105,10 +105,14 @@ import UIKit
 
     func handleFinishFlow(finalPayload: String?, completion: @escaping ERNNavigationCompletionBlock) {
         let payloadDict = finalPayload?.convertStringToDict()
-        guard let navController = self.viewController?.navigationController else { return }
-        for vc in navController.viewControllers {
-            (vc as? MiniAppNavViewController)?.delegate?.deinitRNView()
-            (vc as? MiniAppNavViewController)?.delegate = nil
+        if let navController = self.viewController?.navigationController {
+            for vc in navController.viewControllers {
+                (vc as? MiniAppNavViewController)?.delegate?.deinitRNView()
+                (vc as? MiniAppNavViewController)?.delegate = nil
+            }
+        } else {
+            self.viewController?.delegate?.deinitRNView()
+            self.viewController?.delegate = nil
         }
         if ((self.viewController?.finish) != nil) {
             self.viewController?.finish?(payloadDict)
@@ -155,6 +159,7 @@ import UIKit
     func handleNavigationRequestWithPath(routeData: [AnyHashable : Any], completion: ERNNavigationCompletionBlock) {
         let path = routeData["path"] as? String ?? ""
         let replace = routeData["replace"] as? Bool ?? false
+        let overlay = routeData["overlay"] as? Bool ?? false
         if path == "finishFlow" {
             let jsonPayLoad = routeData["jsonPayload"] as? String
             self.finishedCallBack(finalPayLoad: jsonPayLoad)
@@ -180,7 +185,11 @@ import UIKit
                 }
                 vc.navigateWithRoute = self.viewController?.navigateWithRoute
                 vc.globalProperties = self.viewController?.globalProperties
-                if let viewControllers = self.viewController?.navigationController?.viewControllers {
+                if overlay {
+                    self.viewController?.definesPresentationContext = true
+                    vc.modalPresentationStyle = .overCurrentContext
+                    self.viewController?.present(vc, animated: true)
+                } else if let viewControllers = self.viewController?.navigationController?.viewControllers {
                     if replace && viewControllers.count > 0 {
                         var vcs = viewControllers
                         _ = vcs.popLast()
