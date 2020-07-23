@@ -111,8 +111,19 @@ import UIKit
                 (vc as? MiniAppNavViewController)?.delegate = nil
             }
         } else {
-            self.viewController?.delegate?.deinitRNView()
-            self.viewController?.delegate = nil
+            if var currentVC = self.viewController {
+                var isVCOverlay = currentVC.properties?["overlay"] as? Bool ?? false
+                while isVCOverlay == true {
+                    if let miniappvc = currentVC.presentingViewController as? MiniAppNavViewController {
+                        currentVC = miniappvc
+                        isVCOverlay = currentVC.properties?["overlay"] as? Bool ?? false
+                    } else {
+                        isVCOverlay = false
+                    }
+                }
+                ENNavigationAPIImpl.shared.delegate = currentVC
+                currentVC.dismiss(animated: false)
+            }
         }
         if ((self.viewController?.finish) != nil) {
             self.viewController?.finish?(payloadDict)
