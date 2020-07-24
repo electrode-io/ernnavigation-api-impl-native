@@ -55,6 +55,16 @@ import UIKit
         }
     }
 
+    func viewWillDisappear() {
+        if let presentingVC = self.viewController?.presentingViewController as? MiniAppNavViewController {
+            if let props = presentingVC.properties, let navBarDict = props["navigationBar"] as? [AnyHashable : Any] {
+                let navBar = NavigationBar(dictionary: navBarDict)
+                updateNavBarTitleAndButtons(navBar: navBar)
+            }
+            ENNavigationAPIImpl.shared.delegate = presentingVC
+        }
+    }
+
     func viewDidDisapper() {
         if self.viewController?.isMovingFromParentViewController ?? false {
             self.deinitRNView()
@@ -121,7 +131,6 @@ import UIKit
                         isVCOverlay = false
                     }
                 }
-                ENNavigationAPIImpl.shared.delegate = currentVC
                 currentVC.dismiss(animated: false)
             }
         }
@@ -130,35 +139,34 @@ import UIKit
         } else {
             self.finishedCallBack(finalPayLoad: finalPayload)
         }
-        var presentingVC: UIViewController? = self.viewController
-        while presentingVC?.presentingViewController != nil {
-            presentingVC = presentingVC?.presentingViewController
-            if let nc = presentingVC as? UINavigationController {
-                if let miniappVC = nc.viewControllers.last as? MiniAppNavViewController {
-                    ENNavigationAPIImpl.shared.delegate = miniappVC
-                    break;
-                }
-            }
-        }
         return completion("Finished status")
     }
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
-        if let vc = self.viewController {
-            self.getNavBarTitle(title: navBar.title, viewController: vc)
+        if self.viewController != nil {
+            updateNavBarTitleAndButtons(navBar: navBar)
+            return completion("success")
+        }
+    }
+
+    func updateNavBarTitleAndButtons(navBar: NavigationBar) {
+        if let vc = viewController {
+            getNavBarTitle(title: navBar.title, viewController: vc)
             if let buttons = navBar.buttons {
-                self.getNavBarButtons(buttons: buttons, viewController: vc)
+                getNavBarButtons(buttons: buttons, viewController: vc)
+            } else {
+                clearNavBarButtons(viewController: vc)
             }
             if let leftButton = navBar.leftButton {
-                self.manageLeftButton(leftButton: leftButton, viewController: vc)
+                manageLeftButton(leftButton: leftButton, viewController: vc)
+            } else {
+                clearLeftButton(viewController: vc)
             }
             if let hide = navBar.hide {
                 vc.hide = hide
             }
             vc.hideNavigationBarIfNeeded()
-            return completion("success")
         }
-        return
     }
 
     private func finishedCallBack(finalPayLoad: String?) {
@@ -215,8 +223,25 @@ import UIKit
         return completion("success")
     }
 
+    func getTopViewControllerWithNavigation(viewController: UIViewController) -> UIViewController? {
+        if viewController.navigationController != nil {
+            return viewController
+        } else {
+            var currentVC: UIViewController? = viewController.presentingViewController
+            while currentVC != nil {
+                if currentVC!.navigationController != nil {
+                    return currentVC
+                } else {
+                    currentVC = currentVC?.presentingViewController
+                }
+            }
+            return nil
+        }
+    }
+
     func getNavBarTitle(title: String, viewController: UIViewController) {
-        viewController.navigationController?.navigationBar.topItem?.title = title
+        let vc = getTopViewControllerWithNavigation(viewController: viewController)
+        vc?.navigationController?.navigationBar.topItem?.title = title
     }
 
     func getNavBarButtons(buttons: [NavigationBarButton], viewController: UIViewController) {
@@ -231,32 +256,49 @@ import UIKit
             }
         }
         assert(leftNavigationButtons.count <= 1 && rightNavigationButtons.count <= 3, "cannot have more than one left navigation button or three right navigation buttons")
-        if leftNavigationButtons.count == 1 {
-            viewController.navigationItem.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0], vc: viewController)
+        if let topVC = getTopViewControllerWithNavigation(viewController: viewController) {
+            if leftNavigationButtons.count == 1 {
+                topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0], vc: topVC)
+            }
+            var rightButtons = [ENBarButtonItem]()
+            for rightButton in rightNavigationButtons {
+                rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton, vc: topVC), at: 0)
+            }
+            topVC.navigationController?.navigationBar.topItem?.rightBarButtonItems = rightButtons
         }
-        var rightButtons = [ENBarButtonItem]()
-        for rightButton in rightNavigationButtons {
-            rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton, vc: viewController), at: 0)
-        }
-        viewController.navigationItem.rightBarButtonItems = rightButtons
     }
 
     func manageLeftButton(leftButton: NavigationBarLeftButton, viewController: UIViewController) {
-        var button = ENBarButtonItem()
-        if let icon = leftButton.icon {
-            if let image = self.getImage(icon: icon) {
-                button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+        if let topVC = getTopViewControllerWithNavigation(viewController: viewController) {
+            var button = ENBarButtonItem()
+            if let icon = leftButton.icon {
+                if let image = self.getImage(icon: icon) {
+                    button = ENBarButtonItem(image: image, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+                } else {
+                    NSLog("Cannot get image data")
+                }
             } else {
-                NSLog("Cannot get image data")
+                button = ENBarButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
             }
-        } else {
-            button = ENBarButtonItem(title: leftButton.title, style: .plain, target: self, action: #selector(clickLeftButtonWithButtonId(_:)))
+            button.accessibilityLabel = leftButton.adaLabel
+            button.isEnabled = !(leftButton.disabled ?? false)
+            button.stringTag = leftButton.id
+            button.currViewController = topVC
+            topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = button
         }
-        button.accessibilityLabel = leftButton.adaLabel
-        button.isEnabled = !(leftButton.disabled ?? false)
-        button.stringTag = leftButton.id
-        button.currViewController = viewController
-        viewController.navigationItem.leftBarButtonItem = button
+    }
+
+    func clearNavBarButtons(viewController: UIViewController) {
+        if let topVC = getTopViewControllerWithNavigation(viewController: viewController) {
+            topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = nil
+            topVC.navigationController?.navigationBar.topItem?.rightBarButtonItems = nil
+        }
+    }
+
+    func clearLeftButton(viewController: UIViewController) {
+        if let topVC = getTopViewControllerWithNavigation(viewController: viewController) {
+            topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = nil
+        }
     }
 
     private func getImage(icon: String) -> UIImage? {
@@ -340,7 +382,13 @@ import UIKit
                 if viewControllers?.count == 1 {
                     vc.navigationController?.dismiss(animated: true, completion: nil)
                 } else {
-                    vc.navigationController?.popViewController(animated: true)
+                    if (vc.presentedViewController != nil) {
+                        vc.dismiss(animated: true) {
+                            vc.navigationController?.popViewController(animated: true)
+                        }
+                    } else {
+                        vc.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }
