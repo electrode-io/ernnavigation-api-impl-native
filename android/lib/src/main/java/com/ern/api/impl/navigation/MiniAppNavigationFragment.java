@@ -18,7 +18,12 @@ import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
  * <p>
  * Use this fragment to host a React Native component that uses ern-navigation library to navigate between pages.
  */
-public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate> implements ElectrodeNavigationFragmentDelegate.FragmentNavigator, ElectrodeNavigationFragmentDelegate.OnUpdateNextPageLaunchConfigListener, UpdatePropsListener, NavigationRouteHandler {
+public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate> implements
+        ElectrodeNavigationFragmentDelegate.FragmentNavigator,
+        ElectrodeNavigationFragmentDelegate.OnUpdateNextPageLaunchConfigListener,
+        UpdatePropsListener,
+        NavigationRouteHandler,
+        ElectrodeNavigationFragmentDelegate.OnOptionsMenuUpdatedListener {
     private static final String TAG = MiniAppNavigationFragment.class.getSimpleName();
 
     @NonNull
@@ -55,5 +60,9 @@ public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNa
     public void handleRoute(@NonNull Route route) {
         Logger.v(TAG, "Delegating handleRoute request for route: %s", route);
         mElectrodeReactFragmentDelegate.handleRoute(route, this);
+    }
+
+    @Override
+    public void onOptionsMenuUpdated(@NonNull Menu menu, @NonNull MenuInflater inflater) {
     }
 }

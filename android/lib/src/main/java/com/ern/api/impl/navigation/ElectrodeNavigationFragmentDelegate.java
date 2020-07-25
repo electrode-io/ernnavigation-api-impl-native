@@ -354,6 +354,24 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         void updateNextPageLaunchConfig(@NonNull final String nextPageName, @NonNull final LaunchConfig defaultLaunchConfig);
     }
 
+    /**
+     * Fragments may choose to implement this interface if it needs to take control of options menu after the RN side has updated the menu items.
+     * <p>
+     * This is useful in a situation where native side would also like to add items to the action bar menu.
+     * <p>
+     * Note that, most of the use cases does not need to this.
+     */
+    public interface OnOptionsMenuUpdatedListener {
+        /**
+         * Invoked after RN side has finished updating the action bar menu items.
+         * <p>
+         * Happens after [{@link Fragment#onOptionsItemSelected(MenuItem)} ] and when ever the React Native component fires an update() call.
+         *
+         * @param menu [{@link Menu}]
+         */
+        void onOptionsMenuUpdated(@NonNull Menu menu, @NonNull MenuInflater inflater);
+    }
+
     private void updateNavBar(@NonNull NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
         ActionBar actionBar = getSupportActionBar();
@@ -386,6 +404,9 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         if (mMenu != null && mFragment.getActivity() != null) {
             MenuUtil.updateMenuItems(mMenu, navigationBar, mNavBarButtonClickListener, mMenuItemDataProvider, mFragment.getActivity());
+            if (mFragment instanceof OnOptionsMenuUpdatedListener) {
+                ((OnOptionsMenuUpdatedListener) mFragment).onOptionsMenuUpdated(mMenu, mFragment.requireActivity().getMenuInflater());
+            }
         }
     }
 
