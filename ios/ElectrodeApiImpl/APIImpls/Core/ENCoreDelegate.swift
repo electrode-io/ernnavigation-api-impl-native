@@ -55,11 +55,10 @@ import UIKit
     }
 
     private func createView(name: String, properties: [AnyHashable : Any]?) {
-        let viewController = ElectrodeReactNative.sharedInstance().miniApp(withName: name, properties: properties)
-        if let v = viewController.view {
-            v.translatesAutoresizingMaskIntoConstraints = false
-            rnView = v
-        }
+        let overlay = properties?["overlay"] as? Bool ?? false
+        let view = ElectrodeReactNative.sharedInstance().miniAppView(withName: name, properties: properties, overlay: overlay)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        rnView = view
     }
 
     func reloadView(viewController: UIViewController, ernNavRoute: [AnyHashable: Any]?) {

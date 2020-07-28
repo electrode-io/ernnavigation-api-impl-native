@@ -88,7 +88,22 @@ NSString * const kElectrodeContainerFrameworkIdentifier = @"com.walmartlabs.ern.
     miniAppViewController = [UIViewController new];
     miniAppViewController.view = rootView;
     
-    return miniAppViewController;}
+    return miniAppViewController;
+}
+
+- (UIView *)miniAppViewWithName:(NSString *)name properties:(NSDictionary *_Nullable)properties overlay:(BOOL)overlay {
+    // Use the bridge to generate the view
+    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.bridge moduleName:name initialProperties:properties];
+    rootView.backgroundColor = [self rootViewColorWithOverlay:overlay];
+    return rootView;
+}
+
+- (UIColor *)rootViewColorWithOverlay:(BOOL)overlay {
+    if (overlay) {
+        return [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:0.5];
+    }
+    return [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+}
 
 - (void)updateView:(UIView *)view withProps:(NSDictionary *)newProps {
     if([view isKindOfClass:[RCTRootView class]]) {
