@@ -18,7 +18,7 @@ import UIKit
 
 open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     let miniAppName: String
-    let properties: [AnyHashable: Any]?
+    var properties: [AnyHashable: Any]?
     public var finishedCallback: MiniAppFinishedCallback?
     public var finish: Payload?
     public var delegate: ENNavigationDelegate?
@@ -28,7 +28,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     public var hide: Bool?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
-        self.properties = properties
+        self.properties = properties ?? [AnyHashable: Any]()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -50,6 +50,11 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_FOCUS.rawValue, viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: nil))
+    }
+
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.delegate?.viewWillDisappear()
     }
 
     open override func viewDidDisappear(_ animated: Bool) {
@@ -75,6 +80,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     }
 
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
+        self.properties?["navigationBar"] = navBar.toDictionary()
         self.delegate?.updateNavigationBar(navBar: navBar, completion: completion)
     }
 
