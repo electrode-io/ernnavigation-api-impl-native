@@ -13,6 +13,8 @@ import com.ern.api.impl.core.LaunchConfig;
 import com.ern.api.impl.core.UpdatePropsListener;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
+import org.json.JSONObject;
+
 /**
  * Default fragment for Electrode Native Navigation
  * <p>
@@ -65,4 +67,14 @@ public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNa
     @Override
     public void onOptionsMenuUpdated(@NonNull Menu menu, @NonNull MenuInflater inflater) {
     }
+
+    /**
+     * This will send an event to the current component's `onAppData()` method
+     *
+     * @param jsonPayload: event payload if any
+     */
+    public void emitOnAppData(@Nullable JSONObject jsonPayload) {
+        mElectrodeReactFragmentDelegate.emitOnAppData(jsonPayload);
+    }
+
 }
