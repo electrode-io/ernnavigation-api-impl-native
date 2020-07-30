@@ -105,9 +105,19 @@ import UIKit
             }
             return completion("cannot find path from view Controllet stack")
         } else {
-            self.viewController?.navigationController?.popViewController(animated: true)
-            if refresh, let lastVC = self.viewController?.navigationController?.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
-                miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+            if self.viewController?.navigationController != nil {
+                self.viewController?.navigationController?.popViewController(animated: true)
+                if refresh, let lastVC = self.viewController?.navigationController?.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
+                    miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+                }
+            } else {
+                if let lastVC = self.viewController?.presentingViewController {
+                    self.viewController?.dismiss(animated: false, completion: {
+                        if refresh, let miniAppVC = lastVC as? MiniAppNavViewController {
+                            miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+                        }
+                    })
+                }
             }
             return completion("success")
         }
@@ -207,7 +217,7 @@ import UIKit
                 if overlay {
                     self.viewController?.definesPresentationContext = true
                     vc.modalPresentationStyle = .overCurrentContext
-                    self.viewController?.present(vc, animated: true)
+                    self.viewController?.present(vc, animated: false)
                 } else if let viewControllers = self.viewController?.navigationController?.viewControllers {
                     if replace && viewControllers.count > 0 {
                         var vcs = viewControllers
@@ -258,11 +268,11 @@ import UIKit
         assert(leftNavigationButtons.count <= 1 && rightNavigationButtons.count <= 3, "cannot have more than one left navigation button or three right navigation buttons")
         if let topVC = getTopViewControllerWithNavigation(viewController: viewController) {
             if leftNavigationButtons.count == 1 {
-                topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0], vc: topVC)
+                topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = self.getUIBarButtonItem(navigationButton: leftNavigationButtons[0], vc: viewController)
             }
             var rightButtons = [ENBarButtonItem]()
             for rightButton in rightNavigationButtons {
-                rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton, vc: topVC), at: 0)
+                rightButtons.insert(self.getUIBarButtonItem(navigationButton: rightButton, vc: viewController), at: 0)
             }
             topVC.navigationController?.navigationBar.topItem?.rightBarButtonItems = rightButtons
         }
@@ -283,7 +293,7 @@ import UIKit
             button.accessibilityLabel = leftButton.adaLabel
             button.isEnabled = !(leftButton.disabled ?? false)
             button.stringTag = leftButton.id
-            button.currViewController = topVC
+            button.currViewController = viewController
             topVC.navigationController?.navigationBar.topItem?.leftBarButtonItem = button
         }
     }
@@ -382,10 +392,8 @@ import UIKit
                 if viewControllers?.count == 1 {
                     vc.navigationController?.dismiss(animated: true, completion: nil)
                 } else {
-                    if (vc.presentedViewController != nil) {
-                        vc.dismiss(animated: true) {
-                            vc.navigationController?.popViewController(animated: true)
-                        }
+                    if (vc.presentingViewController != nil)  {
+                        vc.dismiss(animated: false)
                     } else {
                         vc.navigationController?.popViewController(animated: true)
                     }
