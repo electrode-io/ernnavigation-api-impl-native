@@ -149,6 +149,16 @@ import UIKit
         } else {
             self.finishedCallBack(finalPayLoad: finalPayload)
         }
+        var presentingVC: UIViewController? = self.viewController
+        while presentingVC?.presentingViewController != nil {
+            presentingVC = presentingVC?.presentingViewController
+            if let nc = presentingVC as? UINavigationController {
+                if let miniappVC = nc.viewControllers.last as? MiniAppNavViewController {
+                    ENNavigationAPIImpl.shared.delegate = miniappVC
+                    break;
+                }
+            }
+        }
         return completion("Finished status")
     }
 
