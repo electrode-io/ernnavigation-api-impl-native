@@ -16,7 +16,7 @@
 
 import UIKit
 
-open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
+open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENOverlayProtocol {
     let miniAppName: String
     var properties: [AnyHashable: Any]?
     public var finishedCallback: MiniAppFinishedCallback?
@@ -82,6 +82,10 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol {
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
         self.properties?["navigationBar"] = navBar.toDictionary()
         self.delegate?.updateNavigationBar(navBar: navBar, completion: completion)
+    }
+
+    func onDismissOverlay() {
+        self.delegate?.onDismissOverlay()
     }
 
     func hideNavigationBarIfNeeded() {

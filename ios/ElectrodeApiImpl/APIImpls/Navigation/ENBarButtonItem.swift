@@ -18,7 +18,7 @@ import UIKit
 
 class ENBarButtonItem: UIBarButtonItem {
     var stringTag: String?
-    var currViewController: UIViewController?
+    var viewController: UIViewController? // Need reference here to get access to presenting VC for overlay use case
 }
 
 enum NavEventType: String {

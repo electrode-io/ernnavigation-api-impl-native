@@ -46,7 +46,12 @@ class ENNavigationAPIImpl: NSObject {
                 if let navBarDict = ernData["navigationBar"] as? [AnyHashable : Any] {
                     let navBar = NavigationBar(dictionary: navBarDict)
                     self.delegate?.updateNavigationBar(navBar: navBar, completion: { (message) in
-                        return block(message, nil)
+                        if message == "success" {
+                            return block(message, nil)
+                        } else {
+                            let failureMessage = ElectrodeBridgeFailureMessage.createFailureMessage(withCode: "error", message: message)
+                            return block(nil, failureMessage)
+                        }
                     })
                 }
             }
