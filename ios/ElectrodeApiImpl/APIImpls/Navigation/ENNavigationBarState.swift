@@ -16,6 +16,14 @@
 
 import Foundation
 
-protocol ENOverlayProtocol: class {
-    func onDismissOverlay() // Previous overlay is dismissed, use this method to restore state, ie: navigation bar state
+struct ENNavigationBarState {
+    var title: String?
+    var leftBarButtonItem: UIBarButtonItem?
+    var rightBarButtonItems: [UIBarButtonItem]?
+
+    init(navigationItem: UINavigationItem) {
+        title = navigationItem.title
+        leftBarButtonItem = navigationItem.leftBarButtonItem
+        rightBarButtonItems = navigationItem.rightBarButtonItems
+    }
 }

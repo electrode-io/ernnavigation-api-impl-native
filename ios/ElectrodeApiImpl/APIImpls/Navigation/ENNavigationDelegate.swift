@@ -22,7 +22,7 @@ import UIKit
     static var hiddenByRn: Bool = false
     var navigationAPI: EnNavigationAPI?
     weak var delegate: ENNavigationProtocol?
-    var savedleftBarButtonItem: UIBarButtonItem?
+    var navBarState: ENNavigationBarState?
 
     override public func viewDidLoad(viewController: UIViewController) {
         self.delegate = viewController as? ENNavigationProtocol
@@ -56,6 +56,17 @@ import UIKit
         }
     }
 
+    func viewDidAppear() {
+        if let vc = self.viewController {
+            if vc.isMovingToParentViewController {
+                if let navigationBarDict = vc.properties?["navigationBar"] as? [AnyHashable: Any] {
+                    let navBar = NavigationBar(dictionary: navigationBarDict)
+                    updateNavBarTitleAndButtons(navBar: navBar)
+                }
+            }
+        }
+    }
+
     func viewWillDisappear() {
         // This scenario only applies to overlay views that are presented
         if let presentingVC = self.viewController?.presentingViewController as? ENOverlayProtocol {
@@ -63,8 +74,8 @@ import UIKit
         }
     }
 
-    func viewDidDisapper() {
-        if self.viewController?.isMovingFromParentViewController ?? false {
+    func viewDidDisappear() {
+        if self.viewController?.isMovingFromParentViewController ?? false || self.viewController?.isBeingDismissed ?? false {
             self.deinitRNView()
         }
     }
@@ -81,13 +92,34 @@ import UIKit
         }
     }
 
-    func popToViewController(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
+    func popToViewController(ernNavRoute: [AnyHashable : Any]?, completion: @escaping ERNNavigationCompletionBlock) {
+        let overlay = viewController?.properties?["overlay"] as? Bool ?? false
+        let componentName = ernNavRoute?["path"] as? String
         let refresh = ernNavRoute?["refresh"] as? Bool ?? false
-        var deinitViews = [MiniAppNavViewController]()
-        if let p = ernNavRoute?["path"] as? String, let viewControllers = self.viewController?.navigationController?.viewControllers {
+        if let navCallBack = viewController?.navigationController as? ENMiniAppNavDataProvider {
+            if let backToMiniApp = navCallBack.backToMiniApp, let componentName = componentName, let ernNavRoute = ernNavRoute {
+                if backToMiniApp(componentName, ernNavRoute) {
+                    return completion("success")
+                }
+            }
+        }
+        if overlay {
+            if let vc = viewController, let topVC = getTopViewControllerWithNavigation(viewController: vc) {
+                topVC.dismiss(animated: false) {
+                    self.backTo(componentName: componentName, refresh: refresh, ernNavRoute: ernNavRoute, completion: completion)
+                }
+            }
+        } else {
+            backTo(componentName: componentName, refresh: refresh, ernNavRoute: ernNavRoute, completion: completion)
+        }
+    }
+
+    func backTo(componentName: String?, refresh: Bool, ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
+        if let componentName = componentName, let viewControllers = viewController?.navigationController?.viewControllers {
+            var deinitViews = [MiniAppNavViewController]()
             for vc in viewControllers.reversed() {
                 if let miniappVC = vc as? MiniAppNavViewController {
-                    if p == miniappVC.miniAppName {
+                    if componentName == miniappVC.miniAppName {
                         self.viewController?.navigationController?.popToViewController(miniappVC, animated: true)
                         if refresh {
                             miniappVC.reloadView(ernNavRoute: ernNavRoute)
@@ -101,20 +133,12 @@ import UIKit
                     }
                 }
             }
-            return completion("cannot find path from view Controllet stack")
+            return completion("cannot find path from viewController stack")
         } else {
-            if self.viewController?.navigationController != nil {
-                self.viewController?.navigationController?.popViewController(animated: true)
-                if refresh, let lastVC = self.viewController?.navigationController?.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
+            if let navigationController = viewController?.navigationController {
+                navigationController.popViewController(animated: true)
+                if refresh, let lastVC = navigationController.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
                     miniAppVC.reloadView(ernNavRoute: ernNavRoute)
-                }
-            } else {
-                if let lastVC = self.viewController?.presentingViewController {
-                    self.viewController?.dismiss(animated: false, completion: {
-                        if refresh, let miniAppVC = lastVC as? MiniAppNavViewController {
-                            miniAppVC.reloadView(ernNavRoute: ernNavRoute)
-                        }
-                    })
                 }
             }
             return completion("success")
@@ -162,11 +186,9 @@ import UIKit
 
     func onDismissOverlay() {
         if let vc = viewController {
-            if let props = vc.properties, let navBarDict = props["navigationBar"] as? [AnyHashable : Any] {
-                let navBar = NavigationBar(dictionary: navBarDict)
-                updateNavBarTitleAndButtons(navBar: navBar)
-            }
-            vc.navigationController?.navigationBar.topItem?.leftBarButtonItem = vc.delegate?.savedleftBarButtonItem
+            vc.navigationController?.navigationBar.topItem?.title = vc.delegate?.navBarState?.title
+            vc.navigationController?.navigationBar.topItem?.leftBarButtonItem = vc.delegate?.navBarState?.leftBarButtonItem
+            vc.navigationController?.navigationBar.topItem?.rightBarButtonItems = vc.delegate?.navBarState?.rightBarButtonItems
             ENNavigationAPIImpl.shared.delegate = vc
         }
     }
@@ -215,44 +237,50 @@ import UIKit
             if !(self.viewController?.navigateWithRoute?(routeData) ?? false) {
                 // We are checking overlay here to get navigation bar state before update nav bar is called
                 if overlay {
-                    if let leftBarButtonItem = viewController?.navigationController?.navigationBar.topItem?.leftBarButtonItem {
-                        savedleftBarButtonItem = leftBarButtonItem
-                    } else {
-                        let topVC = getTopViewControllerWithNavigation(viewController: viewController!)
-                        savedleftBarButtonItem = topVC?.navigationController?.navigationBar.topItem?.leftBarButtonItem
+                    if let vc = viewController, let topVC = getTopViewControllerWithNavigation(viewController: vc),
+                        let navigationItem = topVC.navigationController?.navigationBar.topItem {
+                        navBarState = ENNavigationBarState(navigationItem: navigationItem)
                     }
                 }
                 let combinedRouteData = self.combineRouteData(dictionary1: routeData, dictionary2: self.viewController?.globalProperties)
-                let vc = MiniAppNavViewController(properties: combinedRouteData, miniAppName: path)
-                vc.pushToExistingViewController = false
-                if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
-                    let navBar = NavigationBar(dictionary: navigationBarDict)
-                    updateNavBarTitleAndButtons(navBar: navBar)
-                }
+                let newVC = MiniAppNavViewController(properties: combinedRouteData, miniAppName: path)
+                newVC.pushToExistingViewController = false
                 if let finish = self.viewController?.finish {
-                    vc.finish = finish
+                    newVC.finish = finish
                 } else if let finishedCallback = self.viewController?.finishedCallback {
-                    vc.finishedCallback = finishedCallback
+                    newVC.finishedCallback = finishedCallback
                 }
-                vc.navigateWithRoute = self.viewController?.navigateWithRoute
-                vc.globalProperties = self.viewController?.globalProperties
+                newVC.navigateWithRoute = self.viewController?.navigateWithRoute
+                newVC.globalProperties = self.viewController?.globalProperties
                 if overlay {
                     self.viewController?.definesPresentationContext = true
-                    vc.modalPresentationStyle = .overCurrentContext
-                    self.viewController?.present(vc, animated: false)
-                } else if let viewControllers = self.viewController?.navigationController?.viewControllers {
-                    if replace && viewControllers.count > 0 {
-                        var vcs = viewControllers
-                        _ = vcs.popLast()
-                        vcs.append(vc)
-                        self.viewController?.navigationController?.setViewControllers(vcs, animated: true)
-                    } else {
-                        self.viewController?.navigationController?.pushViewControllerWithoutBackButtonTitle(vc, animated: true)
+                    newVC.modalPresentationStyle = .overCurrentContext
+                    self.viewController?.present(newVC, animated: false)
+                } else if let navigationController = self.viewController?.navigationController {
+                    pushViewController(viewToPush: newVC, navigationController: navigationController, replace: replace)
+                } else {
+                    // This should only be executed if current viewcontroller is an overlay
+                    if let vc = viewController, let topVC = getTopViewControllerWithNavigation(viewController: vc), let navigationController = topVC.navigationController {
+                        topVC.dismiss(animated: false) {
+                            self.pushViewController(viewToPush: newVC, navigationController: navigationController, replace: replace)
+                        }
                     }
                 }
             }
         }
         return completion("success")
+    }
+
+    func pushViewController(viewToPush: UIViewController, navigationController: UINavigationController, replace: Bool) {
+        let viewControllers = navigationController.viewControllers
+        if replace && viewControllers.count > 0 {
+            var vcs = viewControllers
+            _ = vcs.popLast()
+            vcs.append(viewToPush)
+            navigationController.setViewControllers(vcs, animated: true)
+        } else {
+            navigationController.pushViewControllerWithoutBackButtonTitle(viewToPush, animated: true)
+        }
     }
 
     func getTopViewControllerWithNavigation(viewController: UIViewController) -> UIViewController? {
