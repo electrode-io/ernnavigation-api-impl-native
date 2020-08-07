@@ -21,6 +21,6 @@ typealias ERNNavigationCompletionBlock = (String) -> Void
 protocol ENNavigationProtocol: class {
     func handleNavigationRequestWithPath(routeData: [AnyHashable: Any], completion: ERNNavigationCompletionBlock)
     func handleFinishFlow(finalPayLoad: String?, completion: @escaping ERNNavigationCompletionBlock)
-    func popToViewControllerWithPath(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock)
+    func popToViewControllerWithPath(ernNavRoute: [AnyHashable : Any]?, completion: @escaping ERNNavigationCompletionBlock)
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock)
 }

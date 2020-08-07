@@ -49,6 +49,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
 
     override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.delegate?.viewDidAppear()
         ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_FOCUS.rawValue, viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: nil))
     }
 
@@ -59,7 +60,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
 
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.delegate?.viewDidDisapper()
+        self.delegate?.viewDidDisappear()
         ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: NavEventData(eventType: NavEventType.DID_BLUR.rawValue, viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: nil))
     }
 
@@ -75,7 +76,7 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
         self.delegate?.handleFinishFlow(finalPayload: finalPayLoad, completion: completion)
     }
 
-    func popToViewControllerWithPath(ernNavRoute: [AnyHashable : Any]?, completion: ERNNavigationCompletionBlock) {
+    func popToViewControllerWithPath(ernNavRoute: [AnyHashable : Any]?, completion: @escaping ERNNavigationCompletionBlock) {
         self.delegate?.popToViewController(ernNavRoute: ernNavRoute, completion: completion)
     }
 
