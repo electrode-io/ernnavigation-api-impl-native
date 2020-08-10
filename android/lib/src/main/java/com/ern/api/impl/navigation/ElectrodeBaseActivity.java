@@ -1,6 +1,7 @@
 package com.ern.api.impl.navigation;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -11,17 +12,20 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.ern.api.impl.core.LaunchConfig;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import org.json.JSONObject;
 
-public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeNavigationActivityListener {
+public abstract class ElectrodeBaseActivity extends AppCompatActivity implements ElectrodeNavigationActivityListener, PermissionAwareActivity {
     public static final int DEFAULT_TITLE = -1;
     public static final int NONE = 0;
 
@@ -247,5 +251,18 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void requestPermissions(
+            String[] permissions, int requestCode, PermissionListener listener) {
+        mElectrodeReactNavDelegate.requestPermissions(permissions, requestCode, listener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mElectrodeReactNavDelegate.onRequestPermissionsResult(
+                requestCode, permissions, grantResults);
     }
 }
