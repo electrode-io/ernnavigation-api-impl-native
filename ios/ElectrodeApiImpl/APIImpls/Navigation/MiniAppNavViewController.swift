@@ -85,6 +85,10 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
         self.delegate?.updateNavigationBar(navBar: navBar, completion: completion)
     }
 
+    func presentOverlay(viewToPresent: UIViewController) {
+        self.delegate?.presentOverlay(viewToPresent: viewToPresent)
+    }
+
     func onDismissOverlay() {
         self.delegate?.onDismissOverlay()
     }

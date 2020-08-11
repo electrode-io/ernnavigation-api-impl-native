@@ -17,5 +17,6 @@
 import Foundation
 
 protocol ENOverlayProtocol: class {
+    func presentOverlay(viewToPresent: UIViewController) // Use this method to display overlay
     func onDismissOverlay() // Previous overlay is dismissed, use this method to restore state, ie: navigation bar state
 }
