@@ -192,7 +192,6 @@ import UIKit
             ENNavigationAPIImpl.shared.delegate = vc
         }
     }
-    
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
         if viewController != nil {
             updateNavBarTitleAndButtons(navBar: navBar)
@@ -253,22 +252,36 @@ import UIKit
                 newVC.navigateWithRoute = self.viewController?.navigateWithRoute
                 newVC.globalProperties = self.viewController?.globalProperties
                 if overlay {
-                    self.viewController?.definesPresentationContext = true
-                    newVC.modalPresentationStyle = .overCurrentContext
-                    self.viewController?.present(newVC, animated: false)
+                    // If replace is true, dismiss and then present new overlay
+                    if replace {
+                        if let presentingVC = self.viewController?.presentingViewController as? ENOverlayProtocol {
+                            self.viewController?.dismiss(animated: false, completion: {
+                                presentingVC.presentOverlay(viewToPresent: newVC)
+                            })
+                        }
+                    } else {
+                        presentOverlay(viewToPresent: newVC)
+                    }
                 } else if let navigationController = self.viewController?.navigationController {
                     pushViewController(viewToPush: newVC, navigationController: navigationController, replace: replace)
                 } else {
                     // This should only be executed if current viewcontroller is an overlay
                     if let vc = viewController, let topVC = getTopViewControllerWithNavigation(viewController: vc), let navigationController = topVC.navigationController {
                         topVC.dismiss(animated: false) {
-                            self.pushViewController(viewToPush: newVC, navigationController: navigationController, replace: replace)
+                            // In overlay scenario, replace need not be considered, because dismissing the overlay acts as the replace
+                            self.pushViewController(viewToPush: newVC, navigationController: navigationController, replace: false)
                         }
                     }
                 }
             }
         }
         return completion("success")
+    }
+
+    func presentOverlay(viewToPresent: UIViewController) {
+        self.viewController?.definesPresentationContext = true
+        viewToPresent.modalPresentationStyle = .overCurrentContext
+        self.viewController?.present(viewToPresent, animated: false)
     }
 
     func pushViewController(viewToPush: UIViewController, navigationController: UINavigationController, replace: Bool) {
