@@ -283,12 +283,20 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         return config;
     }
 
+    /**
+     * This method should return the fragment that is hosting the current RN view.
+     *
+     * @return Fragment
+     */
     @Nullable
     protected Fragment getTopOfTheStackFragment() {
         if (mFragment.getActivity() != null) {
             List<Fragment> fragments = mFragment.getActivity().getSupportFragmentManager().getFragments();
-            if (fragments.size() > 0) {
-                return fragments.get(fragments.size() - 1);
+            for (int i = fragments.size() - 1; i >= 0; i--) {
+                Fragment f = fragments.get(i);
+                if (f == mFragment || f instanceof NavigationRouteHandler) {
+                    return f;
+                }
             }
         }
         return null;
