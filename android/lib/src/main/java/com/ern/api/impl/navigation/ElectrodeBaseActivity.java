@@ -263,4 +263,14 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         mElectrodeReactNavDelegate.onRequestPermissionsResult(
                 requestCode, permissions, grantResults);
     }
+
+    @Override
+    public int checkSelfPermission(String permission) {
+        return super.checkSelfPermission(permission);
+    }
+
+    @Override
+    public int checkPermission(String permission, int pid, int uid) {
+        return super.checkPermission(permission, pid, uid);
+    }
 }
