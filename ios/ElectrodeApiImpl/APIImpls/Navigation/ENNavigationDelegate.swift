@@ -22,6 +22,7 @@ import UIKit
     static var hiddenByRn: Bool = false
     var navigationAPI: EnNavigationAPI?
     var navBarState: ENNavigationBarState?
+    var hideNavBar: Bool?
 
     override public func viewDidLoad(viewController: UIViewController) {
         if let navigationVC = viewController as? UINavigationController {
@@ -49,7 +50,7 @@ import UIKit
 
     func viewWillAppear() {
         if let vc = self.viewController {
-            vc.hideNavigationBarIfNeeded()
+            hideNavigationBarIfNeeded()
             ENNavigationAPIImpl.shared.currentViewController = vc
         }
     }
@@ -190,6 +191,7 @@ import UIKit
             ENNavigationAPIImpl.shared.currentViewController = vc
         }
     }
+
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {
         if viewController != nil {
             updateNavBarTitleAndButtons(navBar: navBar)
@@ -200,20 +202,34 @@ import UIKit
     }
 
     func updateNavBarTitleAndButtons(navBar: NavigationBar) {
-        if let vc = self.viewController {
-            setNavBarTitle(title: navBar.title)
-            if let rightButtons = navBar.buttons {
-                setRightBarButtons(buttons: rightButtons)
-            } else {
-                clearRightBarButtons()
+        setNavBarTitle(title: navBar.title)
+        if let rightButtons = navBar.buttons {
+            setRightBarButtons(buttons: rightButtons)
+        } else {
+            clearRightBarButtons()
+        }
+        if let leftButton = navBar.leftButton {
+            setLeftBarButton(leftButton: leftButton)
+        }
+        hideNavBar = navBar.hide
+        hideNavigationBarIfNeeded()
+    }
+
+    func hideNavigationBarIfNeeded() {
+        if let vc = viewController, let topVC = getTopViewControllerWithNavigation(viewController: vc),
+            let navigationVC = topVC.navigationController {
+            if hideNavBar != nil {
+                if hideNavBar! {
+                    if !navigationVC.isNavigationBarHidden {
+                        ENNavigationDelegate.hiddenByRn = true
+                        navigationVC.setNavigationBarHidden(true, animated: false)
+                    }
+                    return
+                } else if ENNavigationDelegate.hiddenByRn && navigationVC.isNavigationBarHidden {
+                    navigationVC.setNavigationBarHidden(false, animated: false)
+                }
+                ENNavigationDelegate.hiddenByRn = false
             }
-            if let leftButton = navBar.leftButton {
-                setLeftBarButton(leftButton: leftButton)
-            }
-            if let hide = navBar.hide {
-                vc.hide = hide
-            }
-            vc.hideNavigationBarIfNeeded()
         }
     }
 

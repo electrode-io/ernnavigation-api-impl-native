@@ -25,7 +25,6 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
     public var navigateWithRoute: NavigateWithRoute?
     public var pushToExistingViewController: Bool = true
     public var globalProperties: [AnyHashable: Any]?
-    public var hide: Bool?
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties ?? [AnyHashable: Any]()
@@ -91,23 +90,6 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
 
     func onDismissOverlay() {
         self.delegate?.onDismissOverlay()
-    }
-
-    func hideNavigationBarIfNeeded() {
-        if let navigationVC = self.navigationController {
-            if hide != nil {
-                if hide! {
-                    if !navigationVC.isNavigationBarHidden {
-                        ENNavigationDelegate.hiddenByRn = true
-                        navigationVC.setNavigationBarHidden(true, animated: false)
-                    }
-                    return
-                } else if ENNavigationDelegate.hiddenByRn && navigationVC.isNavigationBarHidden {
-                    navigationVC.setNavigationBarHidden(false, animated: false)
-                }
-                ENNavigationDelegate.hiddenByRn = false
-            }
-        }
     }
 }
 
