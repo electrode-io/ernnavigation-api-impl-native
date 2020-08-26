@@ -21,11 +21,9 @@ import UIKit
     static let buttonWidth: CGFloat = 22
     static var hiddenByRn: Bool = false
     var navigationAPI: EnNavigationAPI?
-    weak var delegate: ENNavigationProtocol?
     var navBarState: ENNavigationBarState?
 
     override public func viewDidLoad(viewController: UIViewController) {
-        self.delegate = viewController as? ENNavigationProtocol
         if let navigationVC = viewController as? UINavigationController {
             if let vc = navigationVC as? ENMiniAppNavDataProvider {
                 let miniAppName = vc.rootComponentName
@@ -52,7 +50,7 @@ import UIKit
     func viewWillAppear() {
         if let vc = self.viewController {
             vc.hideNavigationBarIfNeeded()
-            ENNavigationAPIImpl.shared.delegate = vc
+            ENNavigationAPIImpl.shared.currentViewController = vc
         }
     }
 
@@ -176,7 +174,7 @@ import UIKit
             presentingVC = presentingVC?.presentingViewController
             if let nc = presentingVC as? UINavigationController {
                 if let miniappVC = nc.viewControllers.last as? MiniAppNavViewController {
-                    ENNavigationAPIImpl.shared.delegate = miniappVC
+                    ENNavigationAPIImpl.shared.currentViewController = miniappVC
                     break;
                 }
             }
@@ -189,7 +187,7 @@ import UIKit
             vc.navigationController?.navigationBar.topItem?.title = vc.delegate?.navBarState?.title
             vc.navigationController?.navigationBar.topItem?.leftBarButtonItem = vc.delegate?.navBarState?.leftBarButtonItem
             vc.navigationController?.navigationBar.topItem?.rightBarButtonItems = vc.delegate?.navBarState?.rightBarButtonItems
-            ENNavigationAPIImpl.shared.delegate = vc
+            ENNavigationAPIImpl.shared.currentViewController = vc
         }
     }
     func updateNavigationBar(navBar: NavigationBar, completion: @escaping ERNNavigationCompletionBlock) {

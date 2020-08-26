@@ -19,7 +19,7 @@ import Foundation
 class ENNavigationAPIImpl: NSObject {
     static let shared = ENNavigationAPIImpl()
     let navigationAPI: EnNavigationAPI
-    weak var delegate: ENNavigationProtocol?
+    weak var currentViewController: ENNavigationProtocol?
 
     private override init() {
         self.navigationAPI = EnNavigationAPI()
@@ -33,7 +33,7 @@ class ENNavigationAPIImpl: NSObject {
     func registerFinishRequestHandler() {
         _ = self.navigationAPI.requests.registerFinishRequestHandler(handler: { (data, block) in
             let finishFlow = data as? String
-            self.delegate?.handleFinishFlow(finalPayLoad: finishFlow, completion: { (messageCompletion) in
+            self.currentViewController?.handleFinishFlow(finalPayLoad: finishFlow, completion: { (messageCompletion) in
                 block(messageCompletion, nil)
                 return
             })
@@ -45,7 +45,7 @@ class ENNavigationAPIImpl: NSObject {
             if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
                 if let navBarDict = ernData["navigationBar"] as? [AnyHashable : Any] {
                     let navBar = NavigationBar(dictionary: navBarDict)
-                    self.delegate?.updateNavigationBar(navBar: navBar, completion: { (message) in
+                    self.currentViewController?.updateNavigationBar(navBar: navBar, completion: { (message) in
                         if message == "success" {
                             return block(message, nil)
                         } else {
@@ -62,7 +62,7 @@ class ENNavigationAPIImpl: NSObject {
         _ = self.navigationAPI.requests.registerBackRequestHandler(handler: { (data, block) in
             let d = data as? ErnNavRoute
             let ernData = d?.toDictionary() as? [AnyHashable : Any]
-            self.delegate?.popToViewControllerWithPath(ernNavRoute: ernData, completion: { (message) in
+            self.currentViewController?.popToViewControllerWithPath(ernNavRoute: ernData, completion: { (message) in
                 if message == "success" {
                     return block(message, nil)
                 } else {
@@ -76,7 +76,7 @@ class ENNavigationAPIImpl: NSObject {
     func registerNavigationRequestHandler() {
         _ = self.navigationAPI.requests.registerNavigateRequestHandler(handler: { (data, block) in
             if let d = data as? ErnNavRoute, let ernData = d.toDictionary() as? [AnyHashable : Any] {
-                self.delegate?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
+                self.currentViewController?.handleNavigationRequestWithPath(routeData: ernData, completion: { (message) in
                     return block(message, nil)
                 })
             }
