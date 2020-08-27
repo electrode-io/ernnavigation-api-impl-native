@@ -200,17 +200,15 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @CallSuper
     public void onPause() {
         super.onPause();
-        if (mNavViewModel != null) {
-            mNavViewModel.unRegisterNavRequestHandler();
-        }
         EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_BLUR.toString()).viewId(getMiniAppViewIdentifier()).build());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mMenu != null) {
-            mMenu = null;
+        mMenu = null;
+        if (mNavViewModel != null) {
+            mNavViewModel.unRegisterNavRequestHandler();
         }
         mFragmentNavigator = null;
     }

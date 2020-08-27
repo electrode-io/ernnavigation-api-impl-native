@@ -49,10 +49,10 @@ public class ElectrodeNavigationActivityDelegate extends ElectrodeBaseActivityDe
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
         if (mDefaultLaunchConfig.mUseActivityScopedNavigation && mNavViewModel != null) {
             mNavViewModel.unRegisterNavRequestHandler();
         }
