@@ -263,6 +263,10 @@ import UIKit
                 } else if let finishedCallback = self.viewController?.finishedCallback {
                     newVC.finishedCallback = finishedCallback
                 }
+                if let navigationBarDict = routeData["navigationBar"] as? [AnyHashable: Any] {
+                    let navBar = NavigationBar(dictionary: navigationBarDict)
+                    newVC.delegate?.hideNavBar = navBar.hide
+                }
                 newVC.navigateWithRoute = self.viewController?.navigateWithRoute
                 newVC.globalProperties = self.viewController?.globalProperties
                 if overlay {
