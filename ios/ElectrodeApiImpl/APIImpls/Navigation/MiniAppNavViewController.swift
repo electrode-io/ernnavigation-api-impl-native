@@ -25,9 +25,11 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
     public var navigateWithRoute: NavigateWithRoute?
     public var pushToExistingViewController: Bool = true
     public var globalProperties: [AnyHashable: Any]?
+
     public init(properties: [AnyHashable: Any]?, miniAppName: String) {
         self.miniAppName = miniAppName
         self.properties = properties ?? [AnyHashable: Any]()
+        self.delegate = ENNavigationDelegate()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -37,7 +39,6 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
 
     override open func viewDidLoad() {
         super.viewDidLoad()
-        self.delegate = ENNavigationDelegate()
         self.delegate?.viewDidLoad(viewController: self)
     }
 
