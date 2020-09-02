@@ -97,7 +97,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 NavigationRouteHandler routeHandler = (NavigationRouteHandler) topOfTheStackFragment;
                 routeHandler.handleRoute(route);
             } else {
-                throw new RuntimeException("Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment that implements NavigationRouteHandler. topOfTheStackFragment:" + topOfTheStackFragment);
+                Logger.w(TAG, "Should never reach here. The fragment handling a navigation api request should be either the current fragment or the top of the stack fragment that implements NavigationRouteHandler. Received topOfTheStackFragment: " + topOfTheStackFragment);
+                route.setResult(false, "Failed to handle request, missing route handler");
             }
 
             if (!route.isCompleted()) {
