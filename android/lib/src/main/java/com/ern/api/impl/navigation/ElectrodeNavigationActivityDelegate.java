@@ -81,7 +81,8 @@ public class ElectrodeNavigationActivityDelegate extends ElectrodeBaseActivityDe
                 if (routeHandler != null) {
                     routeHandler.handleRoute(route);
                 } else {
-                    throw new IllegalStateException("Should never reach here. Missing route handler");
+                    Logger.w(TAG, "Request handler is not able to find a RouteHandler for this request: " + route.getArguments());
+                    route.setResult(false, "Failed to handle request, missing route handler");
                 }
             }
         });
