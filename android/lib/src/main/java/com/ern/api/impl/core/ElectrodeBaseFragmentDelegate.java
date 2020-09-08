@@ -178,7 +178,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             if (data != null) {
                 props.putAll(data);
             }
-            ((ReactRootView)mMiniAppView).setAppProperties(props);
+            ((ReactRootView) mMiniAppView).setAppProperties(props);
         } else {
             Logger.w(TAG, "Refresh called on a null mMiniAppView. Should never reach here");
         }
@@ -255,7 +255,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             View parentView = rootView.findViewById(mFragmentConfig.mReactViewContainerId);
             if (parentView != null && mMiniAppView.getParent() == parentView) {
                 ((ViewGroup) parentView).removeView(mMiniAppView);
-                Logger.v(TAG, "Removed MiniApp(%s) view from parent view",  getReactComponentName());
+                Logger.v(TAG, "Removed MiniApp(%s) view from parent view", getReactComponentName());
             }
         }
     }
