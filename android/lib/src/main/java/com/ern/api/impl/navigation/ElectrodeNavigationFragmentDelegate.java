@@ -306,10 +306,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             NavigationBar navigationBar = NavUtils.getNavBar(arguments);
             if (navigationBar != null) {
                 updateNavBar(navigationBar);
-                return true;
             } else {
-                return false;
+                ActionBar actionBar = getSupportActionBar();
+                if(actionBar != null) {
+                    applyDefaultUpNavigation(actionBar);
+                }
             }
+            return true;
         }
         return false;
     }
@@ -379,7 +382,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         void onOptionsMenuUpdated(@NonNull Menu menu, @NonNull MenuInflater inflater);
     }
 
-    private void updateNavBar(@NonNull NavigationBar navigationBar) {
+    private void updateNavBar(@Nullable NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) {
@@ -430,6 +433,10 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         }
 
         //Default action
+        applyDefaultUpNavigation(actionBar);
+    }
+
+    private void applyDefaultUpNavigation(@NonNull ActionBar actionBar) {
         if (mFragment.getArguments() != null) {
             if (mFragment.getArguments().getBoolean(ActivityDelegateConstants.KEY_MINI_APP_FRAGMENT_SHOW_UP_ENABLED)) {
                 Logger.d(TAG, "Enabling up indicator for component: %s", getReactComponentName());
