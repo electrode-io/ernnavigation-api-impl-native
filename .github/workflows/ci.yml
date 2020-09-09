@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
       - run: npm i -g electrode-native
       - run: yarn --frozen-lockfile
       - working-directory: android/
@@ -20,8 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
+        with:
+          node-version: '12'
       - run: npm i -g electrode-native
       - run: yarn --frozen-lockfile
-      - run: yarn createiOSContainer
+      - working-directory: ios/
+        run: ern create-container --out ${PWD}/container -m https://github.com/electrode-io/movies-reloaded-miniapp --platform ios
       - working-directory: ios/moviesreloadedMiniApp/
         run: xcodebuild -project "ErnRunner.xcodeproj" -scheme "ErnRunner" -destination "platform=iOS Simulator,name=iPhone 11"
