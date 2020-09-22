@@ -52,13 +52,9 @@ public final class ReactNavigationViewModel extends ViewModel {
             log("onRequest: NAVIGATE");
             if (!validate(ernRoute, responseListener)) return;
 
-            if (validateLiveDataObservers()) {
-                final Bundle bundle = ernRoute.toBundle();
-                bundle.putString(KEY_NAV_TYPE, Type.NAVIGATE.toString());
-                post(bundle, responseListener);
-            } else {
-                throwNoFragmentOrActivityListenerError(ernRoute, responseListener);
-            }
+            final Bundle bundle = ernRoute.toBundle();
+            bundle.putString(KEY_NAV_TYPE, Type.NAVIGATE.toString());
+            post(bundle, responseListener);
         }
     };
 
@@ -67,13 +63,9 @@ public final class ReactNavigationViewModel extends ViewModel {
         public void onRequest(@Nullable ErnNavRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: UPDATE");
             if (!validate(ernRoute, responseListener)) return;
-            if (validateLiveDataObservers()) {
-                final Bundle bundle = ernRoute.toBundle();
-                bundle.putString(KEY_NAV_TYPE, Type.UPDATE.toString());
-                post(bundle, responseListener);
-            } else {
-                throwNoFragmentOrActivityListenerError(ernRoute, responseListener);
-            }
+            final Bundle bundle = ernRoute.toBundle();
+            bundle.putString(KEY_NAV_TYPE, Type.UPDATE.toString());
+            post(bundle, responseListener);
         }
     };
 
@@ -81,13 +73,9 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable ErnNavRoute ernRoute, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: BACK");
-            if (validateLiveDataObservers()) {
-                final Bundle bundle = ernRoute != null ? ernRoute.toBundle() : new Bundle();
-                bundle.putString(KEY_NAV_TYPE, Type.BACK.toString());
-                post(bundle, responseListener);
-            } else {
-                throwNoFragmentOrActivityListenerError(ernRoute, responseListener);
-            }
+            final Bundle bundle = ernRoute != null ? ernRoute.toBundle() : new Bundle();
+            bundle.putString(KEY_NAV_TYPE, Type.BACK.toString());
+            post(bundle, responseListener);
         }
     };
 
@@ -95,20 +83,24 @@ public final class ReactNavigationViewModel extends ViewModel {
         @Override
         public void onRequest(@Nullable String payload, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
             log("onRequest: FINISH");
-            if (validateLiveDataObservers()) {
-                final Bundle bundle = new Bundle();
-                if (payload != null) {
-                    bundle.putString("jsonPayload", payload);
-                }
-                bundle.putString(KEY_NAV_TYPE, Type.FINISH.toString());
-                post(bundle, responseListener);
-            } else {
-                throwNoFragmentOrActivityListenerError(null, responseListener);
+            final Bundle bundle = new Bundle();
+            if (payload != null) {
+                bundle.putString("jsonPayload", payload);
             }
+            bundle.putString(KEY_NAV_TYPE, Type.FINISH.toString());
+            post(bundle, responseListener);
         }
     };
 
     private void post(final Bundle bundle, @NonNull final ElectrodeBridgeResponseListener<None> responseListener) {
+        if (!routeLiveData.hasActiveObservers()) {
+            // No active observers indicates that the fragment or activity holding this view model instance is not in `RESUMED` state.
+            // We send a successful response in this case to avoid the bridge triggering a failure with a timeout.
+            // One drawback of this approach is that later when the fragment resumes and the request actually fails there is no way to notify the caller.
+            // In that case this response becomes a false positive.
+            responseListener.onSuccess(None.NONE);
+        }
+
         Route route = new Route.Builder(bundle)
                 .routingNotifier(new RoutingNotifier() {
                     @Override
@@ -131,19 +123,6 @@ public final class ReactNavigationViewModel extends ViewModel {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Check to see if there is a live data observer currently active before posting a request.
-     *
-     * @return True | False
-     */
-    private boolean validateLiveDataObservers() {
-        return routeLiveData.hasActiveObservers();
-    }
-
-    private void throwNoFragmentOrActivityListenerError(@Nullable ErnNavRoute ernRoute, @NonNull ElectrodeBridgeResponseListener<None> responseListener) {
-        responseListener.onFailure(BridgeFailureMessage.create("NAVIGATION_FAILED", "No activity or fragment is currently handling this navigation request: " + (ernRoute != null ? ernRoute.getPath() : "")));
     }
 
     private RequestHandlerHandle requestHandle;

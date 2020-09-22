@@ -57,4 +57,8 @@ public abstract class ElectrodeBaseFragment<T extends ElectrodeBaseFragmentDeleg
         mElectrodeReactFragmentDelegate.onDestroyView();
         super.onDestroyView();
     }
+
+    public String getReactComponentName() {
+        return mElectrodeReactFragmentDelegate.getReactComponentName();
+    }
 }

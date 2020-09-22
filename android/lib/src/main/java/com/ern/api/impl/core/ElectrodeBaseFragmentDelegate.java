@@ -40,7 +40,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     protected final C mFragmentConfig;
 
     @Nullable
-    private ReactRootView mMiniAppView;
+    private View mMiniAppView;
 
     private String mMiniAppComponentName = "NAME_NOT_SET_YET";
 
@@ -100,7 +100,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
         if (mMiniAppView == null) {
             if (!TextUtils.isEmpty(mMiniAppComponentName)) {
-                mMiniAppView = (ReactRootView) mElectrodeActivityListener.createReactNativeView(mMiniAppComponentName, initialProps(savedInstanceState != null));
+                mMiniAppView = mElectrodeActivityListener.createReactNativeView(mMiniAppComponentName, initialProps(savedInstanceState != null));
             } else {
                 Logger.i(TAG, "Missing miniAppComponentName inside arguments, will not create a MiniApp view.");
             }
@@ -172,13 +172,13 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     }
 
     public void refresh(@Nullable Bundle data) {
-        if (mMiniAppView != null) {
+        if (mMiniAppView instanceof ReactRootView) {
             Bundle props = getDefaultProps();
             addGlobalProps(props);
             if (data != null) {
                 props.putAll(data);
             }
-            mMiniAppView.setAppProperties(props);
+            ((ReactRootView) mMiniAppView).setAppProperties(props);
         } else {
             Logger.w(TAG, "Refresh called on a null mMiniAppView. Should never reach here");
         }
@@ -255,7 +255,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             View parentView = rootView.findViewById(mFragmentConfig.mReactViewContainerId);
             if (parentView != null && mMiniAppView.getParent() == parentView) {
                 ((ViewGroup) parentView).removeView(mMiniAppView);
-                Logger.v(TAG, "Removed MiniApp(%s) view from parent view",  getReactComponentName());
+                Logger.v(TAG, "Removed MiniApp(%s) view from parent view", getReactComponentName());
             }
         }
     }
@@ -265,8 +265,8 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @CallSuper
     public void onDestroy() {
         Logger.v(TAG, "onDestroy(): " + getReactComponentName());
-        if (mMiniAppView != null) {
-            mElectrodeActivityListener.removeReactNativeView(mMiniAppComponentName, mMiniAppView);
+        if (mMiniAppView instanceof ReactRootView) {
+            mElectrodeActivityListener.removeReactNativeView(mMiniAppComponentName, (ReactRootView) mMiniAppView);
             mMiniAppView = null;
         }
     }
