@@ -63,26 +63,30 @@ public class ElectrodeNavigationActivityDelegate extends ElectrodeBaseActivityDe
         mNavViewModel.getRouteLiveData().observe(mFragmentActivity, new Observer<Route>() {
             @Override
             public void onChanged(Route route) {
-                Logger.d(TAG, "Navigation request handled by Activity(%s)", mFragmentActivity);
-                NavigationRouteHandler routeHandler = null;
-                if (mDefaultLaunchConfig.mRouteHandlerProvider != null && mDefaultLaunchConfig.mRouteHandlerProvider.getRouteHandler() != null) {
-                    Logger.v(TAG, "Getting route handler via RouteHandlerProvider");
-                    routeHandler = mDefaultLaunchConfig.mRouteHandlerProvider.getRouteHandler();
-                } else {
-                    Fragment f = mFragmentActivity.getSupportFragmentManager().findFragmentById(mDefaultLaunchConfig.getFragmentContainerId());
-                    if (f instanceof NavigationRouteHandler) {
-                        Logger.v(TAG, "Getting fragment(route handler) hosted inside getFragmentContainer of activity");
-                        routeHandler = (NavigationRouteHandler) f;
+                if (route != null && !route.isCompleted()) {
+                    Logger.d(TAG, "Navigation request handled by Activity(%s)", mFragmentActivity);
+                    NavigationRouteHandler routeHandler = null;
+                    if (mDefaultLaunchConfig.mRouteHandlerProvider != null && mDefaultLaunchConfig.mRouteHandlerProvider.getRouteHandler() != null) {
+                        Logger.v(TAG, "Getting route handler via RouteHandlerProvider");
+                        routeHandler = mDefaultLaunchConfig.mRouteHandlerProvider.getRouteHandler();
                     } else {
-                        Logger.w(TAG, "Fragment: %s is not a NavigationRouteHandler", f);
+                        Fragment f = mFragmentActivity.getSupportFragmentManager().findFragmentById(mDefaultLaunchConfig.getFragmentContainerId());
+                        if (f instanceof NavigationRouteHandler) {
+                            Logger.v(TAG, "Getting fragment(route handler) hosted inside getFragmentContainer of activity");
+                            routeHandler = (NavigationRouteHandler) f;
+                        } else {
+                            Logger.w(TAG, "Fragment: %s is not a NavigationRouteHandler", f);
+                        }
                     }
-                }
 
-                if (routeHandler != null) {
-                    routeHandler.handleRoute(route);
+                    if (routeHandler != null) {
+                        routeHandler.handleRoute(route);
+                    } else {
+                        Logger.w(TAG, "Request handler is not able to find a RouteHandler for this request: " + route.getArguments());
+                        route.setResult(false, "Failed to handle request, missing route handler");
+                    }
                 } else {
-                    Logger.w(TAG, "Request handler is not able to find a RouteHandler for this request: " + route.getArguments());
-                    route.setResult(false, "Failed to handle request, missing route handler");
+                    Logger.d(TAG, "Delegate: %s has ignored an already handled route: %s, ", ElectrodeNavigationActivityDelegate.this, route != null ? route.getArguments() : null);
                 }
             }
         });
