@@ -269,6 +269,9 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             mElectrodeActivityListener.removeReactNativeView(mMiniAppComponentName, (ReactRootView) mMiniAppView);
             mMiniAppView = null;
         }
+        if (mFragment.getArguments() != null) {
+            mFragment.getArguments().remove(KEY_UNIQUE_VIEW_IDENTIFIER);
+        }
     }
 
     @SuppressWarnings("unused")
