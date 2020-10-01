@@ -202,7 +202,9 @@ import UIKit
     }
 
     func updateNavBarTitleAndButtons(navBar: NavigationBar) {
-        setNavBarTitle(title: navBar.title)
+        if let title = navBar.title {
+            setNavBarTitle(title: title)
+        }
         if let rightButtons = navBar.buttons {
             setRightBarButtons(buttons: rightButtons)
         } else {
