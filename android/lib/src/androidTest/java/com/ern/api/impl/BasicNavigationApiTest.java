@@ -1,10 +1,5 @@
 package com.ern.api.impl;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
@@ -14,7 +9,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.ern.api.impl.navigation.ElectrodeBaseActivity;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.ErnNavRoute;
@@ -23,18 +17,15 @@ import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListe
 import com.walmartlabs.electrode.reactnative.bridge.FailureMessage;
 import com.walmartlabs.electrode.reactnative.bridge.None;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
-import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import static com.ern.api.impl.BasicNavigationApiTest.SampleActivity.ROOT_COMPONENT_NAME;
+import static com.ern.api.impl.SampleActivity.ROOT_COMPONENT_NAME;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -341,70 +332,8 @@ public class BasicNavigationApiTest {
             }
         });
     }
-
+    
     private String rootPageTitle() {
         return ApplicationProvider.getApplicationContext().getResources().getString(com.walmartlabs.ern.navigation.test.R.string.root_page_title);
-    }
-
-    public static class SampleActivity extends ElectrodeBaseActivity {
-        public static final String ROOT_COMPONENT_NAME = "Root";
-        public boolean isBackgrounded;
-        public boolean isForegrounded;
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            ElectrodeReactContainer.initialize(getApplication(), new ElectrodeReactContainer.Config());
-        }
-
-        @Override
-        protected void onResume() {
-            super.onResume();
-            isBackgrounded = false;
-            isForegrounded = true;
-        }
-
-        @Override
-        protected void onPause() {
-            super.onPause();
-            isBackgrounded = true;
-            isForegrounded = false;
-        }
-
-        @Override
-        protected int title() {
-            return com.walmartlabs.ern.navigation.test.R.string.root_page_title;
-        }
-
-        @Override
-        protected int mainLayout() {
-            return com.walmartlabs.ern.navigation.test.R.layout.activity_sample_main;
-        }
-
-        @NonNull
-        @Override
-        protected String getRootComponentName() {
-            return ROOT_COMPONENT_NAME;
-        }
-
-        @Override
-        protected int getFragmentContainerId() {
-            return com.walmartlabs.ern.navigation.test.R.id.sample_fragment_container;
-        }
-
-        @Override
-        public View createReactNativeView(@NonNull String componentName, @Nullable Bundle props) {
-            //Returns a dummy view.
-            return ((LayoutInflater) Objects.requireNonNull(getSystemService(Context.LAYOUT_INFLATER_SERVICE))).inflate(com.walmartlabs.ern.navigation.test.R.layout.activity_sample_main, null);
-        }
-
-        @Override
-        public boolean backToMiniApp(@Nullable String tag, @Nullable Bundle data) {
-            //Set back the title when going back to root fragment
-            if (ROOT_COMPONENT_NAME.equals(tag)) {
-                Objects.requireNonNull(getSupportActionBar()).setTitle(getString(title()));
-            }
-            return super.backToMiniApp(tag, data);
-        }
     }
 }
