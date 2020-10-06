@@ -49,10 +49,7 @@ public class BasicNavigationApiTest {
 
     @Test
     public void testRootComponentRendering() {
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
-
         scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
             @Override
             public void perform(SampleActivity activity) {
@@ -70,9 +67,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
         //Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -111,9 +106,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testBackgroundNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
 
         // Move to background
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -169,10 +162,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testUpdate() {
         final String UPDATED_TITLE = "Page 0 - Updated";
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
-
         scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
             @Override
             public void perform(SampleActivity activity) {
@@ -226,10 +216,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testBack() {
         final CountDownLatch latch = new CountDownLatch(1);
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
-
         //Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -334,9 +321,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testBackgroundBackToApi() {
         final CountDownLatch latch = new CountDownLatch(1);
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
 
         // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
