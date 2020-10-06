@@ -228,7 +228,21 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
                 return true;
             }
         }
-        boolean result = manager.popBackStackImmediate(tag, 0);
+        boolean result = true;
+        try {
+            result = manager.popBackStackImmediate(tag, 0);
+        } catch (IllegalStateException e) {
+            // java.lang.IllegalStateException: FragmentManager is already executing transactions.
+            // This error occurs when a navigation live data event gets triggered before the current fragment comes into Resumed state.
+            // For this use case we need to perform popBackStack asynchronously.
+            if (tag != null) {
+                result = manager.findFragmentByTag(tag) != null;
+            }
+            //If there is no tag provided assume that the user is trying to go back to the previous screen
+            if (result) {
+                manager.popBackStack(tag, 0);
+            }
+        }
         if (result && data != null && data.getBoolean("refresh", true)) {
             List<Fragment> fragments = mFragmentActivity.getSupportFragmentManager().getFragments();
             if (fragments.size() > 0) {

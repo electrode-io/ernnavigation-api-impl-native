@@ -303,9 +303,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testFinish() {
         final CountDownLatch latch = new CountDownLatch(1);
-        assertNotNull(rule);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        assertNotNull(scenario);
         EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -332,7 +330,76 @@ public class BasicNavigationApiTest {
             }
         });
     }
-    
+
+    @Test
+    public void testBackgroundBackToApi() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        assertNotNull(rule);
+        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        assertNotNull(scenario);
+
+        // Navigate to second page and ensure that the nav bar title is updated.
+        EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+        //Wait for the navigation request to complete
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        // Move to background
+        scenario.moveToState(Lifecycle.State.CREATED);
+        final CountDownLatch backToLatch = new CountDownLatch(1);
+
+        EnNavigationApi.requests().back(new ErnNavRoute.Builder(ROOT_COMPONENT_NAME).build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                backToLatch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail();
+            }
+        });
+
+        //Wait for the backTo request to complete
+        try {
+            backToLatch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        //Resume the activity and ensure that the back action has been completed successfully
+        scenario.moveToState(Lifecycle.State.RESUMED);
+
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                assertThat(activity.isForegrounded).isTrue();
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
+                //Since we performed a back action there should only be one fragment left in the stack.
+                assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
+                assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
+                assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
+                assertThat(((MiniAppNavigationFragment) activity.getSupportFragmentManager().getFragments().get(0)).getReactComponentName()).isEqualTo(ROOT_COMPONENT_NAME);
+                assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
+            }
+        });
+    }
+
     private String rootPageTitle() {
         return ApplicationProvider.getApplicationContext().getResources().getString(com.walmartlabs.ern.navigation.test.R.string.root_page_title);
     }
