@@ -31,7 +31,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * This class is a replica of {@link BasicNavigationApiTest} except the fact that
+ * This class is a replica of {@link FragmentScopedNavigationApiTest} except the fact that
  * the navigation request handler is inside the activity instead of fragments.
  * <p>
  * see {@link TestActivity#createNavigationLaunchConfig()}

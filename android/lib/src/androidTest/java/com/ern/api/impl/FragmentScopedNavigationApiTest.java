@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BasicNavigationApiTest {
+public class FragmentScopedNavigationApiTest {
 
     private static final String TITLE_ROOT_PAGE = ApplicationProvider.getApplicationContext().getString(com.walmartlabs.ern.navigation.test.R.string.root_page_title);
     private static final String TITLE_PAGE_1 = "page 1";
