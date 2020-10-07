@@ -27,7 +27,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.ern.api.impl.SampleActivity.ROOT_COMPONENT_NAME;
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 
@@ -316,6 +315,41 @@ public class BasicNavigationApiTest {
                 assertThat(activity.isFinishing()).isTrue();
             }
         });
+    }
+
+    @Test
+    public void testFinishWhileBackgrounded() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        //Background activity
+        scenario.moveToState(Lifecycle.State.CREATED);
+        EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+        //Wait for the finish request to complete
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        //Foreground activity
+        try {
+            scenario.moveToState(Lifecycle.State.RESUMED);
+        } catch (AssertionError e) {
+            // Before the activity comes to resumed state, the finish call kicks in and destroys it.
+            // The activity might sometimes be in STOPPED or DESTROYED state.
+            assertThat(e.getMessage()).contains("Activity never becomes requested state \"[RESUMED]\" (last lifecycle transition =");
+        }
     }
 
     @Test
