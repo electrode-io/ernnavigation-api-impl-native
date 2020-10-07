@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
+import com.ern.api.impl.navigation.NavigationLaunchConfig;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.ernnavigationApi.ern.model.NavigationBar;
@@ -27,13 +28,17 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.ern.api.impl.SampleActivity.ROOT_COMPONENT_NAME;
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-
+/**
+ * This class is a replica of {@link FragmentScopedNavigationApiTest} except the fact that
+ * the navigation request handler is inside the activity instead of fragments.
+ * <p>
+ * see {@link TestActivity#createNavigationLaunchConfig()}
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BasicNavigationApiTest {
+public class ActivityScopedNavigationApiTest {
 
     private static final String TITLE_ROOT_PAGE = ApplicationProvider.getApplicationContext().getString(com.walmartlabs.ern.navigation.test.R.string.root_page_title);
     private static final String TITLE_PAGE_1 = "page 1";
@@ -45,14 +50,14 @@ public class BasicNavigationApiTest {
     }
 
     @Rule
-    public ActivityScenarioRule<SampleActivity> rule = new ActivityScenarioRule<SampleActivity>(SampleActivity.class);
+    public ActivityScenarioRule<TestActivity> rule = new ActivityScenarioRule<TestActivity>(TestActivity.class);
 
     @Test
     public void testRootComponentRendering() {
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
@@ -67,7 +72,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
         //Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -88,9 +93,9 @@ public class BasicNavigationApiTest {
             fail();
         }
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
                 //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
@@ -106,7 +111,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testBackgroundNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
 
         // Move to background
         scenario.moveToState(Lifecycle.State.CREATED);
@@ -132,9 +137,9 @@ public class BasicNavigationApiTest {
         }
 
         //Ensure that the page is not navigated while backgrounded
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
                 assertThat(activity.isBackgrounded).isTrue();
@@ -143,9 +148,9 @@ public class BasicNavigationApiTest {
 
         scenario.moveToState(Lifecycle.State.RESUMED);
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.isForegrounded).isTrue();
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
@@ -162,10 +167,10 @@ public class BasicNavigationApiTest {
     @Test
     public void testUpdate() {
         final String UPDATED_TITLE = "Page 0 - Updated";
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
@@ -197,9 +202,9 @@ public class BasicNavigationApiTest {
             fail();
         }
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(UPDATED_TITLE);
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
@@ -216,7 +221,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testBack() {
         final CountDownLatch latch = new CountDownLatch(1);
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
         //Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -237,9 +242,9 @@ public class BasicNavigationApiTest {
             fail();
         }
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
                 //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
@@ -272,9 +277,9 @@ public class BasicNavigationApiTest {
             fail();
         }
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(rootPageTitle());
                 //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
@@ -290,7 +295,7 @@ public class BasicNavigationApiTest {
     @Test
     public void testFinish() {
         final CountDownLatch latch = new CountDownLatch(1);
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
         EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -310,18 +315,53 @@ public class BasicNavigationApiTest {
             fail();
         }
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.isFinishing()).isTrue();
             }
         });
     }
 
     @Test
+    public void testFinishWhileBackgrounded() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
+        //Background activity
+        scenario.moveToState(Lifecycle.State.CREATED);
+        EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+        //Wait for the finish request to complete
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        //Foreground activity
+        try {
+            scenario.moveToState(Lifecycle.State.RESUMED);
+        } catch (AssertionError e) {
+            // Before the activity comes to resumed state, the finish call kicks in and destroys it.
+            // The activity might sometimes be in STOPPED or DESTROYED state.
+            assertThat(e.getMessage()).contains("Activity never becomes requested state \"[RESUMED]\" (last lifecycle transition =");
+        }
+    }
+
+    @Test
     public void testBackgroundBackToApi() {
         final CountDownLatch latch = new CountDownLatch(1);
-        ActivityScenario<SampleActivity> scenario = rule.getScenario();
+        ActivityScenario<TestActivity> scenario = rule.getScenario();
 
         // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
@@ -369,9 +409,9 @@ public class BasicNavigationApiTest {
         //Resume the activity and ensure that the back action has been completed successfully
         scenario.moveToState(Lifecycle.State.RESUMED);
 
-        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
-            public void perform(SampleActivity activity) {
+            public void perform(TestActivity activity) {
                 assertThat(activity.isForegrounded).isTrue();
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
@@ -387,5 +427,14 @@ public class BasicNavigationApiTest {
 
     private String rootPageTitle() {
         return ApplicationProvider.getApplicationContext().getResources().getString(com.walmartlabs.ern.navigation.test.R.string.root_page_title);
+    }
+
+    public static class TestActivity extends SampleActivity {
+        @Override
+        protected NavigationLaunchConfig createNavigationLaunchConfig() {
+            NavigationLaunchConfig config = super.createNavigationLaunchConfig();
+            config.useActivityScopeForNavigation(true, null);
+            return config;
+        }
     }
 }

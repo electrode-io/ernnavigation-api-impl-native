@@ -2,7 +2,12 @@
     package="com.walmartlabs.ern.navigation.sample">
 
     <application>
-        <activity android:name="com.ern.api.impl.SampleActivity" android:theme="@style/Theme.AppCompat"/>
+        <activity
+            android:name="com.ern.api.impl.SampleActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.ActivityScopedNavigationApiTest$TestActivity"
+            android:theme="@style/Theme.AppCompat" />
 
     </application>
 
