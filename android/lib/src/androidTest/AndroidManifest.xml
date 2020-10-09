@@ -9,6 +9,17 @@
             android:name="com.ern.api.impl.ActivityScopedNavigationApiTest$TestActivity"
             android:theme="@style/Theme.AppCompat" />
 
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$AddToBackStackDisabledForRootActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$AddToBackStackDisabledActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$DisableMiniAppLaunchInOnCreateActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$ValidateReplaceActivity"
+            android:theme="@style/Theme.AppCompat" />
     </application>
-
 </manifest>
