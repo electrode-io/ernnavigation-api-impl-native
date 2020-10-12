@@ -11,12 +11,17 @@ import androidx.annotation.Nullable;
 import com.ern.api.impl.navigation.ElectrodeBaseActivity;
 import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
+import org.json.JSONObject;
+
 import java.util.Objects;
 
 public class SampleActivity extends ElectrodeBaseActivity {
     public static final String ROOT_COMPONENT_NAME = "dummyRootComponent";
     public boolean isBackgrounded;
     public boolean isForegrounded;
+
+    boolean didFinishFlow = false;
+    JSONObject finishFlowPayload = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,5 +77,11 @@ public class SampleActivity extends ElectrodeBaseActivity {
             Objects.requireNonNull(getSupportActionBar()).setTitle(getString(title()));
         }
         return super.backToMiniApp(tag, data);
+    }
+
+    @Override
+    public void finishFlow(@Nullable JSONObject finalPayload) {
+        didFinishFlow = true;
+        finishFlowPayload = finalPayload;
     }
 }

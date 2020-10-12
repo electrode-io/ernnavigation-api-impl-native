@@ -67,7 +67,7 @@ public class FragmentScopedNavigationApiTest {
     public void testNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        //Navigate to second page and ensure that the nav bar title is updated.
+        // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -80,7 +80,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -92,7 +92,7 @@ public class FragmentScopedNavigationApiTest {
             public void perform(SampleActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
-                //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
+                // Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(2);
                 assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
@@ -130,7 +130,7 @@ public class FragmentScopedNavigationApiTest {
             fail();
         }
 
-        //Ensure that the page is not navigated while backgrounded
+        // Ensure that the page is not navigated while backgrounded
         scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
             @Override
             public void perform(SampleActivity activity) {
@@ -148,7 +148,7 @@ public class FragmentScopedNavigationApiTest {
                 assertThat(activity.isForegrounded).isTrue();
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
-                //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
+                // Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(2);
                 assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
@@ -189,7 +189,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the update request to complete
+        // Wait for the update request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -216,7 +216,7 @@ public class FragmentScopedNavigationApiTest {
     public void testBack() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        //Navigate to second page and ensure that the nav bar title is updated.
+        // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -229,7 +229,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -250,7 +250,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Navigate back to FirstPage
+        // Navigate back to FirstPage
         final CountDownLatch backLatch = new CountDownLatch(1);
         EnNavigationApi.requests().back(new ErnNavRoute.Builder(ROOT_COMPONENT_NAME).navigationBar(new NavigationBar.Builder(COMPONENT_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -264,7 +264,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the back request to complete
+        // Wait for the back request to complete
         try {
             backLatch.await();
         } catch (InterruptedException e) {
@@ -302,7 +302,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the finish request to complete
+        // Wait for the finish request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -312,7 +312,7 @@ public class FragmentScopedNavigationApiTest {
         scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
             @Override
             public void perform(SampleActivity activity) {
-                assertThat(activity.isFinishing()).isTrue();
+                assertThat(activity.didFinishFlow).isTrue();
             }
         });
     }
@@ -321,7 +321,7 @@ public class FragmentScopedNavigationApiTest {
     public void testFinishWhileBackgrounded() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<SampleActivity> scenario = rule.getScenario();
-        //Background activity
+        // Background activity
         scenario.moveToState(Lifecycle.State.CREATED);
         EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -335,21 +335,21 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the finish request to complete
+        // Wait for the finish request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
             fail();
         }
 
-        //Foreground activity
-        try {
-            scenario.moveToState(Lifecycle.State.RESUMED);
-        } catch (AssertionError e) {
-            // Before the activity comes to resumed state, the finish call kicks in and destroys it.
-            // The activity might sometimes be in STOPPED or DESTROYED state.
-            assertThat(e.getMessage()).contains("Activity never becomes requested state \"[RESUMED]\" (last lifecycle transition =");
-        }
+        // Foreground activity
+        scenario.moveToState(Lifecycle.State.RESUMED);
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                assertThat(activity.didFinishFlow).isTrue();
+            }
+        });
     }
 
     @Test
@@ -370,7 +370,7 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -393,14 +393,14 @@ public class FragmentScopedNavigationApiTest {
             }
         });
 
-        //Wait for the backTo request to complete
+        // Wait for the backTo request to complete
         try {
             backToLatch.await();
         } catch (InterruptedException e) {
             fail();
         }
 
-        //Resume the activity and ensure that the back action has been completed successfully
+        // Resume the activity and ensure that the back action has been completed successfully
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {

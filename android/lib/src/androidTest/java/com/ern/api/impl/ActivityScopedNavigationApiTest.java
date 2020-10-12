@@ -73,7 +73,7 @@ public class ActivityScopedNavigationApiTest {
     public void testNavigate() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<TestActivity> scenario = rule.getScenario();
-        //Navigate to second page and ensure that the nav bar title is updated.
+        // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -86,7 +86,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -98,7 +98,7 @@ public class ActivityScopedNavigationApiTest {
             public void perform(TestActivity activity) {
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
-                //Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
+                // Since we performed a navigation there should be two fragments in the stack, 1. Root component and 2. Navigated component
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(2);
                 assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
@@ -129,14 +129,14 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
             fail();
         }
 
-        //Ensure that the page is not navigated while backgrounded
+        // Ensure that the page is not navigated while backgrounded
         scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
             public void perform(TestActivity activity) {
@@ -195,7 +195,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the update request to complete
+        // Wait for the update request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -222,7 +222,7 @@ public class ActivityScopedNavigationApiTest {
     public void testBack() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<TestActivity> scenario = rule.getScenario();
-        //Navigate to second page and ensure that the nav bar title is updated.
+        // Navigate to second page and ensure that the nav bar title is updated.
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
@@ -235,7 +235,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the navigation request to complete
+        // Wait for the navigation request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -256,7 +256,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Navigate back to FirstPage
+        // Navigate back to FirstPage
         final CountDownLatch backLatch = new CountDownLatch(1);
         EnNavigationApi.requests().back(new ErnNavRoute.Builder(ROOT_COMPONENT_NAME).navigationBar(new NavigationBar.Builder(COMPONENT_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override
@@ -270,7 +270,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the back request to complete
+        // Wait for the back request to complete
         try {
             backLatch.await();
         } catch (InterruptedException e) {
@@ -308,7 +308,7 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the finish request to complete
+        // Wait for the finish request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -318,7 +318,8 @@ public class ActivityScopedNavigationApiTest {
         scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
             @Override
             public void perform(TestActivity activity) {
-                assertThat(activity.isFinishing()).isTrue();
+                assertThat(activity.didFinishFlow).isTrue();
+                assertThat(activity.finishFlowPayload).isNull();
             }
         });
     }
@@ -327,9 +328,9 @@ public class ActivityScopedNavigationApiTest {
     public void testFinishWhileBackgrounded() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<TestActivity> scenario = rule.getScenario();
-        //Background activity
+        // Background activity
         scenario.moveToState(Lifecycle.State.CREATED);
-        EnNavigationApi.requests().finish(null, new ElectrodeBridgeResponseListener<None>() {
+        EnNavigationApi.requests().finish("{}", new ElectrodeBridgeResponseListener<None>() {
             @Override
             public void onSuccess(@Nullable None responseData) {
                 latch.countDown();
@@ -341,21 +342,22 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the finish request to complete
+        // Wait for the finish request to complete
         try {
             latch.await();
         } catch (InterruptedException e) {
             fail();
         }
 
-        //Foreground activity
-        try {
-            scenario.moveToState(Lifecycle.State.RESUMED);
-        } catch (AssertionError e) {
-            // Before the activity comes to resumed state, the finish call kicks in and destroys it.
-            // The activity might sometimes be in STOPPED or DESTROYED state.
-            assertThat(e.getMessage()).contains("Activity never becomes requested state \"[RESUMED]\" (last lifecycle transition =");
-        }
+        // Foreground activity
+        scenario.moveToState(Lifecycle.State.RESUMED);
+        scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
+            @Override
+            public void perform(TestActivity activity) {
+                assertThat(activity.didFinishFlow).isTrue();
+                assertThat(activity.finishFlowPayload).isNotNull();
+            }
+        });
     }
 
     @Test
@@ -399,14 +401,14 @@ public class ActivityScopedNavigationApiTest {
             }
         });
 
-        //Wait for the backTo request to complete
+        // Wait for the backTo request to complete
         try {
             backToLatch.await();
         } catch (InterruptedException e) {
             fail();
         }
 
-        //Resume the activity and ensure that the back action has been completed successfully
+        // Resume the activity and ensure that the back action has been completed successfully
         scenario.moveToState(Lifecycle.State.RESUMED);
 
         scenario.onActivity(new ActivityScenario.ActivityAction<TestActivity>() {
@@ -415,7 +417,7 @@ public class ActivityScopedNavigationApiTest {
                 assertThat(activity.isForegrounded).isTrue();
                 assertThat(activity.getSupportActionBar()).isNotNull();
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_ROOT_PAGE);
-                //Since we performed a back action there should only be one fragment left in the stack.
+                // Since we performed a back action there should only be one fragment left in the stack.
                 assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
                 assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
