@@ -20,8 +20,9 @@ public class SampleActivity extends ElectrodeBaseActivity {
     public boolean isBackgrounded;
     public boolean isForegrounded;
 
-    boolean didFinishFlow = false;
-    JSONObject finishFlowPayload = null;
+    public boolean didFinishFlow;// Indicates finishFlow() call
+    public boolean didFinish;// Indicates finish() call
+    public JSONObject finishFlowPayload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,5 +84,11 @@ public class SampleActivity extends ElectrodeBaseActivity {
     public void finishFlow(@Nullable JSONObject finalPayload) {
         didFinishFlow = true;
         finishFlowPayload = finalPayload;
+    }
+
+    @Override
+    public void finish() {
+        didFinish = true;
+        super.finish();
     }
 }

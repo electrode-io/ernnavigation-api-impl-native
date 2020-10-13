@@ -21,5 +21,14 @@
         <activity
             android:name="com.ern.api.impl.LaunchConfigTests$ValidateReplaceActivity"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.core.BaseActivityDelegateTest$DelegateTestActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$RootBackPressConfigActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$OverlayActivity"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 </manifest>
