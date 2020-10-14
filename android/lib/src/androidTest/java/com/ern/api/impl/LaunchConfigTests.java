@@ -187,6 +187,50 @@ public class LaunchConfigTests {
         });
     }
 
+    public static class RootBackPressConfigActivity extends SampleActivity {
+        @Override
+        protected NavigationLaunchConfig createNavigationLaunchConfig() {
+            NavigationLaunchConfig config = super.createNavigationLaunchConfig();
+            config.setRootBackPressHandledByRN(true);
+            return config;
+        }
+    }
+
+    @Test
+    public void testRootBackPressHandledByRn() {
+        ActivityScenario<RootBackPressConfigActivity> scenario = ActivityScenario.launch(RootBackPressConfigActivity.class);
+        scenario.onActivity(new ActivityScenario.ActivityAction<RootBackPressConfigActivity>() {
+            @Override
+            public void perform(RootBackPressConfigActivity activity) {
+                activity.onBackPressed();
+                // Since the back press is supposed to be handed over to RN, native does not handle it.
+                assertThat(activity.didFinish).isFalse();
+            }
+        });
+    }
+
+    public static class OverlayActivity extends SampleActivity {
+        @Override
+        protected NavigationLaunchConfig createNavigationLaunchConfig() {
+            NavigationLaunchConfig config = super.createNavigationLaunchConfig();
+            config.setShowAsOverlay(true);
+            return config;
+        }
+    }
+
+    @Test
+    public void testShowAsOverlay() {
+        ActivityScenario<OverlayActivity> scenario = ActivityScenario.launch(OverlayActivity.class);
+        scenario.onActivity(new ActivityScenario.ActivityAction<OverlayActivity>() {
+            @Override
+            public void perform(OverlayActivity activity) {
+                assertThat(activity.getSupportFragmentManager().getBackStackEntryCount()).isEqualTo(1);
+                //There should not be any fragment since startRootInOnCreate is disabled
+                assertThat(activity.getSupportFragmentManager().getFragments().size()).isEqualTo(1);
+            }
+        });
+    }
+
     private void repeatNavigation(final CountDownLatch latch, final int currentCount, final int totalNavigationCount) {
         EnNavigationApi.requests().navigate(new ErnNavRoute.Builder("component" + currentCount).navigationBar(new NavigationBar.Builder("page " + currentCount).build()).build(), new ElectrodeBridgeResponseListener<None>() {
             @Override

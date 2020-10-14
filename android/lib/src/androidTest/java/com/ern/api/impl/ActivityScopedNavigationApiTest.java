@@ -293,6 +293,49 @@ public class ActivityScopedNavigationApiTest {
     }
 
     @Test
+    public void testBackWithSingleFragment() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        ActivityScenario<SampleActivity> scenario = ActivityScenario.launch(SampleActivity.class);
+        EnNavigationApi.requests().back(new ErnNavRoute.Builder(ROOT_COMPONENT_NAME).navigationBar(new NavigationBar.Builder(COMPONENT_PAGE_1).build()).build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                // Calling back on a single fragment activity finishes the activity.
+                assertThat(activity.didFinish).isTrue();
+            }
+        });
+    }
+
+    @Test
+    public void testDeviceBackPressedOnSingleFragment() {
+        ActivityScenario<SampleActivity> scenario = ActivityScenario.launch(SampleActivity.class);
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                activity.onBackPressed();
+                // Calling back on a single fragment activity finishes the activity.
+                assertThat(activity.didFinish).isTrue();
+            }
+        });
+    }
+
+    @Test
     public void testFinish() {
         final CountDownLatch latch = new CountDownLatch(1);
         ActivityScenario<TestActivity> scenario = rule.getScenario();
