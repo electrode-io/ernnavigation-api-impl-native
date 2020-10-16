@@ -1,5 +1,7 @@
 package com.ern.api.impl;
 
+import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
@@ -415,6 +417,103 @@ public class FragmentScopedNavigationApiTest {
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
                 assertThat(((MiniAppNavigationFragment) activity.getSupportFragmentManager().getFragments().get(0)).getReactComponentName()).isEqualTo(ROOT_COMPONENT_NAME);
                 assertThat(activity.getSupportFragmentManager().getFragments().get(0)).isInstanceOf(MiniAppNavigationFragment.class);
+            }
+        });
+    }
+
+    /**
+     * 1. Show root page with navigation bar
+     * 2. Navigate to page1 and hide nav bar, assert nav bar is hidden
+     * 3. Navigate tp page2 with hide=false, assert that nav bar is visible
+     * 4. Back to page1 and ensure the nav bar is hidden
+     */
+    @Test
+    public void testHideActionBar() {
+        ActivityScenario<SampleActivity> scenario = ActivityScenario.launch(SampleActivity.class);
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        // Navigate to a new page and ensure that the nav bar is hidden
+        EnNavigationApi.requests().navigate(new ErnNavRoute.Builder(COMPONENT_PAGE_1).navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).hide(true).build()).build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+
+        // Wait for the navigation request to complete
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                assertThat(activity.getSupportActionBar().isShowing()).isFalse();
+            }
+        });
+
+        final CountDownLatch latchPage2 = new CountDownLatch(1);
+        // Navigate to another page and ensure that the nav bar is visible for that page
+        EnNavigationApi.requests().navigate(new ErnNavRoute.Builder("cmp2").navigationBar(new NavigationBar.Builder("page 2").hide(false).build()).build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latchPage2.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail(failureMessage.getMessage());
+            }
+        });
+
+        // Wait for the navigation request to complete
+        try {
+            latchPage2.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+        final CountDownLatch lastLatch = new CountDownLatch(1);
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(final SampleActivity activity) {
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                // The delay is added since activity.getSupportActionBar().show() takes a while to reflect on the screen due to animations
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        assertThat(activity.getSupportActionBar().isShowing()).isTrue();
+                        lastLatch.countDown();
+                    }
+                }, 50);
+            }
+        });
+        try {
+            lastLatch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(final SampleActivity activity) {
+                activity.onBackPressed();
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                // The delay is added since activity.getSupportActionBar().hide() takes a while to reflect on the screen due to animations
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        assertThat(activity.getSupportActionBar().isShowing()).isFalse();
+                        lastLatch.countDown();
+                    }
+                }, 50);
             }
         });
     }

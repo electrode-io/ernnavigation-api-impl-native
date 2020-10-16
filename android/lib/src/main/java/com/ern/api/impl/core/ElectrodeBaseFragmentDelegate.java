@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -31,10 +32,12 @@ import java.util.UUID;
 public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> implements LifecycleObserver {
     private static final String TAG = ElectrodeBaseFragmentDelegate.class.getSimpleName();
     protected static final String KEY_UNIQUE_VIEW_IDENTIFIER = "viewId";
+    protected static final String NAME_NOT_SET_YET = "NAME_NOT_SET_YET";
 
     protected final Fragment mFragment;
 
-    protected T mElectrodeActivityListener;
+    @VisibleForTesting
+    public T electrodeActivityListener;
 
     @Nullable
     protected final C mFragmentConfig;
@@ -42,10 +45,10 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @Nullable
     private View mMiniAppView;
 
-    private String mMiniAppComponentName = "NAME_NOT_SET_YET";
+    private String mMiniAppComponentName = NAME_NOT_SET_YET;
 
     @SuppressWarnings("unused")
-    protected ElectrodeBaseFragmentDelegate(@NonNull Fragment fragment) {
+    public ElectrodeBaseFragmentDelegate(@NonNull Fragment fragment) {
         this(fragment, null);
     }
 
@@ -53,7 +56,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
      * @param fragment       Hosting fragment
      * @param fragmentConfig Optional config that can be passed if your fragment needs to have a custom layout, etc.
      */
-    protected ElectrodeBaseFragmentDelegate(@NonNull Fragment fragment, @Nullable C fragmentConfig) {
+    public ElectrodeBaseFragmentDelegate(@NonNull Fragment fragment, @Nullable C fragmentConfig) {
         mFragment = fragment;
         mFragmentConfig = fragmentConfig;
     }
@@ -62,7 +65,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     public void onAttach(Context context) {
         if (context instanceof ElectrodeBaseFragmentDelegate.ElectrodeActivityListener) {
             //noinspection unchecked
-            mElectrodeActivityListener = (T) context;
+            electrodeActivityListener = (T) context;
         } else {
             throw new RuntimeException(context.toString()
                     + "Activity must implement a ElectrodeActivityListener");
@@ -99,8 +102,8 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
         Logger.d(TAG, "onCreateView() called. MiniApp component name: " + mMiniAppComponentName);
 
         if (mMiniAppView == null) {
-            if (!TextUtils.isEmpty(mMiniAppComponentName)) {
-                mMiniAppView = mElectrodeActivityListener.createReactNativeView(mMiniAppComponentName, initialProps(savedInstanceState != null));
+            if (isValidMiniAppName(mMiniAppComponentName)) {
+                mMiniAppView = electrodeActivityListener.createReactNativeView(mMiniAppComponentName, initialProps(savedInstanceState != null));
             } else {
                 Logger.i(TAG, "Missing miniAppComponentName inside arguments, will not create a MiniApp view.");
             }
@@ -117,7 +120,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
                 if (view instanceof ViewGroup) {
                     ((ViewGroup) view).addView(mMiniAppView);
                 } else {
-                    throw new IllegalStateException("reactViewContainerId() should represent a ViewGroup to be able to add a react root view inside it.");
+                    throw new IllegalStateException("ElectrodeFragmentConfig reactViewContainerId is not a ViewGroup element");
                 }
             } else {
                 Logger.i(TAG, "Missing reactViewContainerId() or mMiniAppView is null. Will not add MiniApp view explicitly. Do you have a MiniAppView component defined in your layout xml resource file?.");
@@ -126,13 +129,17 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             rootView = inflatedView;
         } else {
             if (mMiniAppView == null) {
-                throw new IllegalStateException("MiniAppView is null. Should never reach here. onCreateView() should return a non-null view.");
+                throw new IllegalStateException("Should never reach here. onCreateView() should return a non-null view. The Fragment neither has a MiniAppView or a custom layout passed via ElectrodeFragmentConfig.");
             }
             Logger.d(TAG, "Returning a ReactRootView.");
             rootView = mMiniAppView;
         }
 
         return rootView;
+    }
+
+    private boolean isValidMiniAppName(String miniAppName) {
+        return !TextUtils.isEmpty(miniAppName) && !NAME_NOT_SET_YET.equals(miniAppName);
     }
 
     private void setupToolbarIfPresent() {
@@ -211,7 +218,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     }
 
     private void addGlobalProps(@NonNull Bundle props) {
-        Bundle globalProps = mElectrodeActivityListener.globalProps();
+        Bundle globalProps = electrodeActivityListener.globalProps();
         if (globalProps != null) {
             props.putAll(globalProps);
         }
@@ -266,7 +273,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     public void onDestroy() {
         Logger.v(TAG, "onDestroy(): " + getReactComponentName());
         if (mMiniAppView instanceof ReactRootView) {
-            mElectrodeActivityListener.removeReactNativeView(mMiniAppComponentName, (ReactRootView) mMiniAppView);
+            electrodeActivityListener.removeReactNativeView(mMiniAppComponentName, (ReactRootView) mMiniAppView);
             mMiniAppView = null;
         }
         if (mFragment.getArguments() != null) {

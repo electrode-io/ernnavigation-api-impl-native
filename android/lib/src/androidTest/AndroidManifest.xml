@@ -30,5 +30,11 @@
         <activity
             android:name="com.ern.api.impl.LaunchConfigTests$OverlayActivity"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.NavigationFragmentDelegateTest$TestActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.NavigationFragmentDelegateTest$EmptyComponentActivity"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 </manifest>
