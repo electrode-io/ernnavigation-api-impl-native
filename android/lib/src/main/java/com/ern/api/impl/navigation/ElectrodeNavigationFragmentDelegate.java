@@ -179,7 +179,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     @SuppressWarnings("unused")
     @CallSuper
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Fragment fragment = getTopOfTheStackFragment();
             if (mFragment == fragment) {
@@ -308,7 +308,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 updateNavBar(navigationBar);
             } else {
                 ActionBar actionBar = getSupportActionBar();
-                if(actionBar != null) {
+                if (actionBar != null) {
                     applyDefaultUpNavigation(actionBar);
                 }
             }
@@ -385,8 +385,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private void updateNavBar(@Nullable NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            Logger.d(TAG, "Action bar is null, skipping nav bar update");
+        if (actionBar == null || navigationBar == null) {
+            Logger.d(TAG, "Action or navigation bar is null, skipping nav bar update");
             return;
         }
 

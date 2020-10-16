@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * <p>
  * Use this fragment to host a React Native component that uses ern-navigation library to navigate between pages.
  */
-public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate> implements
+public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig>> implements
         ElectrodeNavigationFragmentDelegate.FragmentNavigator,
         ElectrodeNavigationFragmentDelegate.OnUpdateNextPageLaunchConfigListener,
         UpdatePropsListener,
@@ -30,17 +30,17 @@ public class MiniAppNavigationFragment extends ElectrodeBaseFragment<ElectrodeNa
 
     @NonNull
     @Override
-    protected ElectrodeNavigationFragmentDelegate createFragmentDelegate() {
-        return new ElectrodeNavigationFragmentDelegate(this);
+    protected ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> createFragmentDelegate() {
+        return new ElectrodeNavigationFragmentDelegate<>(this);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         mElectrodeReactFragmentDelegate.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         return mElectrodeReactFragmentDelegate.onOptionsItemSelected(item);
     }
 
