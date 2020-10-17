@@ -179,7 +179,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     @SuppressWarnings("unused")
     @CallSuper
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Fragment fragment = getTopOfTheStackFragment();
             if (mFragment == fragment) {
@@ -221,7 +221,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     public void back(@NonNull Route route) {
         Logger.v(TAG, "handling back call inside %s", getReactComponentName());
         //Manage fragment back-stack popping. If the given route.path is not in the stack pop a new fragment.
-        boolean result = mElectrodeActivityListener.backToMiniApp(route.getArguments().getString("path"), populateArgsForBack(route));
+        boolean result = electrodeActivityListener.backToMiniApp(route.getArguments().getString("path"), populateArgsForBack(route));
         route.setResult(result, !result ? "back navigation failed. component not found in the back stack" : null);
     }
 
@@ -236,7 +236,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     public void finish(@NonNull Route route) {
         Logger.v(TAG, "handling finish call inside %s", getReactComponentName());
-        mElectrodeActivityListener.finishFlow(NavUtils.getPayload(route.getArguments()));
+        electrodeActivityListener.finishFlow(NavUtils.getPayload(route.getArguments()));
         route.setResult(true, null);
     }
 
@@ -247,12 +247,12 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
         if (path != null && path.length() != 0) {
             // If the hosting activity or fragment has not handled the navigation, fall back to the default.
-            if (!mElectrodeActivityListener.navigate(path, route.getArguments()) && (mFragmentNavigator == null || !mFragmentNavigator.navigate(path, route.getArguments()))) {
+            if (!electrodeActivityListener.navigate(path, route.getArguments()) && (mFragmentNavigator == null || !mFragmentNavigator.navigate(path, route.getArguments()))) {
                 LaunchConfig launchConfig = createNextLaunchConfig(route);
                 if (mOnUpdateNextPageLaunchConfigListener != null) {
                     mOnUpdateNextPageLaunchConfigListener.updateNextPageLaunchConfig(path, launchConfig);
                 }
-                mElectrodeActivityListener.startMiniAppFragment(path, launchConfig);
+                electrodeActivityListener.startMiniAppFragment(path, launchConfig);
             }
             route.setResult(true, "Navigation completed.");
         } else {
@@ -308,7 +308,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 updateNavBar(navigationBar);
             } else {
                 ActionBar actionBar = getSupportActionBar();
-                if(actionBar != null) {
+                if (actionBar != null) {
                     applyDefaultUpNavigation(actionBar);
                 }
             }
@@ -385,8 +385,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private void updateNavBar(@Nullable NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null) {
-            Logger.d(TAG, "Action bar is null, skipping nav bar update");
+        if (actionBar == null || navigationBar == null) {
+            Logger.d(TAG, "Action or navigation bar is null, skipping nav bar update");
             return;
         }
 

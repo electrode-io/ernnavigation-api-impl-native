@@ -60,7 +60,7 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // This menu item id is set inside MenuItemDemoFragment
         if (item.getItemId() == R.id.refresh) {
             Toast.makeText(this.getActivity(), "Refresh handled inside fragment", Toast.LENGTH_SHORT).show();

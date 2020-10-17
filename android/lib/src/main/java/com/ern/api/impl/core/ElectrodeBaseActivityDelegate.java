@@ -131,7 +131,7 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
             }
             fragment = fClazz.newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create " + fClazz + " fragment", e);
+            throw new RuntimeException("Failed to create " + fClazz + " fragment: " + e.getMessage(), e);
         }
 
         Bundle props = launchConfig.mInitialProps != null ? launchConfig.mInitialProps : new Bundle();
