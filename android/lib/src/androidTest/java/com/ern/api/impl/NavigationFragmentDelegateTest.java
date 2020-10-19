@@ -1,21 +1,46 @@
 package com.ern.api.impl;
 
+import android.app.Application;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.testing.FragmentScenario;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.ern.api.impl.core.ActivityDelegateConstants;
+import com.ern.api.impl.core.ElectrodeBaseFragment;
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationActivityListener;
 import com.ern.api.impl.navigation.ElectrodeNavigationFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationFragmentDelegate;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
+import com.ernnavigationApi.ern.api.EnNavigationApi;
+import com.ernnavigationApi.ern.model.NavEventData;
+import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeEventListener;
+import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
+import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+
+import static com.ern.api.impl.navigation.NavEventType.APP_DATA;
+import static com.ern.api.impl.navigation.NavEventType.DID_BLUR;
+import static com.ern.api.impl.navigation.NavEventType.DID_FOCUS;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -23,6 +48,11 @@ import static org.mockito.Mockito.mock;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class NavigationFragmentDelegateTest {
+
+    @Before
+    public void setup() {
+        Logger.overrideLogLevel(Logger.LogLevel.VERBOSE);
+    }
 
     @Test
     public void testFragmentLayoutIsUsedWhenSpecifiedInFragmentConfig() {
@@ -69,6 +99,126 @@ public class NavigationFragmentDelegateTest {
             fail("Should throw exception before reaching here");
         } catch (Exception e) {
             assertThat(e.getMessage()).contains("Should never reach here. onCreateView() should return a non-null view.");
+        }
+    }
+
+    @Test
+    public void testOnEmitDataWithPayload() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Bundle args = new Bundle();
+        args.putBoolean(ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL, true);
+        initReact();
+
+        FragmentScenario<LayoutConfiguredFragment> scenario = FragmentScenario.launch(LayoutConfiguredFragment.class, args);
+        scenario.onFragment(new FragmentScenario.FragmentAction<LayoutConfiguredFragment>() {
+            @Override
+            public void perform(@NonNull final LayoutConfiguredFragment fragment) {
+                final JSONObject passedPayload = new JSONObject();
+                try {
+                    passedPayload.put("testKey", "testValue");
+                } catch (JSONException e) {
+                    fail("Should not fail create json");
+                }
+                EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+                    @Override
+                    public void onEvent(@Nullable NavEventData eventPayload) {
+                        assertThat(eventPayload).isNotNull();
+                        //Only validate APP_DATA event
+                        if (eventPayload.getEventType().equals(APP_DATA.toString())) {
+                            assertThat(fragment.getArguments()).isNotNull();
+                            assertThat(eventPayload.getViewId()).isEqualTo(fragment.getMiniAppViewIdentifier());
+                            assertThat(eventPayload.getJsonPayload()).isNotNull();
+                            try {
+                                JSONObject receivedPayload = new JSONObject(eventPayload.getJsonPayload());
+                                assertThat(receivedPayload.getString("testKey")).isEqualTo(passedPayload.getString("testKey"));
+                            } catch (JSONException e) {
+                                fail("Expected a valid JSON string");
+                            }
+                            latch.countDown();
+                        }
+                    }
+                });
+                ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> delegate = new ElectrodeNavigationFragmentDelegate<>(fragment);
+                delegate.emitOnAppData(passedPayload);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail("Should not time out");
+        }
+    }
+
+    @Test
+    public void testOnEmitDataWithNullPayload() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Bundle args = new Bundle();
+        args.putBoolean(ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL, true);
+        final String viewId = UUID.randomUUID().toString();
+        args.putString(ElectrodeBaseFragmentDelegate.KEY_UNIQUE_VIEW_IDENTIFIER, viewId);
+        initReact();
+
+        FragmentScenario<LayoutConfiguredFragment> scenario = FragmentScenario.launch(LayoutConfiguredFragment.class, args);
+        scenario.onFragment(new FragmentScenario.FragmentAction<LayoutConfiguredFragment>() {
+            @Override
+            public void perform(@NonNull final LayoutConfiguredFragment fragment) {
+                EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+                    @Override
+                    public void onEvent(@Nullable NavEventData eventPayload) {
+                        assertThat(eventPayload).isNotNull();
+                        assertThat(eventPayload.getViewId()).isNotNull();
+                        //Only validate APP_DATA event
+                        if (eventPayload.getEventType().equals(APP_DATA.toString()) && eventPayload.getViewId().equals(viewId)) {
+                            assertThat(eventPayload.getJsonPayload()).isNull();
+                            latch.countDown();
+                        }
+                    }
+                });
+                ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> delegate = new ElectrodeNavigationFragmentDelegate<>(fragment);
+                delegate.emitOnAppData(null);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail("Should not time out");
+        }
+    }
+
+    private void initReact() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                ElectrodeReactContainer.initialize((Application) ApplicationProvider.getApplicationContext(), new ElectrodeReactContainer.Config());
+            }
+        });
+    }
+
+    @Test
+    public void testBlurAndFocusEvents() {
+        final CountDownLatch latch = new CountDownLatch(2);
+        Bundle args = new Bundle();
+        args.putBoolean(ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL, true);
+        initReact();
+
+        EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+            @Override
+            public void onEvent(@Nullable NavEventData eventPayload) {
+                assertThat(eventPayload).isNotNull();
+                if (eventPayload.getEventType().equals(DID_FOCUS.toString()) || eventPayload.getEventType().equals(DID_BLUR.toString())) {
+                    latch.countDown();
+                }
+            }
+        });
+        FragmentScenario<LayoutConfiguredFragment> scenario = FragmentScenario.launch(LayoutConfiguredFragment.class, args);
+        scenario.moveToState(Lifecycle.State.RESUMED);
+        scenario.moveToState(Lifecycle.State.DESTROYED);
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail("Should not time out");
         }
     }
 }

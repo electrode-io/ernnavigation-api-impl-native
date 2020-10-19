@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> implements LifecycleObserver {
     private static final String TAG = ElectrodeBaseFragmentDelegate.class.getSimpleName();
-    protected static final String KEY_UNIQUE_VIEW_IDENTIFIER = "viewId";
+    public static final String KEY_UNIQUE_VIEW_IDENTIFIER = "viewId";
     protected static final String NAME_NOT_SET_YET = "NAME_NOT_SET_YET";
 
     protected final Fragment mFragment;

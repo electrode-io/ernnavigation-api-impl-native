@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import static com.ern.api.impl.navigation.NavEventType.APP_DATA;
 import static com.ern.api.impl.navigation.ReactNavigationViewModel.KEY_NAV_TYPE;
 
 public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragmentDelegate.ElectrodeActivityListener, C extends ElectrodeFragmentConfig> extends ElectrodeBaseFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> {
@@ -496,7 +497,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     }
 
     public void emitOnAppData(@Nullable JSONObject jsonPayload) {
-        NavEventData data = new NavEventData.Builder("APP_DATA")
+        NavEventData data = new NavEventData.Builder(APP_DATA.toString())
                 .viewId(getMiniAppViewIdentifier())
                 .jsonPayload(jsonPayload != null ? jsonPayload.toString() : null).build();
         EnNavigationApi.events().emitNavEvent(data);
