@@ -28,6 +28,8 @@ import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -491,6 +493,13 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
             return ((AppCompatActivity) mFragment.getActivity()).getSupportActionBar();
         }
         return null;
+    }
+
+    public void emitOnAppData(@Nullable JSONObject jsonPayload) {
+        NavEventData data = new NavEventData.Builder("APP_DATA")
+                .viewId(getMiniAppViewIdentifier())
+                .jsonPayload(jsonPayload != null ? jsonPayload.toString() : null).build();
+        EnNavigationApi.events().emitNavEvent(data);
     }
 
     private class BackPressedCallback extends OnBackPressedCallback {

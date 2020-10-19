@@ -19,13 +19,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.ErnNavRoute;
-import com.ernnavigationApi.ern.model.NavEventData;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
-
-import org.json.JSONObject;
 
 import java.util.UUID;
 
@@ -208,13 +204,6 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             id = mFragment.getArguments().getString(KEY_UNIQUE_VIEW_IDENTIFIER);
         }
         return id != null ? id : "NOT_SET";
-    }
-
-    public void emitOnAppData(@Nullable JSONObject jsonPayload) {
-        NavEventData data = new NavEventData.Builder("APP_DATA")
-                .viewId(getMiniAppViewIdentifier())
-                .jsonPayload(jsonPayload != null ? jsonPayload.toString() : null).build();
-        EnNavigationApi.events().emitNavEvent(data);
     }
 
     private void addGlobalProps(@NonNull Bundle props) {
