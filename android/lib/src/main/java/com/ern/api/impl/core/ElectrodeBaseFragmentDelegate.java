@@ -63,8 +63,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             //noinspection unchecked
             electrodeActivityListener = (T) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + "Activity must implement a ElectrodeActivityListener");
+            Logger.e(TAG, "Activity must implement a ElectrodeActivityListener. If not for tests this should never happen.");
         }
     }
 
