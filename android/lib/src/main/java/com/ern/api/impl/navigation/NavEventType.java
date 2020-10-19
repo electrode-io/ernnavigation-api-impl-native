@@ -4,4 +4,5 @@ public enum NavEventType {
     BUTTON_CLICK,
     DID_FOCUS,
     DID_BLUR,
+    APP_DATA,
 }

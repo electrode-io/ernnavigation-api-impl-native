@@ -61,4 +61,8 @@ public abstract class ElectrodeBaseFragment<T extends ElectrodeBaseFragmentDeleg
     public String getReactComponentName() {
         return mElectrodeReactFragmentDelegate.getReactComponentName();
     }
+
+    public String getMiniAppViewIdentifier() {
+        return mElectrodeReactFragmentDelegate.getMiniAppViewIdentifier();
+    }
 }
