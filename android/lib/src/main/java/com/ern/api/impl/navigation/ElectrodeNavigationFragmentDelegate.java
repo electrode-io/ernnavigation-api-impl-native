@@ -532,14 +532,14 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
                 throw new IllegalStateException("handleOnBackPressed: Should never reach here. NavigationBarLeftButton is null.");
             }
 
-            if (mLeftButton.getId() != null) {
+            if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
+                Logger.v(TAG, "handleOnBackPressed: Back press disabled, component:%s", getReactComponentName());
+            } else if (mLeftButton.getId() != null) {
                 Logger.v(TAG, "handleOnBackPressed: firing event to React Native, button id: %s", mLeftButton.getId());
                 //TODO: This line should be removed with next major version update of ern-navigation. Keeping here for backward compatibility
                 EnNavigationApi.events().emitOnNavButtonClick(mLeftButton.getId());
 
                 EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.BUTTON_CLICK.toString()).viewId(getMiniAppViewIdentifier()).jsonPayload("{\"id\": \"" + mLeftButton.getId() + "\"}").build());
-            } else if (mLeftButton.getDisabled() != null && mLeftButton.getDisabled()) {
-                Logger.v(TAG, "handleOnBackPressed: Back press disabled, component:%s", getReactComponentName());
             } else {
                 Logger.w(TAG, "handleOnBackPressed: not handled by %s. [SHOULD NEVER REACH HERE]", getReactComponentName());
             }
