@@ -34,7 +34,10 @@
             android:name="com.ern.api.impl.NavigationFragmentDelegateTest$TestActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name="com.ern.api.impl.NavigationFragmentDelegateTest$EmptyComponentActivity"
+            android:name="com.ern.api.impl.LaunchConfigTests$UpEnabledForRootActivity"
+            android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.LaunchConfigTests$RootUpClickToRnActivity"
             android:theme="@style/Theme.AppCompat" />
     </application>
 </manifest>

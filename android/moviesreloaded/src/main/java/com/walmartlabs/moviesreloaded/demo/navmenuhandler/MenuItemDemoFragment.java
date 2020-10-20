@@ -13,7 +13,6 @@ import com.ern.api.impl.navigation.MenuItemProperties;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ern.api.impl.navigation.OnNavBarItemClickListener;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
-import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.moviesreloaded.R;
 
 public class MenuItemDemoFragment extends MiniAppNavigationFragment implements OnNavBarItemClickListener {
@@ -30,7 +29,7 @@ public class MenuItemDemoFragment extends MiniAppNavigationFragment implements O
             public MenuItemProperties menuItemPropertiesFor(@NonNull NavigationBarButton rightButton) {
                 if ("refresh".equals(rightButton.getId())) {
                     return new DefaultMenuItemProperties.Builder()
-                            .icon(R.drawable.ic_refresh_24px)
+                            .icon(R.drawable.ic_refresh)
                             .itemId(R.id.refresh)
                             .handleClickInActivity(true) //Set this to true when you want to handle the click action on the native side.
                             .build();
