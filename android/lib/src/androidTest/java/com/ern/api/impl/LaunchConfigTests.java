@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -335,7 +336,7 @@ public class LaunchConfigTests {
         }
 
         final CountDownLatch eventLatch = new CountDownLatch(1);
-        EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+        UUID uuid = EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
             @Override
             public void onEvent(@Nullable NavEventData eventPayload) {
                 assertThat(eventPayload).isNotNull();
@@ -365,6 +366,7 @@ public class LaunchConfigTests {
         } catch (InterruptedException e) {
             fail();
         }
+        EnNavigationApi.events().removeNavEventEventListener(uuid);
     }
 
     @Test
@@ -405,7 +407,7 @@ public class LaunchConfigTests {
         }
 
         final CountDownLatch eventLatch = new CountDownLatch(1);
-        EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+        UUID uuid = EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
             @Override
             public void onEvent(@Nullable NavEventData eventPayload) {
                 assertThat(eventPayload).isNotNull();
@@ -429,6 +431,7 @@ public class LaunchConfigTests {
             // Expected to timeout. Giving sometime for the event listener to get called if any.
             // In case if it gets called the test would fail
         }
+        EnNavigationApi.events().removeNavEventEventListener(uuid);
     }
 
     @Test
@@ -470,7 +473,7 @@ public class LaunchConfigTests {
         }
 
         final CountDownLatch eventLatch = new CountDownLatch(1);
-        EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+        UUID uuid = EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
             @Override
             public void onEvent(@Nullable NavEventData eventPayload) {
                 assertThat(eventPayload).isNotNull();
@@ -497,6 +500,7 @@ public class LaunchConfigTests {
             // Expected to timeout. Giving sometime for the event listener to get called if any.
             // In case if it gets called the test would fail
         }
+        EnNavigationApi.events().removeNavEventEventListener(uuid);
     }
 
     /**
