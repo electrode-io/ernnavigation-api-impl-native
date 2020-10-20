@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,11 +13,12 @@ import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.ViewAssertion;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.ern.api.impl.core.ActivityDelegateConstants;
-import com.ern.api.impl.core.ElectrodeBaseFragment;
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationActivityListener;
@@ -24,10 +26,17 @@ import com.ern.api.impl.navigation.ElectrodeNavigationFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationFragmentDelegate;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
+import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.ernnavigationApi.ern.model.NavEventData;
+import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeEventListener;
+import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;
+import com.walmartlabs.electrode.reactnative.bridge.FailureMessage;
+import com.walmartlabs.electrode.reactnative.bridge.None;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactContainer;
+import com.walmartlabs.ern.navigation.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +47,8 @@ import org.junit.runner.RunWith;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static com.ern.api.impl.navigation.NavEventType.APP_DATA;
 import static com.ern.api.impl.navigation.NavEventType.DID_BLUR;
 import static com.ern.api.impl.navigation.NavEventType.DID_FOCUS;
@@ -220,5 +231,117 @@ public class NavigationFragmentDelegateTest {
         } catch (InterruptedException e) {
             fail("Should not time out");
         }
+    }
+
+    @Test
+    public void testLeftIconOverride() {
+        NavigationBarLeftButton leftButton = new NavigationBarLeftButton
+                .Builder()
+                .id("leftButtonId")
+                .icon("ic_refresh")
+                .build();
+        NavigationBar navBar = new NavigationBar
+                .Builder("page 1")
+                .leftButton(leftButton)
+                .build();
+        ErnNavRoute route = new ErnNavRoute
+                .Builder("new page")
+                .navigationBar(navBar)
+                .build();
+        ActivityScenario<SampleActivity> scenario = ActivityScenario.launch(SampleActivity.class);
+        final CountDownLatch latch = new CountDownLatch(1);
+        EnNavigationApi.requests().navigate(route, new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        onView(withContentDescription(R.string.abc_action_bar_up_description)).check(new ViewAssertion() {
+            @Override
+            public void check(View view, NoMatchingViewException noViewFoundException) {
+                assertThat(view).isNotNull();
+            }
+        });
+    }
+
+    @Test
+    public void testOverlay() {
+        final String TITLE_PAGE_1 = "page 1";
+        final String TITLE_PAGE_2 = "page 2";
+        ActivityScenario<SampleActivity> scenario = ActivityScenario.launch(SampleActivity.class);
+        final CountDownLatch latch = new CountDownLatch(1);
+        EnNavigationApi.requests().navigate(new ErnNavRoute
+                .Builder("new page")
+                .navigationBar(new NavigationBar.Builder(TITLE_PAGE_1).build())
+                .overlay(true)
+                .build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        //Ensure Overlay is displayed with proper title.
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_1);
+            }
+        });
+
+        final CountDownLatch latch2 = new CountDownLatch(1);
+        //Try to navigate one more time while overlay is displayed.
+        EnNavigationApi.requests().navigate(new ErnNavRoute
+                .Builder("another page")
+                .navigationBar(new NavigationBar.Builder(TITLE_PAGE_2).build())
+                .overlay(true)
+                .build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch2.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail();
+            }
+        });
+
+        try {
+            latch2.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
+
+        //Ensure the navigation succeeded while on an overlay page
+        scenario.onActivity(new ActivityScenario.ActivityAction<SampleActivity>() {
+            @Override
+            public void perform(SampleActivity activity) {
+                assertThat(activity.getSupportActionBar()).isNotNull();
+                assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_2);
+            }
+        });
     }
 }
