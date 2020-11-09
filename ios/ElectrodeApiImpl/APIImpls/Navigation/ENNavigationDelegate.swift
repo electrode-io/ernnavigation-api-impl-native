@@ -135,9 +135,13 @@ import UIKit
             return completion("cannot find path from viewController stack")
         } else {
             if let navigationController = viewController?.navigationController {
-                navigationController.popViewController(animated: true)
-                if refresh, let lastVC = navigationController.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
-                    miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+                if navigationController.viewControllers.count == 1 {
+                    navigationController.dismiss(animated: true, completion: nil)
+                } else {
+                    navigationController.popViewController(animated: true)
+                    if refresh, let lastVC = navigationController.viewControllers.last, let miniAppVC = lastVC as? MiniAppNavViewController {
+                        miniAppVC.reloadView(ernNavRoute: ernNavRoute)
+                    }
                 }
             }
             return completion("success")
