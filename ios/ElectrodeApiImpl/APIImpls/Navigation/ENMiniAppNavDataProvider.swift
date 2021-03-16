@@ -16,14 +16,19 @@
 
 import Foundation
 
+@available(*, deprecated, message: "MiniAppFinishedCallback is deprecated, use Payload")
 public typealias MiniAppFinishedCallback = (String?) -> Void
+
 public typealias Payload = ([AnyHashable: Any]?) -> Void
 public typealias NavigateWithRoute = ([AnyHashable: Any]) -> Bool
 public typealias BackToRoute = (_ componentName: String, _ properties: [AnyHashable: Any]) -> Bool
 
 @objc public protocol ENMiniAppNavDataProvider: ENMiniAppDataProvider {
     // Ideally this protocol was named ENNavCallback, as it should be a call back handler
+
+    @available(*, deprecated, message: "finishedCallback is deprecated, use finish")
     @objc optional var finishedCallback: MiniAppFinishedCallback? { get set }
+
     @objc optional var finish: Payload? { get set }
     @objc optional var navigateWithRoute: NavigateWithRoute { get set }
     @objc optional var backToMiniApp: BackToRoute { get set }
