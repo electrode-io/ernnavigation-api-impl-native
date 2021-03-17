@@ -171,8 +171,13 @@ import UIKit
         }
         if ((self.viewController?.finish) != nil) {
             self.viewController?.finish?(payloadDict)
-        } else {
+        } else if ((self.viewController?.finishedCallback) != nil) {
             self.finishedCallBack(finalPayLoad: finalPayload)
+        } else {
+            // No overrides, so perform default finish implementation to dismiss navigation stack
+            if let navController = self.viewController?.navigationController {
+                navController.dismiss(animated: true)
+            }
         }
         var presentingVC: UIViewController? = self.viewController
         while presentingVC?.presentingViewController != nil {
@@ -184,7 +189,7 @@ import UIKit
                 }
             }
         }
-        return completion("Finished status")
+        return completion("success")
     }
 
     func onDismissOverlay() {
