@@ -30,6 +30,7 @@
 		5ECD5A5793E144C5A58B8357 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6363F7D7314F089C23F19E /* libRCTCameraRoll.a */; };
 		608EB536E1B449CD86A426F7 /* ElectrodeBridgeMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADEF28A1F884237AEB0FB6B /* ElectrodeBridgeMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		672467578A794FECA4B3859D /* ElectrodeBridgeFailureMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 80610BCF60A2462DA9C767CC /* ElectrodeBridgeFailureMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6E7A28C32602A3A5002400E5 /* ENBaseNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7A28C22602A3A5002400E5 /* ENBaseNavigationController.swift */; };
 		6E948F062602991F00E99E37 /* ENCoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E948EDD2602991F00E99E37 /* ENCoreDelegate.swift */; };
 		6E948F072602991F00E99E37 /* ENMiniAppDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E948EDE2602991F00E99E37 /* ENMiniAppDataProvider.swift */; };
 		6E948F082602991F00E99E37 /* EnNavigationApiRequestHandlerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E948EDF2602991F00E99E37 /* EnNavigationApiRequestHandlerProvider.swift */; };
@@ -486,6 +487,7 @@
 		6205CB3C80444400969D7235 /* ElectrodeBridgeTransceiver.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; name = ElectrodeBridgeTransceiver.m; path = ElectrodeReactNativeBridge/ElectrodeBridgeTransceiver.m; sourceTree = "<group>"; };
 		64B8E0F266164E01B749365A /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ReactNative/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		6D8EFE42F68A43359F037637 /* ElectrodeReactNativeBridge.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = ElectrodeReactNativeBridge.h; path = ElectrodeReactNativeBridge/ElectrodeReactNativeBridge.h; sourceTree = "<group>"; };
+		6E7A28C22602A3A5002400E5 /* ENBaseNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ENBaseNavigationController.swift; sourceTree = "<group>"; };
 		6E948EDD2602991F00E99E37 /* ENCoreDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENCoreDelegate.swift; sourceTree = "<group>"; };
 		6E948EDE2602991F00E99E37 /* ENMiniAppDataProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENMiniAppDataProvider.swift; sourceTree = "<group>"; };
 		6E948EDF2602991F00E99E37 /* EnNavigationApiRequestHandlerProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnNavigationApiRequestHandlerProvider.swift; sourceTree = "<group>"; };
@@ -759,6 +761,7 @@
 				6E948EE82602991F00E99E37 /* ENMiniAppNavDataProvider.swift */,
 				6E948EE92602991F00E99E37 /* ENBarButtonItem.swift */,
 				6E948EEA2602991F00E99E37 /* MiniAppNavViewController.swift */,
+				6E7A28C22602A3A5002400E5 /* ENBaseNavigationController.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -1396,6 +1399,7 @@
 				B2258421ED2444539E556FF0 /* ElectrodeBridgeRequest.m in Sources */,
 				90B43D950CE4449F8D5EBCC0 /* ElectrodeBridgeResponse.m in Sources */,
 				6E948F132602991F00E99E37 /* RequestHandlerProvider.swift in Sources */,
+				6E7A28C32602A3A5002400E5 /* ENBaseNavigationController.swift in Sources */,
 				6ED8270B23D7C2EC00A0CEE9 /* NavigationBar.swift in Sources */,
 				6E948F0B2602991F00E99E37 /* ENNavigationDelegate.swift in Sources */,
 				6E948F122602991F00E99E37 /* MiniAppNavViewController.swift in Sources */,
