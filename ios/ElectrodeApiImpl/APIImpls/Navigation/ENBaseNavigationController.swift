@@ -11,8 +11,9 @@ import UIKit
 
 class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvider {
 
-    var rootComponentName: String
+    var rootComponentName: String = ""
     var properties: [AnyHashable : Any]?
+    var globalProperties: [AnyHashable : Any]?
     var navigateWithRoute: NavigateWithRoute = { _ in
         return false
     }
@@ -21,10 +22,11 @@ class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvid
         return false
     }
 
-    init(properties: [AnyHashable : Any]?, rootComponentName: String) {
-        self.rootComponentName = rootComponentName
-        self.properties = properties
+    init() {
         super.init(nibName: nil, bundle: nil)
+        self.rootComponentName = getRootComponentName()
+        self.properties = getProps()
+        self.globalProperties = globalProps()
         self.navigateWithRoute = { route in
             let path = route["path"] as? String ?? ""
             return self.navigate(path, route)
@@ -46,6 +48,21 @@ class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvid
         let navDelegate = ENNavigationDelegate()
         navDelegate.viewDidLoad(viewController: self)
         addCloseButton()
+    }
+
+    // Override to provide React Native component name of root view
+    func getRootComponentName() -> String {
+        return ""
+    }
+
+    // Override to provide properties to root view
+    func getProps() -> [AnyHashable : Any]? {
+        return nil
+    }
+
+    // Override to provide global properties to all views
+    func globalProps() -> [AnyHashable : Any]? {
+        return nil
     }
 
     // Override and return true to provide custom navigate implementation
