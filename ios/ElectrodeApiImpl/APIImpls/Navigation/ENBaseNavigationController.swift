@@ -9,20 +9,20 @@
 import Foundation
 import UIKit
 
-class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvider {
+open class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvider {
 
-    var rootComponentName: String = ""
-    var properties: [AnyHashable : Any]?
-    var globalProperties: [AnyHashable : Any]?
-    var navigateWithRoute: NavigateWithRoute = { _ in
+    open var rootComponentName: String = ""
+    open var properties: [AnyHashable : Any]?
+    open var globalProperties: [AnyHashable : Any]?
+    open var navigateWithRoute: NavigateWithRoute = { _ in
         return false
     }
-    var finish: Payload?
-    var backToMiniApp: BackToRoute = { _, _ in
+    open var finish: Payload?
+    open var backToMiniApp: BackToRoute = { _, _ in
         return false
     }
 
-    init() {
+    public init() {
         super.init(nibName: nil, bundle: nil)
         self.rootComponentName = getRootComponentName()
         self.properties = getProps()
@@ -39,11 +39,11 @@ class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvid
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         let navDelegate = ENNavigationDelegate()
         navDelegate.viewDidLoad(viewController: self)
@@ -51,39 +51,39 @@ class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataProvid
     }
 
     // Override to provide React Native component name of root view
-    func getRootComponentName() -> String {
+    open func getRootComponentName() -> String {
         return ""
     }
 
     // Override to provide properties to root view
-    func getProps() -> [AnyHashable : Any]? {
+    open func getProps() -> [AnyHashable : Any]? {
         return nil
     }
 
     // Override to provide global properties to all views
-    func globalProps() -> [AnyHashable : Any]? {
+    open func globalProps() -> [AnyHashable : Any]? {
         return nil
     }
 
     // Override and return true to provide custom navigate implementation
     // return false to use default implementation
-    func navigate(_ path: String, _ route: [AnyHashable: Any]) -> Bool {
+    open func navigate(_ path: String, _ route: [AnyHashable: Any]) -> Bool {
         return false
     }
 
     // Override to provide custom finish implementation
-    func finishFlow(_ payload: [AnyHashable: Any]?) {
+    open func finishFlow(_ payload: [AnyHashable: Any]?) {
         dismiss(animated: true)
     }
 
     // Override and return true to provide custom back to implementation
     // return false to use default implementation
-    func backToMiniApp(_ componentName: String, _ backProperties: [AnyHashable: Any]) -> Bool {
+    open func backToMiniApp(_ componentName: String, _ backProperties: [AnyHashable: Any]) -> Bool {
         return false
     }
 
     // Override and return false to remove default close button
-    func showCloseBarButton() -> Bool {
+    open func showCloseBarButton() -> Bool {
         return true
     }
 
