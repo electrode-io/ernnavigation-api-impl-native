@@ -39,5 +39,8 @@
         <activity
             android:name="com.ern.api.impl.LaunchConfigTests$RootUpClickToRnActivity"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name="com.ern.api.impl.NavigationFragmentDelegateTest$MenuItemsActivity"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 </manifest>

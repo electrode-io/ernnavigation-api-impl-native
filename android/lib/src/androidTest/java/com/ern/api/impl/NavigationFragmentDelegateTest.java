@@ -4,6 +4,8 @@ import android.app.Application;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -24,11 +26,14 @@ import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationActivityListener;
 import com.ern.api.impl.navigation.ElectrodeNavigationFragmentConfig;
 import com.ern.api.impl.navigation.ElectrodeNavigationFragmentDelegate;
+import com.ern.api.impl.navigation.MenuItemProperties;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
+import com.ern.api.impl.navigation.NavEventType;
 import com.ernnavigationApi.ern.api.EnNavigationApi;
 import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.ernnavigationApi.ern.model.NavEventData;
 import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeEventListener;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;
@@ -44,11 +49,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.ern.api.impl.navigation.NavEventType.APP_DATA;
 import static com.ern.api.impl.navigation.NavEventType.DID_BLUR;
 import static com.ern.api.impl.navigation.NavEventType.DID_FOCUS;
@@ -343,5 +351,133 @@ public class NavigationFragmentDelegateTest {
                 assertThat(activity.getSupportActionBar().getTitle()).isEqualTo(TITLE_PAGE_2);
             }
         });
+    }
+
+    public static class MenuItemsActivity extends SampleActivity {
+        @NonNull
+        @Override
+        protected Class<? extends Fragment> miniAppFragmentClass() {
+            return MenuItemsFragment.class;
+        }
+    }
+
+    public static class MenuItemsFragment extends MiniAppNavigationFragment {
+
+        @Override
+        public void onOptionsMenuUpdated(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+            super.onOptionsMenuUpdated(menu, inflater);
+        }
+
+        @NonNull
+        @Override
+        protected ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> createFragmentDelegate() {
+            ElectrodeNavigationFragmentDelegate<ElectrodeNavigationActivityListener, ElectrodeNavigationFragmentConfig> delegate = super.createFragmentDelegate();
+            delegate.setMenuItemDataProvider(new MenuItemDataProvider());
+            return delegate;
+        }
+
+        public static class MenuItemDataProvider implements com.ern.api.impl.navigation.MenuItemDataProvider {
+            @Nullable
+            @Override
+            public MenuItemProperties menuItemPropertiesFor(@NonNull NavigationBarButton rightButton) {
+                if (rightButton.getId().equals(RIGHT_BUTTON_ID_1)) {
+                    return getMenuItemPropertiesFor(com.walmartlabs.ern.navigation.test.R.id.r_button_1);
+                } else if (rightButton.getId().equals(RIGHT_BUTTON_ID_2)) {
+                    return getMenuItemPropertiesFor(com.walmartlabs.ern.navigation.test.R.id.r_button_2);
+                } else if (rightButton.getId().equals(RIGHT_BUTTON_ID_3)) {
+                    return getMenuItemPropertiesFor(com.walmartlabs.ern.navigation.test.R.id.r_button_3);
+                } else {
+                    return null;
+                }
+            }
+
+            @NonNull
+            private MenuItemProperties getMenuItemPropertiesFor(final int itemId) {
+                return new MenuItemProperties() {
+                    @Override
+                    public int itemId() {
+                        return itemId;
+                    }
+
+                    @Override
+                    public int icon() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean shouldHandleClickOnNative() {
+                        return false;
+                    }
+                };
+            }
+
+            @Override
+            public int homeAsUpIndicatorOverride(@NonNull String iconName) {
+                return 0;
+            }
+        }
+    }
+
+    private static final String RIGHT_BUTTON_ID_1 = "id_right1";
+    private static final String RIGHT_BUTTON_ID_2 = "id_right2";
+    private static final String RIGHT_BUTTON_ID_3 = "id_right3";
+
+    @Test
+    public void testRightMenuItemsRenderingAndClicks() {
+        ActivityScenario<MenuItemsActivity> scenario = ActivityScenario.launch(MenuItemsActivity.class);
+        final CountDownLatch latch = new CountDownLatch(1);
+        final NavigationBarButton rightButton1 = new NavigationBarButton.Builder(RIGHT_BUTTON_ID_1).icon("ic_refresh").adaLabel("right button 1").build();
+        final NavigationBarButton rightButton2 = new NavigationBarButton.Builder(RIGHT_BUTTON_ID_2).icon("ic_refresh").adaLabel("right button 2").build();
+        // Disabled button
+        final NavigationBarButton rightButton3 = new NavigationBarButton.Builder(RIGHT_BUTTON_ID_3).icon("ic_refresh").adaLabel("right button 3").disabled(true).build();
+        NavigationBar navigationBar = new NavigationBar
+                .Builder("page 1")
+                .buttons(new ArrayList<NavigationBarButton>() {{
+                    add(rightButton1);
+                    add(rightButton2);
+                    add(rightButton3);
+                }})
+                .build();
+        EnNavigationApi.requests().navigate(new ErnNavRoute
+                .Builder("page1component")
+                .navigationBar(navigationBar)
+                .overlay(true)
+                .build(), new ElectrodeBridgeResponseListener<None>() {
+            @Override
+            public void onSuccess(@Nullable None responseData) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(@NonNull FailureMessage failureMessage) {
+                fail();
+            }
+        });
+
+        final CountDownLatch eventLatch = new CountDownLatch(2);
+        EnNavigationApi.events().addNavEventEventListener(new ElectrodeBridgeEventListener<NavEventData>() {
+            @Override
+            public void onEvent(@Nullable NavEventData eventPayload) {
+                assertThat(eventPayload).isNotNull();
+                if (eventPayload.getEventType().equals(NavEventType.BUTTON_CLICK.toString())) {
+                    assertThat(eventPayload.getJsonPayload()).isNotNull();
+                    eventLatch.countDown();
+                }
+            }
+        });
+
+        onView(withId(com.walmartlabs.ern.navigation.test.R.id.r_button_1)).perform(click());
+        onView(withId(com.walmartlabs.ern.navigation.test.R.id.r_button_2)).perform(click());
+        onView(withId(com.walmartlabs.ern.navigation.test.R.id.r_button_3)).check(new ViewAssertion() {
+            @Override
+            public void check(View view, NoMatchingViewException noViewFoundException) {
+                assertThat(view.isEnabled()).isFalse();
+            }
+        });
+        try {
+            eventLatch.await();
+        } catch (InterruptedException e) {
+            fail();
+        }
     }
 }
