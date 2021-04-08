@@ -387,9 +387,17 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
 
     private void updateNavBar(@Nullable NavigationBar navigationBar) {
         Logger.d(TAG, "Updating nav bar: %s", navigationBar);
+        if(navigationBar == null) {
+            Logger.d(TAG, "Received empty navigation bar, skipping nav bar update");
+            return;
+        }
+
+        //Allow RN to control device back key if a valid leftButton is provided
+        mBackPressedCallback.setEnabled(navigationBar.getLeftButton());
+
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar == null || navigationBar == null) {
-            Logger.d(TAG, "Action or navigation bar is null, skipping nav bar update");
+        if (actionBar == null) {
+            Logger.d(TAG, "Action bar is null, skipping nav bar update");
             return;
         }
 
@@ -424,7 +432,6 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     }
 
     private void updateHomeAsUpIndicator(@Nullable NavigationBarLeftButton leftButton, @NonNull ActionBar actionBar) {
-        mBackPressedCallback.setEnabled(leftButton);
         if (leftButton != null) {
             if (leftButton.getDisabled() != null && leftButton.getDisabled()) {
                 Logger.d(TAG, "Disabling DisplayHomeAsUp for component: %s", getReactComponentName());
@@ -520,6 +527,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         private void setEnabled(@Nullable NavigationBarLeftButton leftButton) {
             mLeftButton = leftButton;
             if (leftButton != null && (leftButton.getId() != null || (leftButton.getDisabled() != null && leftButton.getDisabled()))) {
+                Logger.d(TAG, "LeftButton click overridden by RN, will forward back clicks to RN component");
                 setEnabled(true);
             } else {
                 setEnabled(false);
