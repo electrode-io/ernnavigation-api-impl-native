@@ -42,8 +42,8 @@ import UIKit
                 navigationVC.pushViewControllerWithoutBackButtonTitle(miniappVC, animated: false)
             }
         } else {
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didBlur), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.didFocus), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didBlur), name: UIApplication.didEnterBackgroundNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.didFocus), name: UIApplication.didBecomeActiveNotification, object: nil)
             super.viewDidLoad(viewController: viewController)
         }
     }
@@ -57,7 +57,7 @@ import UIKit
 
     func viewDidAppear() {
         if let vc = self.viewController {
-            if vc.isMovingToParentViewController {
+            if vc.isMovingToParent {
                 if let navigationBarDict = vc.properties?["navigationBar"] as? [AnyHashable: Any] {
                     let navBar = NavigationBar(dictionary: navigationBarDict)
                     updateNavBarTitleAndButtons(navBar: navBar)
@@ -74,7 +74,7 @@ import UIKit
     }
 
     func viewDidDisappear() {
-        if self.viewController?.isMovingFromParentViewController ?? false || self.viewController?.isBeingDismissed ?? false {
+        if self.viewController?.isMovingToParent ?? false || self.viewController?.isBeingDismissed ?? false {
             self.deinitRNView()
         }
     }
