@@ -22,7 +22,7 @@ import Foundation
 {
     // Singleton
     static let instance = EnNavigationApiController()
-    private override init() {}
+    public override init() {}
     
     private var requestHandler: EnNavigationApiRequestHandlerProvider?
     
