@@ -103,4 +103,9 @@ open class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataP
         dismiss(animated: true)
     }
 
+    open func emitPayloadToCurrentRNView(_ jsonPayload: String?) {
+        if let miniAppNavVC = viewControllers.last as? MiniAppNavViewController {
+            miniAppNavVC.emitAppData(jsonPayload)
+        }
+    }
 }
