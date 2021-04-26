@@ -753,15 +753,15 @@
 		6E948EE22602991F00E99E37 /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				6E948EE32602991F00E99E37 /* ENNavigationDelegate.swift */,
-				6E948EE42602991F00E99E37 /* ENNavigationBarState.swift */,
-				6E948EE52602991F00E99E37 /* ENNavigationAPIImpl.swift */,
-				6E948EE62602991F00E99E37 /* ENOverlayProtocol.swift */,
-				6E948EE72602991F00E99E37 /* ENNavigationProtocol.swift */,
-				6E948EE82602991F00E99E37 /* ENMiniAppNavDataProvider.swift */,
 				6E948EE92602991F00E99E37 /* ENBarButtonItem.swift */,
-				6E948EEA2602991F00E99E37 /* MiniAppNavViewController.swift */,
 				6E7A28C22602A3A5002400E5 /* ENBaseNavigationController.swift */,
+				6E948EE82602991F00E99E37 /* ENMiniAppNavDataProvider.swift */,
+				6E948EE52602991F00E99E37 /* ENNavigationAPIImpl.swift */,
+				6E948EE42602991F00E99E37 /* ENNavigationBarState.swift */,
+				6E948EE32602991F00E99E37 /* ENNavigationDelegate.swift */,
+				6E948EE72602991F00E99E37 /* ENNavigationProtocol.swift */,
+				6E948EE62602991F00E99E37 /* ENOverlayProtocol.swift */,
+				6E948EEA2602991F00E99E37 /* MiniAppNavViewController.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";

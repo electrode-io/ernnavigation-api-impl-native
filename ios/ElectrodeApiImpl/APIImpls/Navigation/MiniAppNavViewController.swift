@@ -92,6 +92,12 @@ open class MiniAppNavViewController: UIViewController, ENNavigationProtocol, ENO
     func onDismissOverlay() {
         self.delegate?.onDismissOverlay()
     }
+
+    func emitAppData(_ jsonPayload: String?) {
+        let eventData = NavEventData(eventType: "APP_DATA", viewId: self.delegate?.viewIdentifier ?? "NOT_SET", jsonPayload: jsonPayload)
+        ENNavigationAPIImpl.shared.navigationAPI.events.emitEventNavEvent(eventData: eventData)
+    }
+
 }
 
 extension UINavigationController {
