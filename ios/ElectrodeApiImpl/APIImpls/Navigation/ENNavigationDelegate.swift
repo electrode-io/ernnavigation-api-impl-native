@@ -476,19 +476,3 @@ import UIKit
         return "{\"id\": \"" + buttonId + "\"}"
     }
 }
-
-extension String {
-    func convertStringToDict() -> [AnyHashable: Any]? {
-        do {
-            if let data = self.data(using: String.Encoding.utf8), let dict = try JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [AnyHashable: Any] {
-                return dict
-            } else {
-                return nil
-            }
-        } catch let error as NSError {
-            let logger = ElectrodeConsoleLogger.sharedInstance()
-            logger.log(.error, message: error.description)
-        }
-        return nil
-    }
-}

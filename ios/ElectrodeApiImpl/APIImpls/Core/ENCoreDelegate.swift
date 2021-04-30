@@ -77,7 +77,22 @@ import UIKit
         guard let dict2 = dictionary2 else {
             return dictionary1
         }
-        return dict2.merging(dict1) {(current, _) in current }
+
+        var result = dict2.merging(dict1) {(current, _) in current }
+
+        /*  When both dictionaries have jsonPayloads,
+            Convert the json strings to dictionaries,
+            Merge and convert back to json strings
+            Set back to "jsonPayload" key
+        */
+        if let payload1 = dict1["jsonPayload"] as? String, let payload2 = dict2["jsonPayload"] as? String {
+            if let jsonDict1 = payload1.convertStringToDict(), let jsonDict2 = payload2.convertStringToDict() {
+                let jsonResult = jsonDict2.merging(jsonDict1) {(current, _) in current }
+                let jsonString = ENNavigationUtils.jsonToString(json: jsonResult)
+                result["jsonPayload"] = jsonString
+            }
+        }
+        return result
     }
 
     func deinitRNView() {

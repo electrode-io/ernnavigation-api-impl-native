@@ -26,7 +26,7 @@ open class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataP
         return false
     }
     open var finish: Payload?
-    open var backToMiniApp: BackToRoute = { _, _ in
+    open var backTo: BackToRoute = { _, _ in
         return false
     }
 
@@ -42,7 +42,7 @@ open class ENBaseNavigationController: UINavigationController, ENMiniAppNavDataP
         self.finish = { payload in
             self.finishFlow(payload)
         }
-        self.backToMiniApp = { componentName, backProperties in
+        self.backTo = { componentName, backProperties in
             return self.backToMiniApp(componentName, backProperties)
         }
     }
