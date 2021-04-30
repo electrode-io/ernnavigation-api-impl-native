@@ -25,7 +25,8 @@
         "dependencies": [
           "androidx.appcompat:appcompat:1.1.0",
           "androidx.lifecycle:lifecycle-extensions:2.1.0",
-          "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+          "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0",
+          "com.walmartlabs.ern:ern.navigation.support.lib:0.0.1"
         ],
         "copy": [
           {

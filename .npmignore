@@ -7,6 +7,7 @@ android/lib/build/
 android/.gradle
 android/.idea/
 android/local.properties
+android/ern-navigation-support-lib/
 *.iml
 android/gradle*
 *.gradle
