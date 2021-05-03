@@ -14,7 +14,7 @@ import androidx.annotation.RequiresApi;
 
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.facebook.react.ReactRootView;
-import com.walmartlabs.ern.navigation.R;
+import com.walmartlabs.ern.navigation.res.lib.R;
 
 public class MiniAppView extends FrameLayout {
     public interface OnSetInitialPropsListener {

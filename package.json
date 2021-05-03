@@ -27,12 +27,6 @@
           "androidx.lifecycle:lifecycle-extensions:2.2.0",
           "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
           "com.walmartlabs.ern:ern.navigation.support.lib:0.0.1"
-        ],
-        "copy": [
-          {
-            "dest": "lib/src/main/res/devassist",
-            "source": "android/lib/src/main/res/values"
-          }
         ]
       },
       "ios": {
