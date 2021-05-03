@@ -6,8 +6,6 @@
     "ernnavigation-api": "1.2.1"
   },
   "scripts": {
-    "prepublishOnly": "node scripts/update-android-import.js './android/lib/src/main/java/com/ern/api/impl/navigation/views/MiniAppView.java' 'import com.walmartlabs.ern.navigation.R' 'import com.walmartlabs.ern.container.R'",
-    "postpublish": "node scripts/update-android-import.js './android/lib/src/main/java/com/ern/api/impl/navigation/views/MiniAppView.java' 'import com.walmartlabs.ern.container.R' 'import com.walmartlabs.ern.navigation.R'",
     "createiOSContainer": "./scripts/create-ios-container.sh"
   },
   "ern": {
@@ -23,16 +21,10 @@
       "android": {
         "root": "android",
         "dependencies": [
-          "androidx.appcompat:appcompat:1.1.0",
-          "androidx.lifecycle:lifecycle-extensions:2.1.0",
-          "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0",
+          "androidx.appcompat:appcompat:1.2.0",
+          "androidx.lifecycle:lifecycle-extensions:2.2.0",
+          "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
           "com.walmartlabs.ern:ern.navigation.support.lib:0.0.1"
-        ],
-        "copy": [
-          {
-            "dest": "lib/src/main/res/devassist",
-            "source": "android/lib/src/main/res/values"
-          }
         ]
       },
       "ios": {
