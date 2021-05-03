@@ -6,8 +6,6 @@
     "ernnavigation-api": "1.2.1"
   },
   "scripts": {
-    "prepublishOnly": "node scripts/update-android-import.js './android/lib/src/main/java/com/ern/api/impl/navigation/views/MiniAppView.java' 'import com.walmartlabs.ern.navigation.R' 'import com.walmartlabs.ern.container.R'",
-    "postpublish": "node scripts/update-android-import.js './android/lib/src/main/java/com/ern/api/impl/navigation/views/MiniAppView.java' 'import com.walmartlabs.ern.container.R' 'import com.walmartlabs.ern.navigation.R'",
     "createiOSContainer": "./scripts/create-ios-container.sh"
   },
   "ern": {
