@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.ern.api.impl.util.AnimUtil;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 import com.walmartlabs.ern.container.ElectrodeReactActivityDelegate;
 
@@ -196,6 +197,11 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
      * @param transaction {@link FragmentTransaction} used for the current fragment transaction
      */
     protected void manageTransition(@NonNull FragmentTransaction transaction) {
+        if(mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.FADE) {
+            AnimUtil.fade(transaction);
+        } else if(mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.SLIDE) {
+            AnimUtil.slide(transaction);
+        }
     }
 
     private FragmentManager getFragmentManager(@NonNull LaunchConfig launchConfig) {

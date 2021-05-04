@@ -48,6 +48,7 @@ public class NavMenuActivity extends ElectrodeBaseActivity {
     protected LaunchConfig createDefaultLaunchConfig() {
         LaunchConfig config =  super.createDefaultLaunchConfig();
         config.setForceUpEnabled(true);
+        config.setNavigationTransition(LaunchConfig.TRANSITION.SLIDE);
         return config;
     }
 }

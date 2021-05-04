@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,12 @@ public class LaunchConfig {
     }
 
     public static final int NONE = 0;
+
+    public enum TRANSITION {
+        DEFAULT,
+        FADE,
+        SLIDE
+    }
 
     /**
      * Pass a fragmentManager that should be used to start the new fragment.
@@ -90,6 +97,11 @@ public class LaunchConfig {
      * This is valid only when the backStackEntryCount is > 0.
      */
     boolean mReplace;
+
+    /**
+     * Choose the animation for your page transitions.
+     */
+    TRANSITION navigationTransition = TRANSITION.DEFAULT;
 
     public LaunchConfig() {
     }
@@ -251,5 +263,9 @@ public class LaunchConfig {
      */
     public boolean shouldReplace() {
         return mReplace;
+    }
+
+    public void setNavigationTransition(@NonNull TRANSITION transition) {
+        navigationTransition = transition;
     }
 }
