@@ -3,6 +3,7 @@ package com.walmartlabs.moviesreloaded.demo.defaultbehavior;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.ern.api.impl.core.LaunchConfig;
 import com.ern.api.impl.navigation.ElectrodeBaseActivity;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ern.api.impl.navigation.NavigationLaunchConfig;
@@ -38,6 +39,7 @@ public class DefaultActivity extends ElectrodeBaseActivity {
     protected NavigationLaunchConfig createNavigationLaunchConfig() {
         NavigationLaunchConfig config = super.createNavigationLaunchConfig();
         config.setForceUpEnabled(true);
+        config.setNavigationTransition(LaunchConfig.TRANSITION.FADE);
         config.useActivityScopeForNavigation(false, (NavigationLaunchConfig.RouteHandlerProvider<MiniAppNavigationFragment>) () -> {
             Logger.v(TAG, "Entering getRouteHandler() implementation");
             Fragment f = getSupportFragmentManager().findFragmentById(getFragmentContainerId());

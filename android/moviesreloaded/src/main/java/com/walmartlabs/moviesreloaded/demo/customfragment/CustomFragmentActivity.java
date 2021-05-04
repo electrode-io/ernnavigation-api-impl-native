@@ -2,6 +2,7 @@ package com.walmartlabs.moviesreloaded.demo.customfragment;
 
 import androidx.annotation.NonNull;
 
+import com.ern.api.impl.core.LaunchConfig;
 import com.ern.api.impl.navigation.ElectrodeBaseActivity;
 import com.ern.api.impl.navigation.NavigationLaunchConfig;
 import com.walmartlabs.moviesreloaded.R;
@@ -28,6 +29,7 @@ public class CustomFragmentActivity extends ElectrodeBaseActivity {
         NavigationLaunchConfig config = super.createNavigationLaunchConfig();
         config.setFragmentClass(CustomFragment.class);
         config.setForceUpEnabled(true);
+        config.setNavigationTransition(LaunchConfig.TRANSITION.FADE);
         return config;
     }
 }
