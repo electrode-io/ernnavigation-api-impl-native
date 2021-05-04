@@ -43,6 +43,8 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
 
     private String mMiniAppComponentName = NAME_NOT_SET_YET;
 
+    private ViewGroup previousParent;
+
     @SuppressWarnings("unused")
     public ElectrodeBaseFragmentDelegate(@NonNull Fragment fragment) {
         this(fragment, null);
@@ -102,7 +104,10 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
             } else {
                 Logger.i(TAG, "Missing miniAppComponentName inside arguments, will not create a MiniApp view.");
             }
-        }
+        } else if (previousParent != null && mMiniAppView.getParent() == previousParent) {{
+            previousParent.removeView(mMiniAppView);
+            previousParent = null;
+        }}
 
         View rootView;
         if (mFragmentConfig != null && mFragmentConfig.mFragmentLayoutId != ElectrodeFragmentConfig.NONE) {
@@ -243,14 +248,17 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
     @SuppressWarnings("unused")
     public void onDestroyView() {
         Logger.v(TAG, "onDestroyView(): " + getReactComponentName());
+        storeOldParent();
+    }
+
+    private void storeOldParent() {
         // If the ReactNative view was inflated inside a container make sure to remove the ReactRootView from the parent
         // since we are reusing the same MiniApp view instance when the view is recreated.
         View rootView = mFragment.getView();
         if (rootView != null && mMiniAppView != null && rootView != mMiniAppView && mFragmentConfig != null) {
-            View parentView = rootView.findViewById(mFragmentConfig.mReactViewContainerId);
-            if (parentView != null && mMiniAppView.getParent() == parentView) {
-                ((ViewGroup) parentView).removeView(mMiniAppView);
-                Logger.v(TAG, "Removed MiniApp(%s) view from parent view", getReactComponentName());
+            final View parentView = rootView.findViewById(mFragmentConfig.mReactViewContainerId);
+            if (parentView instanceof ViewGroup) {
+                previousParent = (ViewGroup) parentView;
             }
         }
     }
@@ -267,6 +275,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
         if (mFragment.getArguments() != null) {
             mFragment.getArguments().remove(KEY_UNIQUE_VIEW_IDENTIFIER);
         }
+        previousParent = null;
     }
 
     @SuppressWarnings("unused")
