@@ -37,7 +37,6 @@ import androidx.core.view.MenuItemCompat;
 import com.ernnavigationApi.ern.model.NavigationBar;
 import com.ernnavigationApi.ern.model.NavigationBarButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
-import com.walmartlabs.ern.container.ElectrodeReactContainer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -127,7 +126,7 @@ final class MenuUtil {
     }
 
     public static boolean canLoadIconFromURI(String icon) {
-        return ElectrodeReactContainer.isReactNativeDeveloperSupport() && URLUtil.isValidUrl(icon);
+        return  URLUtil.isValidUrl(icon);
     }
 
     public static Drawable getBitmapFromURL(Context context, String iconLocation) throws IOException {
