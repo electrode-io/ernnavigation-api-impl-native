@@ -19,6 +19,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.ern.api.impl.navigation.NavUtils;
 import com.ernnavigationApi.ern.model.ErnNavRoute;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
@@ -182,9 +183,7 @@ public class ElectrodeBaseFragmentDelegate<T extends ElectrodeBaseFragmentDelega
         if (mMiniAppView instanceof ReactRootView) {
             Bundle props = getDefaultProps();
             addGlobalProps(props);
-            if (data != null) {
-                props.putAll(data);
-            }
+            NavUtils.mergeBundleWithJsonPayloads(props, data);
             ((ReactRootView) mMiniAppView).setAppProperties(props);
         } else {
             Logger.w(TAG, "Refresh called on a null mMiniAppView. Should never reach here");
