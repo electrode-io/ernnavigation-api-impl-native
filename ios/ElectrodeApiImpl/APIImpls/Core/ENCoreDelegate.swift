@@ -85,12 +85,24 @@ import UIKit
             Merge and convert back to json strings
             Set back to "jsonPayload" key
         */
-        if let payload1 = dict1["jsonPayload"] as? String, let payload2 = dict2["jsonPayload"] as? String {
-            if let jsonDict1 = payload1.convertStringToDict(), let jsonDict2 = payload2.convertStringToDict() {
+        let payload1 = dict1["jsonPayload"] as? String
+        let payload2 = dict2["jsonPayload"] as? String
+        if let payload1 = payload1, let payload2 = payload2 {
+            let jsonDict1 = payload1.convertStringToDict()
+            let jsonDict2 = payload2.convertStringToDict()
+            if let jsonDict1 = jsonDict1, let jsonDict2 = jsonDict2 {
                 let jsonResult = jsonDict2.merging(jsonDict1) {(current, _) in current }
                 let jsonString = ENNavigationUtils.jsonToString(json: jsonResult)
                 result["jsonPayload"] = jsonString
+            } else if let _ = jsonDict1 {
+                result["jsonPayload"] = payload1
+            } else {
+                result["jsonPayload"] = payload2
             }
+        } else if payload1 = payload1 {
+            result["jsonPayload"] = payload1
+        } else {
+            result["jsonPayload"] = payload2
         }
         return result
     }
