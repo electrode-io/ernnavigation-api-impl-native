@@ -99,7 +99,7 @@ import UIKit
             } else {
                 result["jsonPayload"] = payload2
             }
-        } else if payload1 = payload1 {
+        } else if let payload1 = payload1 {
             result["jsonPayload"] = payload1
         } else {
             result["jsonPayload"] = payload2
