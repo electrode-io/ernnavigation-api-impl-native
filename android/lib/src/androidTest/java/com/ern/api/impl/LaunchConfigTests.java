@@ -271,6 +271,8 @@ public class LaunchConfigTests {
         });
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
         Lifecycle.State state = scenario.getState();
+        // Sometimes the activity gets destroyed immediately ot it can be delayed.
+        // Covering both cases below.
         if(state == Lifecycle.State.STARTED) {
             scenario.onActivity(new ActivityScenario.ActivityAction<UpEnabledForRootActivity>() {
                 @Override

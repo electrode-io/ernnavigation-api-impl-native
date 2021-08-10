@@ -2,6 +2,8 @@ package com.ern.api.impl.navigation;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,6 +60,8 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     private BackPressedCallback mBackPressedCallback;
 
     protected boolean ignoreRnNavBarUpdate;
+
+    private Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     private final Observer<Route> routeObserver = new Observer<Route>() {
         @Override
@@ -170,7 +174,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         if (mNavViewModel != null) {
             mNavViewModel.registerNavRequestHandler();
         }
-        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_FOCUS.toString()).viewId(getMiniAppViewIdentifier()).build());
+        mMainHandler.post(() -> EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_FOCUS.toString()).viewId(getMiniAppViewIdentifier()).build()));
     }
 
     @SuppressWarnings("unused")
@@ -204,7 +208,7 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
     @CallSuper
     public void onPause() {
         super.onPause();
-        EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_BLUR.toString()).viewId(getMiniAppViewIdentifier()).build());
+        mMainHandler.post(() -> EnNavigationApi.events().emitNavEvent(new NavEventData.Builder(NavEventType.DID_BLUR.toString()).viewId(getMiniAppViewIdentifier()).build()));
     }
 
     @Override

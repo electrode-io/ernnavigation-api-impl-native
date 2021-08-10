@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -84,7 +85,7 @@ public class NavigationFragmentDelegateTest {
                 assertThat(fragment).isInstanceOf(LayoutConfiguredFragment.class);
                 LayoutConfiguredFragment testFragment = (LayoutConfiguredFragment) fragment;
                 assertThat(testFragment.getView()).isNotNull();
-                assertThat(testFragment.getView().findViewById(com.walmartlabs.ern.navigation.test.R.id.miniapp_view_container)).isNotNull();
+                assertThat((LinearLayout) testFragment.getView().findViewById(com.walmartlabs.ern.navigation.test.R.id.miniapp_view_container)).isNotNull();
             }
         });
     }
