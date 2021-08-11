@@ -4,6 +4,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -269,12 +270,19 @@ public class LaunchConfigTests {
             }
         });
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
-        scenario.onActivity(new ActivityScenario.ActivityAction<UpEnabledForRootActivity>() {
-            @Override
-            public void perform(UpEnabledForRootActivity activity) {
-                assertThat(activity.isFinishing()).isTrue();
-            }
-        });
+        Lifecycle.State state = scenario.getState();
+        // Sometimes the activity gets destroyed immediately ot it can be delayed.
+        // Covering both cases below.
+        if(state == Lifecycle.State.STARTED) {
+            scenario.onActivity(new ActivityScenario.ActivityAction<UpEnabledForRootActivity>() {
+                @Override
+                public void perform(UpEnabledForRootActivity activity) {
+                    assertThat(activity.isFinishing()).isTrue();
+                }
+            });
+        } else {
+            assertThat(scenario.getState()).isEqualTo(Lifecycle.State.DESTROYED);
+        }
     }
 
     @Test
