@@ -1,5 +1,6 @@
 package com.ern.api.impl.core;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -74,14 +75,18 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     @Override
     public void onResume() {
-        super.onResume();
+        if (getReactNativeHost() != null) {
+            super.onResume();
+        }
         Logger.v(TAG, "onResume()");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     @Override
     public void onPause() {
-        super.onPause();
+        if (getReactNativeHost() != null) {
+            super.onPause();
+        }
         Logger.v(TAG, "onPause()");
     }
 
@@ -94,7 +99,9 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
     @Override
     public void onDestroy() {
         mFragmentActivity = null;
-        super.onDestroy();
+        if (getReactNativeHost() != null) {
+            super.onDestroy();
+        }
         Logger.v(TAG, "onDestroy()");
     }
 
@@ -104,6 +111,13 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
             return onBackPressed();
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (getReactNativeHost() != null) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -197,9 +211,9 @@ public class ElectrodeBaseActivityDelegate<T extends LaunchConfig> extends Elect
      * @param transaction {@link FragmentTransaction} used for the current fragment transaction
      */
     protected void manageTransition(@NonNull FragmentTransaction transaction) {
-        if(mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.FADE) {
+        if (mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.FADE) {
             AnimUtil.fade(transaction);
-        } else if(mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.SLIDE) {
+        } else if (mDefaultLaunchConfig.navigationTransition == LaunchConfig.TRANSITION.SLIDE) {
             AnimUtil.slide(transaction);
         }
     }

@@ -145,6 +145,7 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preRootComponentRender();
         if (mainLayout() != NONE) {
             setContentView(mainLayout());
         }
@@ -154,6 +155,14 @@ public abstract class ElectrodeBaseActivity extends AppCompatActivity implements
         mElectrodeReactNavDelegate.onCreate(savedInstanceState);
 
         setupNavBar();
+    }
+
+    /**
+     * Override this to perform any action that needs to be performed before the root component is first rendered.
+     * Some apps might only choose to initialize the container inside an activity. This method can act as a helper method for them to perform init.
+     */
+    protected void preRootComponentRender() {
+        // Do nothing here, override if needed.
     }
 
     @Override
