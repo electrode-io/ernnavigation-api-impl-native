@@ -25,8 +25,7 @@ public class SampleActivity extends ElectrodeBaseActivity {
     public JSONObject finishFlowPayload;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void preRootComponentRender() {
         ElectrodeReactContainer.initialize(getApplication(), new ElectrodeReactContainer.Config());
     }
 
