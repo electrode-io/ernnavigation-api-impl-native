@@ -34,8 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuItemCompat;
 
-import com.ernnavigationApi.ern.model.NavigationBar;
-import com.ernnavigationApi.ern.model.NavigationBarButton;
+import com.ernnavigation.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.NavigationBarButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import java.io.IOException;

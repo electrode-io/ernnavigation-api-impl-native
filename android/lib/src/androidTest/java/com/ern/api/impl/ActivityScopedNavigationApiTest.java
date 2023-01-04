@@ -11,9 +11,9 @@ import androidx.test.filters.LargeTest;
 
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ern.api.impl.navigation.NavigationLaunchConfig;
-import com.ernnavigationApi.ern.api.EnNavigationApi;
-import com.ernnavigationApi.ern.model.ErnNavRoute;
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigation.ern.api.EnNavigationApi;
+import com.ernnavigation.ern.model.ErnNavRoute;
+import com.ernnavigation.ern.model.NavigationBar;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;
 import com.walmartlabs.electrode.reactnative.bridge.FailureMessage;
 import com.walmartlabs.electrode.reactnative.bridge.None;

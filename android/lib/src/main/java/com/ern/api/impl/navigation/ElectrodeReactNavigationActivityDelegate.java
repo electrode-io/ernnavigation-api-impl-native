@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate;
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.NavigationBar;
 
 /**
  * @deprecated  This delegate is no longer in use.  Change to use {@link com.ern.api.impl.core.ElectrodeBaseActivityDelegate}

@@ -15,14 +15,74 @@ task copyApiImplSrc(type: Copy) {
     into "$CONTAINER_PATH/lib/src/main/java/com/ern/api/impl"
 }
 
+// Patch container sources for in-progress androidx migration (Jan 2022) - Remove later
+
+task patchApiSrc(type: Copy) {
+    from "$CONTAINER_PATH/lib/src/main/java/com/ernnavigationApi/ern"
+    into "$buildDir/tmp/patched-api"
+    filter { line -> line.replaceAll('android\\.support', 'androidx') }
+    filter { line -> line.replaceAll('ernnavigationApi', 'ernnavigation') }
+}
+task deleteApiSrc(type: Delete) {
+    delete "$CONTAINER_PATH/lib/src/main/java/com/ernnavigationApi"
+}
+task replaceApiSrc(type: Copy) {
+    from "$buildDir/tmp/patched-api"
+    into "$CONTAINER_PATH/lib/src/main/java/com/ernnavigation/ern"
+}
+
+task patchBridgeSrc(type: Copy) {
+    from "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/electrode/reactnative/bridge"
+    into "$buildDir/tmp/patched-bridge"
+    filter { line -> line.replaceAll('android\\.support', 'androidx') }
+}
+task deleteBridgeSrc(type: Delete) {
+    delete "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/electrode/reactnative/bridge"
+}
+task replaceBridgeSrc(type: Copy) {
+    from "$buildDir/tmp/patched-bridge"
+    into "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/electrode/reactnative/bridge"
+}
+
+task patchPluginsSrc(type: Copy) {
+    from "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/ern/container/plugins"
+    into "$buildDir/tmp/patched-plugins"
+    filter { line -> line.replaceAll('android\\.support', 'androidx') }
+}
+task deletePluginsSrc(type: Delete) {
+    delete "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/ern/container/plugins"
+}
+task replacePluginsSrc(type: Copy) {
+    from "$buildDir/tmp/patched-plugins"
+    into "$CONTAINER_PATH/lib/src/main/java/com/walmartlabs/ern/container/plugins"
+}
+
 task patchContainer {
     dependsOn deleteApiImplSrc
     dependsOn copyApiImplSrc
+    dependsOn patchApiSrc
+    dependsOn deleteApiSrc
+    dependsOn replaceApiSrc
+    dependsOn patchBridgeSrc
+    dependsOn deleteBridgeSrc
+    dependsOn replaceBridgeSrc
+    dependsOn patchPluginsSrc
+    dependsOn deletePluginsSrc
+    dependsOn replacePluginsSrc
     tasks.findByName('copyApiImplSrc').mustRunAfter 'deleteApiImplSrc'
+    tasks.findByName('patchApiSrc').mustRunAfter 'copyApiImplSrc'
+    tasks.findByName('deleteApiSrc').mustRunAfter 'patchApiSrc'
+    tasks.findByName('replaceApiSrc').mustRunAfter 'deleteApiSrc'
+    tasks.findByName('patchBridgeSrc').mustRunAfter 'replaceApiSrc'
+    tasks.findByName('deleteBridgeSrc').mustRunAfter 'patchBridgeSrc'
+    tasks.findByName('replaceBridgeSrc').mustRunAfter 'deleteBridgeSrc'
+    tasks.findByName('patchPluginsSrc').mustRunAfter 'replaceBridgeSrc'
+    tasks.findByName('deletePluginsSrc').mustRunAfter 'patchPluginsSrc'
+    tasks.findByName('replacePluginsSrc').mustRunAfter 'deletePluginsSrc'
 }
 
 task publishErnContainer(type: Exec) {
-    commandLine "ern", "publish-container", "-p", "ern-container-publisher-maven@1.0.5", "-u", "file://$HOMEDIR/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
+    commandLine "ern", "publish-container", "-p", "maven", "-u", "file://$HOMEDIR/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
 }
 
 task createAndPublishErnDevContainer() {
