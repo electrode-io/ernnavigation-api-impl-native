@@ -7,7 +7,7 @@ task createErnDevContainer(type: Exec) {
 }
 
 task publishErnContainer(type: Exec) {
-    commandLine "ern", "publish-container", "-p", "maven", "--url", "file://${HOMEDIR}/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
+    commandLine "ern", "publish-container", "-p", "ern-container-publisher-maven@1.0.5", "--url", "file://${HOMEDIR}/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
 }
 
 task createAndPublishErnDevContainer() {
