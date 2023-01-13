@@ -2,7 +2,7 @@ package com.ern.api.impl.navigation;
 
 import android.os.Bundle;
 
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.NavigationBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;

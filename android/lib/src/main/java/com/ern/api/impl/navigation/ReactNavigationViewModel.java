@@ -25,8 +25,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.ernnavigationApi.ern.api.EnNavigationApi;
-import com.ernnavigationApi.ern.model.ErnNavRoute;
+import com.ernnavigation.ern.api.EnNavigationApi;
+import com.ernnavigation.ern.model.ErnNavRoute;
 import com.walmartlabs.electrode.reactnative.bridge.BridgeFailureMessage;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeRequestHandler;
 import com.walmartlabs.electrode.reactnative.bridge.ElectrodeBridgeResponseListener;

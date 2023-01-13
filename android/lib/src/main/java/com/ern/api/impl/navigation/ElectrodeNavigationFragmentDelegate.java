@@ -23,11 +23,11 @@ import com.ern.api.impl.core.ActivityDelegateConstants;
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
 import com.ern.api.impl.core.ElectrodeFragmentConfig;
 import com.ern.api.impl.core.LaunchConfig;
-import com.ernnavigationApi.ern.api.EnNavigationApi;
-import com.ernnavigationApi.ern.model.NavEventData;
-import com.ernnavigationApi.ern.model.NavigationBar;
-import com.ernnavigationApi.ern.model.NavigationBarButton;
-import com.ernnavigationApi.ern.model.NavigationBarLeftButton;
+import com.ernnavigation.ern.api.EnNavigationApi;
+import com.ernnavigation.ern.model.NavEventData;
+import com.ernnavigation.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.NavigationBarButton;
+import com.ernnavigation.ern.model.NavigationBarLeftButton;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import org.json.JSONObject;

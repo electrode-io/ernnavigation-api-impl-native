@@ -20,7 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.NavigationBar;
 
 import org.json.JSONObject;
 

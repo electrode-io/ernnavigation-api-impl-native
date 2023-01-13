@@ -21,8 +21,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ernnavigationApi.ern.model.ErnNavRoute;
-import com.ernnavigationApi.ern.model.NavigationBar;
+import com.ernnavigation.ern.model.ErnNavRoute;
+import com.ernnavigation.ern.model.NavigationBar;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 
 import org.json.JSONException;

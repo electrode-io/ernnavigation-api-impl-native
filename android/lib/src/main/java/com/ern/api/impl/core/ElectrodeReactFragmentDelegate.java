@@ -38,7 +38,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 
-import com.ernnavigationApi.ern.model.ErnNavRoute;
+import com.ernnavigation.ern.model.ErnNavRoute;
 import com.facebook.react.ReactRootView;
 import com.walmartlabs.electrode.reactnative.bridge.helpers.Logger;
 

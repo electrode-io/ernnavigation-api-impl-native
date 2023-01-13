@@ -12,7 +12,7 @@ import com.ern.api.impl.navigation.MenuItemDataProvider;
 import com.ern.api.impl.navigation.MenuItemProperties;
 import com.ern.api.impl.navigation.MiniAppNavigationFragment;
 import com.ern.api.impl.navigation.OnNavBarItemClickListener;
-import com.ernnavigationApi.ern.model.NavigationBarButton;
+import com.ernnavigation.ern.model.NavigationBarButton;
 import com.walmartlabs.moviesreloaded.R;
 
 public class MenuItemDemoFragment extends MiniAppNavigationFragment implements OnNavBarItemClickListener {
