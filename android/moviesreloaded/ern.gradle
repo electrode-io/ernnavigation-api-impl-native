@@ -1,17 +1,34 @@
 // WORKSPACE is defined in Looper as the root working directory for the job
 // When running on local workstation, we're just using HOME
 final String HOMEDIR = System.getenv('WORKSPACE') ?: System.getProperty('user.home')
+final String CONTAINER_PATH = "$HOMEDIR/.ern/containergen/out/android"
 
 task createErnDevContainer(type: Exec) {
-    commandLine "ern", "create-container", "--miniapps", "https://github.com/electrode-io/MoviesReloadedMiniApp.git", "--platform", "android"
+    commandLine "ern", "create-container", "-m", "https://github.com/electrode-io/movies-reloaded-miniapp.git", "--platform", "android"
+}
+
+task deleteApiImplSrc(type: Delete) {
+    delete "$CONTAINER_PATH/lib/src/main/java/com/ern/api/impl"
+}
+task copyApiImplSrc(type: Copy) {
+    from "${System.getProperty('user.dir')}/lib/src/main/java/com/ern/api/impl"
+    into "$CONTAINER_PATH/lib/src/main/java/com/ern/api/impl"
+}
+
+task patchContainer {
+    dependsOn deleteApiImplSrc
+    dependsOn copyApiImplSrc
+    tasks.findByName('copyApiImplSrc').mustRunAfter 'deleteApiImplSrc'
 }
 
 task publishErnContainer(type: Exec) {
-    commandLine "ern", "publish-container", "-p", "ern-container-publisher-maven@1.0.5", "--url", "file://${HOMEDIR}/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
+    commandLine "ern", "publish-container", "-p", "ern-container-publisher-maven@1.0.5", "-u", "file://$HOMEDIR/.m2/repository", "--platform", "android", "-e", '{"artifactId":"container-movies-reloaded","groupId":"com.walmartlabs.ern"}'
 }
 
 task createAndPublishErnDevContainer() {
     dependsOn 'createErnDevContainer'
+    dependsOn 'patchContainer'
     dependsOn 'publishErnContainer'
-    tasks.findByName('publishErnContainer').mustRunAfter 'createErnDevContainer'
+    tasks.findByName('patchContainer').mustRunAfter 'createErnDevContainer'
+    tasks.findByName('publishErnContainer').mustRunAfter 'patchContainer'
 }
