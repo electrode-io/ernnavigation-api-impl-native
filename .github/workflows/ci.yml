@@ -13,6 +13,13 @@ jobs:
           node-version: '16'
       - run: echo "y" | /usr/local/lib/android/sdk/tools/bin/sdkmanager "ndk;21.0.6113669"
       - run: npm i -g electrode-native
+      - uses: actions/checkout@v3
+        with:
+          repository: electrode-io/electrode-native
+          path: electrode-native
+      - working-directory: electrode-native/
+        run: node setup-dev.js
+      - run: ern platform use 0.49.2
       - run: yarn --frozen-lockfile
       - working-directory: android/
         run: ./gradlew createAndPublishErnDevContainer
