@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-ernnavigation-api@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/ernnavigation-api/-/ernnavigation-api-1.2.1.tgz#5e44cd4dcfc89544e2283d9e40ab1be18d80e243"
-  integrity sha512-Kyv63hJ+tb0RsXnX7iEB4xtxdgJTKD7ksqSP7L4oeCBfLDTOtBpy63VUywcjW7WUgZ3Bcyxr1xiuPpASw6k3pA==
+ernnavigation-api@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ernnavigation-api/-/ernnavigation-api-2.0.0.tgz#21aef7048598fc8b27a33a7f779dd66257128abf"
+  integrity sha512-DNgA2jTCRxM5PU/Mytmzt2tgCXOzi3jnnc9nHfEWTiQnkZs9IWgXvDftzSqE+zchRN5AFNkteUDkO0v9RWuKSw==
   dependencies:
     react-native-electrode-bridge "1.5.x"
 
