@@ -2,22 +2,22 @@
 # yarn lockfile v1
 
 
-ernnavigation-api@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/ernnavigation-api/-/ernnavigation-api-2.0.0.tgz#21aef7048598fc8b27a33a7f779dd66257128abf"
-  integrity sha512-DNgA2jTCRxM5PU/Mytmzt2tgCXOzi3jnnc9nHfEWTiQnkZs9IWgXvDftzSqE+zchRN5AFNkteUDkO0v9RWuKSw==
+ernnavigation-api@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ernnavigation-api/-/ernnavigation-api-2.1.0.tgz#316c2e4fd3f6dfb8fed06ffa2c9323acf594a529"
+  integrity sha512-tCWx4IgvsXtOohS0esmF9b/rSBDv7we7S2p8oTmImRRa3P5SyRO0LVpef90M91o9t3uZqgeTFOBNwjcBb3hwLA==
   dependencies:
-    react-native-electrode-bridge "1.5.x"
+    react-native-electrode-bridge "^1.5.27"
 
 events@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
   integrity sha1-nr23Y1rQmccNzEwqH1AEKI6L2SQ=
 
-react-native-electrode-bridge@1.5.x:
-  version "1.5.19"
-  resolved "https://registry.yarnpkg.com/react-native-electrode-bridge/-/react-native-electrode-bridge-1.5.19.tgz#146051a478a0a709bc15e6d9746f7ea23061d46a"
-  integrity sha512-15PTawA0jYSpcG0Ej8GXjwOFCAWW4hbP/NK7ZAL/gxVifhiBhN2GcCxAP76hd4iwJCNMDn6D6qmTh542/ck+Fw==
+react-native-electrode-bridge@^1.5.27:
+  version "1.5.27"
+  resolved "https://registry.yarnpkg.com/react-native-electrode-bridge/-/react-native-electrode-bridge-1.5.27.tgz#28396b2bf647252cd50437eec741fbb912ee0dea"
+  integrity sha512-eYtg9PjnQBJN25EqgkkALjWAFaFuVQvhlRl3WiBt3nZPFQRAAv8aVFCh5t1Bbn7BiEVkDcw+vIUSWbTkUROVng==
   dependencies:
     events "^1.1.1"
     uuid "^3.0.0"
