@@ -32,7 +32,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.ern.api.impl.core.ElectrodeReactFragmentActivityDelegate.StartMiniAppConfig;
 import com.ern.api.impl.core.ElectrodeReactFragmentDelegate;
@@ -128,7 +128,7 @@ public class ElectrodeReactFragmentNavDelegate extends ElectrodeReactFragmentDel
     @CallSuper
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mNavViewModel = ViewModelProviders.of(mFragment).get(ReactNavigationViewModel.class);
+        mNavViewModel = new ViewModelProvider(mFragment).get(ReactNavigationViewModel.class);
         mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
 
     }
