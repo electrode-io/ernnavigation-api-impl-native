@@ -8,19 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
       - uses: android-actions/setup-android@v3
+      - run: sdkmanager "ndk;27.1.12297006"
       - run: npm i -g electrode-native
       - uses: actions/checkout@v3
         with:
           repository: electrode-io/electrode-native
-          path: electrode-native
       - working-directory: electrode-native/
         run: node setup-dev.js
       - run: ern platform use 1000.0.0
