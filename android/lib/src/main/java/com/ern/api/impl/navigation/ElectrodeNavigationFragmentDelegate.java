@@ -17,7 +17,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.ern.api.impl.core.ActivityDelegateConstants;
 import com.ern.api.impl.core.ElectrodeBaseFragmentDelegate;
@@ -160,12 +160,12 @@ public class ElectrodeNavigationFragmentDelegate<T extends ElectrodeBaseFragment
         // This is because calling add() or show() will not trigger a lifecycle method (onPause() or onStop()) on the previous fragment.
         // Not registering a view model in this case will prevent multiple request handlers getting registered at the same time.
         if (args != null && args.getBoolean(ActivityDelegateConstants.KEY_REGISTER_NAV_VIEW_MODEL)) {
-            mNavViewModel = ViewModelProviders.of(mFragment).get(ReactNavigationViewModel.class);
+            mNavViewModel = new ViewModelProvider(mFragment).get(ReactNavigationViewModel.class);
             mNavViewModel.getRouteLiveData().observe(mFragment.getViewLifecycleOwner(), routeObserver);
             mNavViewModel.registerNavRequestHandler();
         }
 
-        mActionBarStatusViewModel = ViewModelProviders.of(mFragment.requireActivity()).get(ActionBarStatusViewModel.class);
+        mActionBarStatusViewModel = new ViewModelProvider(mFragment.requireActivity()).get(ActionBarStatusViewModel.class);
     }
 
     @CallSuper
